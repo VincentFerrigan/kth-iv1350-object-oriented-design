@@ -1,0 +1,257 @@
+@startuml
+skinparam style strictuml
+
+'autoactivate on 'TODO activationbars!!!!!!!
+' actor user
+hide unlinked
+title "startSale"
+participant ":View" as View
+participant "contr:Controller" as contr
+participant "currentSale:Sale" as currentSale
+
+autonumber 1
+View -> contr : startSale(): void
+activate contr
+
+autonumber 1.1
+'contr -> currentSale :  <<create>> \n currentSale = Sale(printer: Printer):Sale
+contr -> currentSale :  <<create>> \n currentSale = Sale():Sale
+activate currentSale
+deactivate currentSale
+deactivate contr
+
+autonumber stop
+
+newpage registerItem
+'REGISTERITEM
+hide unlinked
+participant ":InventorySystem" as InventorySystem
+
+loop moreItems
+'[validIdentifier]
+    alt multipleItem
+        autonumber 1
+        View -> contr : saleInfo = registerItem(itemID:int, quantity:int) : SaleDTO
+        activate contr
+
+        autonumber 1.1
+        contr -> InventorySystem : itemInfo = registerItem(itemID:int):ItemDTO
+        activate InventorySystem
+        alt invalidItem
+        autonumber 1.1.1
+        contr <-- InventorySystem : itemNotFound(itemID:int)
+        deactivate InventorySystem
+        autonumber 1.2
+        View <-- contr : itemNotFound(itemID:int)
+
+        else else
+        deactivate InventorySystem
+        note right: InventorySystem creates ItemDTO
+
+        autonumber 1.2
+        contr -> currentSale : saleInfo = addItem(itemInfo:ItemDTO, quantity:int) : SaleDTO
+        activate currentSale
+        opt !newItem
+            autonumber 1.2.1
+            currentSale -> currentSale : increaseQuantity(quantity:int) : void
+            activate currentSale
+            deactivate currentSale
+        end
+        autonumber 1.2.2
+        currentSale -> currentSale : calculationOfPrice() : void
+        activate currentSale
+        deactivate currentSale
+        deactivate currentSale
+        deactivate contr
+        end
+
+    else else
+        autonumber 1
+        View -> contr : saleInfo = registerItem(itemID:int) : SaleDTO
+        activate contr
+
+        autonumber 1.1
+'        create InventorySystem
+        contr -> InventorySystem : itemInfo = registerItem(itemID:int):ItemDTO
+        activate InventorySystem
+        alt invalidItem
+
+        autonumber 1.1.1
+        contr <-- InventorySystem : itemNotFound(itemID:int)
+        deactivate InventorySystem
+        autonumber 1.2
+        View <-- contr : itemNotFound(itemID:int)
+
+        else else
+        deactivate InventorySystem
+
+
+        autonumber 1.2
+        contr -> currentSale : saleInfo = addItem(itemInfo:ItemDTO) : SaleDTO
+        activate currentSale
+    opt !newItem
+        autonumber 1.2.1
+        currentSale -> currentSale : increaseQuantity() : void
+        activate currentSale
+        deactivate currentSale
+    end
+    autonumber 1.2.2
+    currentSale -> currentSale : calculationOfPrice() : void
+    activate currentSale
+    deactivate currentSale
+    deactivate currentSale
+    deactivate contr
+end
+end
+
+autonumber stop
+newpage EndSale
+autonumber 1
+View -> contr : saleInfo = endSale() : SaleDTO
+activate contr
+autonumber 1.1
+contr -> currentSale : saleInfo = endSale (): SaleDTO
+activate currentSale
+deactivate currentSale
+deactivate contr
+note right: Sale creates saleDTO
+
+autonumber stop
+newpage discountRequest
+participant ":DiscountRegister" as DiscountRegister
+participant ":Sale" as Sale
+autonumber 1
+View -> contr : saleInfo = discountRequest(customerID:int): SaleDTO
+activate contr
+note right : gets new SaleDTO after discount
+autonumber 1.1
+'create DiscountRegister
+contr -> DiscountRegister : discount = DiscountRequest(customerID:int, saleInfo:SaleDTO):DiscountDTO
+activate DiscountRegister
+deactivate DiscountRegister
+note right: Discount creates discountDTO
+autonumber 1.2
+contr -> currentSale : saleInfo = applyDiscount(discount:DiscountDTO): SaleDTO
+activate currentSale
+deactivate currentSale
+deactivate contr
+note right: discountDTO is used by currentSale \nto create a new SaleDTO.
+
+autonumber stop
+newpage addPayment
+participant "cashRegister:CashRegister" as cashRegister
+participant "printer:Printer" as printer
+participant "payment:CashPayment" as payment
+participant ":AccountingSystem" as AccountingSystem
+participant "currentReceipt:Receipt" as currentReceipt
+participant "saleLog:SaleLog" as saleLog
+autonumber 1
+'View -> contr : changeAmount = pay(payment:CashPayment) : Amount
+View -> contr : changeAmount = pay(paidAmt:Amount) : Amount
+activate contr
+autonumber 1.1
+contr -> payment : <<create>> \npayment = CashPayment(paidAmt:Amount) : CashPayment
+activate payment
+deactivate payment
+autonumber 1.2
+contr -> currentSale : saleInfo = pay(payment:CashPayment) : SaleDTO
+activate currentSale
+autonumber 1.2.1
+currentSale -> payment : calculateTotalCost(paidSale:Sale):void
+activate payment
+deactivate payment
+deactivate currentSale
+autonumber 1.3
+contr -> cashRegister : addPayment (payment:CashPayment) : void
+activate cashRegister
+deactivate cashRegister
+
+
+autonumber 1.4
+contr -> saleLog:logSale(saleInfo:SaleDTO):void
+activate saleLog
+deactivate saleLog
+
+autonumber 1.5
+contr -> InventorySystem : updateInventory(saleInfo:SaleDTO):void
+activate InventorySystem
+deactivate InventorySystem
+autonumber 1.6
+contr -> AccountingSystem : updateToAccounting(saleInfo:SaleDTO): void
+activate AccountingSystem
+deactivate AccountingSystem
+autonumber 1.7
+contr -> currentSale : printReceipt(printer:Printer) : void
+activate currentSale
+autonumber 1.7.1
+currentSale -> currentReceipt : <<create>>\nReceipt(saleInfo:SaleDTO, printer: Printer) : Receipt
+activate currentReceipt
+deactivate currentReceipt
+autonumber 1.7.2
+currentSale -> printer :printReceipt(currentReceipt:Receipt):void
+activate printer
+deactivate printer
+deactivate currentSale
+deactivate contr
+autonumber stop
+@enduml
+
+@startuml
+skinparam style strictuml
+participant ":Main" as Main
+participant ":View" as View
+participant "contr:Controller" as contr
+participant "saleLog:SaleLog" as saleLog
+participant "printer:Printer" as printer
+participant "cashRegister:CashRegister" as cashRegister
+participant ":DiscountRegister" as DiscountRegister
+participant ":AccountingSystem" as AccountingSystem
+participant ":InventorySystem" as InventorySystem
+' user -> Main: main()
+' create Printer
+autonumber 1
+Main -> printer : <<create>>\n printer = Printer():Printer
+activate printer
+deactivate printer
+
+' create contr
+autonumber 2
+Main -> SaleLog : <<create>>\n saleLog = SaleLog():SaleLog
+activate SaleLog
+deactivate SaleLog
+autonumber 3
+Main -> contr : <<create>>\n contr = Controller(printer: Printer, saleLog:SaleLog):Controller
+activate contr
+
+' create CashRegister
+autonumber 3.1
+contr -> cashRegister : <<create>>\n cashRegister = CashRegister(initialAmount: int):CashRegister
+activate cashRegister
+deactivate cashRegister
+
+' create AccountingSystem
+autonumber 3.2
+contr -> AccountingSystem : <<create>>\n AccountingSystem():AccountingSystem
+activate AccountingSystem
+deactivate AccountingSystem
+
+' create DiscountRegister
+autonumber 3.3
+contr -> DiscountRegister : <<create>>\n DiscountRegister():DiscountRegister
+activate DiscountRegister
+deactivate DiscountRegister
+
+' create InventorySystem
+autonumber 3.4
+contr -> InventorySystem: <<create>>\n InventorySystem():InventorySystem
+activate InventorySystem
+deactivate InventorySystem
+deactivate contr
+
+' create View
+autonumber 4
+Main -> View : <<create>>\n View(contr: Controller):View
+activate View
+deactivate View
+
+@enduml

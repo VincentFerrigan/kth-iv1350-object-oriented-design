@@ -1,0 +1,155 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam linetype ortho
+skinparam package {
+    BackgroundColor LightYellow
+}
+'top to bottom direction
+left to right direction
+skinparam ClassAttributeIconSize 0
+together {
+package startup {
+    class Main{
+        +main(args : String[]) : void
+    }
+}
+    package view {
+    class View {
+        + <<create>> View(contr : Controller) : View 
+    }
+    }
+    package controller {
+        class Controller{
+            +startSale() : void
+            +registerItem(itemID : int) : SaleDTO
+            +registerItem(itemID : int, quantity:int) : SaleDTO
+            +endSale() : SaleDTO
+            +discountRequest(customerID : int) SaleDTO
+            +pay(paidAmt : Amount) : void
+            +<<create>> Controller(printer : Printer, saleLog:SaleLog) : Controller
+        }
+    }
+    package model {
+        class Sale{
+            - runningTotal : Amount
+'            - itemName : String
+'            - quantity : int
+            - items :Item[]
+            - timeOfSale : LocalDateTime
+            + <<create>> Sale() : Sale
+            + addItem(itemInfo : ItemDTO) : SaleDTO
+            + addItem(itemInfo : ItemDTO, quantity : int) : SaleDTO
+            - increaseQuantity() : void
+            - increaseQuantity(quantity:int) : void
+'            - calculationOfPrice() : Amount
+            - calculationOfPrice() : void
+            + endSale() : SaleDTO
+            + applyDiscount(discount : DiscountDTO) : SaleDTO
+            + pay(payment : CashPayment) : SaleDTO
+        }
+        class Item{
+            - quantity: int
+            - itemInfo : ItemDTO
+            + <<create>> Item(itemInfo:ItemDTO): Item
+            + increment():void
+            + setQuantity(quantity:int):void
+            }
+        class CashPayment{
+            - paidAmt:Amount
+            - totalCost:Amount
+            + <<create>> CashPayment(paidAmt:Amount): CashPayment
+            ~ calculateTotalCost(paidSale:Sale):void
+            ~ getTotalCost():Amount
+            ~ getChange():Amount
+            }
+        class CashRegister{
+            - balance : int
+            + addPayment(payment : CashPayment) : void
+            + <<create>> CashRegister(initialAmount : Amount) : CashRegister
+        }
+        class Receipt{
+            ~ <<create>> Receipt(saleInfo: SaleDTO, printer : Printer) : Receipt
+        }
+        class Amount{
+            - currency : String
+            - amount : int
+            ~ <<create>> Amount(amt: int) : Amount
+        }
+    }
+}
+    package integration {
+        class DiscountRegister{
+            +discountRequest(customerID : int) : DiscountDTO
+            +<<create>> DiscountRegister() : DiscountRegister
+        }
+        class InventorySystem{
+            +registerItem(itemID : int) : ItemDTO
+            +updateInventory(saleInfo : SaleDTO) : void
+            +<<create>> InventorySystem() : InventorySystem
+        }
+        class SaleLog{
+            +logSale(SaleInfo : SaleDTO) : void
+            +<<create>>SalesLog() : SalesLog
+        }
+        class AccountingSystem{
+            + updateAccounting(saleInfo : SaleDTO) : void
+            + <<create>> Accounting() : Accounting
+        }
+        class Printer{
+            +<<create>>Printer() : Printer
+            +printReceipt(currentReceipt : Receipt) : void
+        }
+    }
+Main --> View
+Main -left-> Controller
+Main --> Printer
+Main --> SaleLog
+Controller -up-> CashRegister
+Controller -right-> DiscountRegister
+Controller -right-> AccountingSystem
+Controller -right-> InventorySystem
+View -right-> Controller
+Controller --> Sale
+Controller --> CashPayment
+Sale --> CashPayment
+Controller --> SaleLog
+Receipt <-- Sale
+Sale --> Printer
+Sale --> Item
+newpage
+hide circle
+skinparam linetype ortho
+skinparam package {
+    BackgroundColor LightYellow
+}
+    package dto {
+        class SaleDTO{
+            -totalPrice : Amount
+            -items : Item[]
+            -timeOfSale : LocalDateTime
+            -VATAmount : Amount
+            ' Ska dessa finnas med och i sånnafall vilken datatyp?
+            -amountPaid: CashPayment
+            -changeAmount :CashPayment
+            +<<create>> SaleDTO() : SaleDTO
+        }
+        class ItemDTO{
+            -name : String
+            -description : String
+            -price : Amount
+            -itemId : int
+            -VATRate : double
+            +<<create>> ItemDTO() : ItemDTO
+        }
+        class DiscountDTO{
+            -customerID : int
+            -discountRules
+'            -peronalDiscount : Amount
+'            -dailyItemDiscount : Amount
+            +<<create>>DiscountDTO() : DiscountDTO
+        }
+        note right : Attributes TBD based on Discount Rules.
+    }
+note left : getters are included as methods for all DTO attributes
+@enduml
