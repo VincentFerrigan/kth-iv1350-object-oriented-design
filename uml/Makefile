@@ -1,3 +1,4 @@
+# OBS! skapa en egen output mapp!
 # Define variables
 PLANTUML := java -jar plantuml.jar
 PUML_FILES := $(wildcard *.puml)
