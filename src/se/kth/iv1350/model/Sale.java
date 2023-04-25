@@ -23,6 +23,7 @@ public class Sale {
      */
     public Sale(){
         this.timeOfSale = LocalDateTime.now();          //TODO where is this from?
+        this.runningTotal = new Amount(0);
     }
 
     public CurrentSaleDTO addItem(ItemDTO itemInfo){
@@ -34,18 +35,13 @@ public class Sale {
         } else {
             items.put(key, new Item(itemInfo));
         }
-        this.runningTotal = new Amount(itemInfo.getPrice().getAmount());
+
+        this.runningTotal = new Amount(this.runningTotal.getAmount() + itemInfo.getPrice().getAmount());
         Collection<Item> itemCollection = items.values();
         Item[] itemArray = itemCollection.toArray(new Item[0]);
-        return new CurrentSaleDTO(itemArray, runningTotal);
+        return new CurrentSaleDTO(itemArray, this.runningTotal);
 
         //items.computeIfPresent(key, (key,val) -> val.increment());
-        //1. Kolla om den finns i vår "lista"
-        //2. Om den finns så anrop increaseQuantity().
-        // som uppdaterar antalet av varan i vår "lista"
-        // om inte finns, lägg till i vår "lista"
-        // 3. Uppdatera runningTotal.
-        //4. Skapa en currentSaleDTO och returnera den.
     }
 
     public CurrentSaleDTO addItem(ItemDTO itemInfo, int quantity){
@@ -58,7 +54,8 @@ public class Sale {
         } else {
             items.put(key, new Item(itemInfo,quantity));
         }
-        this.runningTotal = new Amount(itemInfo.getPrice().getAmount() * quantity);
+
+        this.runningTotal = new Amount(this.runningTotal.getAmount() + itemInfo.getPrice().getAmount());
         Collection<Item> itemCollection = items.values();
         Item[] itemArray = itemCollection.toArray(new Item[0]);
         return new CurrentSaleDTO(itemArray, runningTotal);
@@ -73,20 +70,22 @@ public class Sale {
     }
 
     private void calclationOfPrice(){
-        this.runningTotal += it
         //TODO needs an attribute OR is this where we use SaleDTO?
     }
 
     public SaleDTO endSale(){
         //TODO do it
+        return new SaleDTO();
     }
 
     public SaleDTO applyDiscount(DiscountDTO discount){
-        //TODO do it
+            //TODO also do it
+        return new SaleDTO();
     }
 
     public SaleDTO pay(CashPayment payment){
         //TODO also do it
+        return new SaleDTO();
     }
 }
 
