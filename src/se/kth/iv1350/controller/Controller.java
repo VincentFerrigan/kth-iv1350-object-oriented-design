@@ -1,19 +1,21 @@
 package src.se.kth.iv1350.controller;
 
+import src.se.kth.iv1350.dto.CurrentSaleDTO;
+import src.se.kth.iv1350.dto.ItemDTO;
 import src.se.kth.iv1350.dto.SaleDTO;
+import src.se.kth.iv1350.integration.InventorySystem;
 import src.se.kth.iv1350.integration.Printer;
-import src.se.kth.iv1350.model.Receipt;
 import src.se.kth.iv1350.model.Sale;
 import src.se.kth.iv1350.model.Amount;
 import src.se.kth.iv1350.integration.SaleLog;
 
 public class Controller {
 
-    //TODO where are these from?
-    public Printer printer;
-    public SaleLog saleLog;
-//    private Sale sale;
+    private Printer printer;
+    private SaleLog saleLog;
+    private InventorySystem is = new InventorySystem("src/se/kth/iv1350/startup/inventory_items.csv");
 
+    private Sale currentSale;
 
     /**
      * Constructor
@@ -29,22 +31,26 @@ public class Controller {
      * Start a new sale. This method must be called before doing anything else during a sale.
      */
     public void startSale(){
-//        sale = new Sale();          //TODO också va?
+        this.currentSale = new Sale();
     }
 
-    public SaleDTO registerItem(int itemID){
-        //TODO do it
+    public CurrentSaleDTO registerItem(int itemID){
+        ItemDTO itemInfo = is.getItemInfo(itemID);
+        return currentSale.addItem(itemInfo);
     }
 
-    public SaleDTO registerItem(int itemID, int quantity){
-        //TODO do it
+    public CurrentSaleDTO registerItem(int itemID, int quantity){
+        ItemDTO itemInfo = is.getItemInfo(itemID);
+        return currentSale.addItem(itemInfo, quantity);
     }
 
     public SaleDTO endSale(){
         //TODO do it
+        return new SaleDTO();
     }
 
     public SaleDTO discountRequest (int customerID){
+        return new SaleDTO();
         //TODO do it
     }
 
