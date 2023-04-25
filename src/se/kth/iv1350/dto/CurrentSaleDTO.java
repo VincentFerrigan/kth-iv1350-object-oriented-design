@@ -19,10 +19,10 @@ public class CurrentSaleDTO {
         StringBuilder builder = new StringBuilder();
         for (Item item: this.items) {
             builder.append("Item: " + item.getItemDTO().getName() + ", "); //TODO är det namn eller description
-            builder.append("price: " + item.getItemDTO().getPrice() + ", ");
+            builder.append(item.getItemDTO().getPrice().getAmount() + " " + item.getItemDTO().getPrice().getCurrency());
             builder.append("\n");
         }
-        builder.append(("Running total: " + this.runningTotal));
+        builder.append(("Running total: " + this.runningTotal.getAmount() + " " + this.runningTotal.getCurrency()));
         return builder.toString();
     }
 }
