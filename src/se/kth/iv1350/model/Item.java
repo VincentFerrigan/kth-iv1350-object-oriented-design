@@ -33,6 +33,10 @@ public class Item {
     public void setQuantity(int quantity){
         this.quantity = quantity;
     }
+
+    public void addQuantity(int additionalQuantity){
+        this.quantity += additionalQuantity;
+    }
     public ItemDTO getItemDTO() {
         return itemInfo;
     }
