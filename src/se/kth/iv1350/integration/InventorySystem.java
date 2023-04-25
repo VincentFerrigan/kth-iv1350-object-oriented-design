@@ -4,6 +4,10 @@ import src.se.kth.iv1350.dto.ItemDTO;
 import src.se.kth.iv1350.dto.SaleDTO;
 import src.se.kth.iv1350.model.Item;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,16 +26,49 @@ public class InventorySystem {
         inventoryTable.put(festis.getItemID(), new Item(festis, 4));
     }
 
+    /**
+     *
+     * @param file filename with relative path
+     */
+    public InventorySystem(String file) {
+        // TODO ska vi flytta ut hela inläsningsprocessen till en separat metod????
+        String filePath = file;
+        String splitCsvBy = ",";
+        try{
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
+            String line = "";
+            line = bufferedReader.readLine();
+            while((line = bufferedReader.readLine()) != null){
+                String [] splitArray = line.split(splitCsvBy);
+                Item item = new Item(new ItemDTO(
+                                Integer.parseInt(splitArray[0]),
+                                splitArray[1],
+                                splitArray[2],
+                                Integer.parseInt(splitArray[3]),
+                                Integer.parseInt(splitArray[4])),
+                                Integer.parseInt(splitArray[5]));
+                this.inventoryTable.put(item.getItemDTO().getItemID(), item);
+            }
+        } catch (FileNotFoundException e){
+            System.out.println("The file was not found");
+            e.printStackTrace(); //Skriver ut vart felet var någonstans.
+
+        } catch (IOException e){
+            System.out.println("IOE exception");
+            e.printStackTrace();
+        }
+       }
+
     public ItemDTO getItemInfo(int itemID){
-//    public ItemDTO registerItem(int itemID){
         Item item = this.inventoryTable.get(itemID);
-        item.decrement();
-        this.inventoryTable.put(itemID, item); // Något osäker om replace eller ens put behövs
         return item.getItemDTO();
     }
 
     public void updateInventory(SaleDTO saleInfo){
 //        saleInfo
         //TODO do it
+        // TODO Nedan skall istället finnas med i updateInventory
+//        item.decrement();
+//        this.inventoryTable.put(itemID, item); // Något osäker om replace eller ens put behövs
     }
 }
