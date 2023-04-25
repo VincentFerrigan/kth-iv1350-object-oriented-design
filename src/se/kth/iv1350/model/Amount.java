@@ -14,4 +14,12 @@ public class Amount {
         this.currency = currency;
         this.amount = amount;
     }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
 }
