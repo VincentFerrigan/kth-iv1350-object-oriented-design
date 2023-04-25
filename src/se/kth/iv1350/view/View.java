@@ -1,10 +1,25 @@
 package src.se.kth.iv1350.view;
 
 import src.se.kth.iv1350.controller.Controller;
+import src.se.kth.iv1350.dto.CurrentSaleDTO;
 
 public class View {
-    //TODO where is this attr from?
+    private CurrentSaleDTO saleInfo;
     private Controller contr;
+
+    // 1. En med prompt
+    // 2. Fil med itemID och ev. quantity
+    // 3. Hårdkodade
+
+// 3.
+    public void hardkodadegrejer() {
+        contr.startSale();
+        System.out.println(contr.registerItem(5));
+        System.out.println(contr.registerItem(5));
+        System.out.println(contr.registerItem(8, 2));
+        System.out.println(contr.registerItem(1));
+        System.out.println(contr.registerItem(1, 2));
+    }
 
     /**
      * Creates a new instance.
