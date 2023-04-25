@@ -33,7 +33,7 @@ public class InventorySystem {
     public InventorySystem(String file) {
         // TODO ska vi flytta ut hela inläsningsprocessen till en separat metod????
         String filePath = file;
-        String splitCsvBy = ",";
+        String splitCsvBy = ";";
         try{
             BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath));
             String line = "";
