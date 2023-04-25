@@ -8,6 +8,6 @@ public class DiscountRegister {
     }
 
     public DiscountDTO discountRegister(int customerID){
-        //TODO not sure what this does
+        return new DiscountDTO(customerID);
     }
 }
