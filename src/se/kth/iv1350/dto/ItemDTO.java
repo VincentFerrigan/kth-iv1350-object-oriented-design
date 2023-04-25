@@ -12,10 +12,10 @@ import src.se.kth.iv1350.model.VAT;
  */
 public class ItemDTO {
     private final int itemID; // Alt. a String
-    private String name;
-    private String description;
-    private Amount price;
-    private VAT vat; // TODO Bättre namn? OBS! Enligt namn convention.
+    private final String name;
+    private final String description;
+    private final Amount price;
+    private final VAT vat; // TODO Bättre namn? OBS! Enligt namn convention.
 
     /**
      * Creates a new instance representing a particular item.
