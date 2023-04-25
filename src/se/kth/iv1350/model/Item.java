@@ -2,11 +2,15 @@ package src.se.kth.iv1350.model;
 import src.se.kth.iv1350.dto.ItemDTO;
 
 public class Item {
+    private ItemDTO item;
     private int quantity;
-    private ItemDTO itemInfo;
 
-    public Item (ItemDTO itemInfo){
-        this.itemInfo = itemInfo;
+    public Item (ItemDTO item, int quantity){
+        this.item = item;
+        this.quantity = quantity;
+    }
+    public Item (ItemDTO item){
+        this(item, 1);
     }
 
     /**
@@ -16,11 +20,21 @@ public class Item {
         this.quantity++;
     }
 
+    public void decrement(){
+        this.quantity--;
+    }
+
     /**
      * Sets the quantity of items with same ID number.
      * @param   quantity    nbr of items
      */
     public void setQuantity(int quantity){
         this.quantity = quantity;
+    }
+    public ItemDTO getItemDTO() {
+        return item;
+    }
+    public int getQuantity() {
+        return quantity;
     }
 }
