@@ -5,12 +5,13 @@ import src.se.kth.iv1350.model.VAT;
 
 //TODO ska pris vara inkl. moms?
 //TODO @Override toString()
+// TODO final?
 
 /**
  * Contains information about one particular item.
  */
 public class ItemDTO {
-    private int itemID; // Alt. a String
+    private final int itemID; // Alt. a String
     private String name;
     private String description;
     private Amount price;
