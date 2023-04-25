@@ -20,7 +20,8 @@ public class Main {
         Controller contr = new Controller(printer, saleLog);
 
         View view = new View(contr);
-        // TODO remove after we've tested the runFeakeExec
-        view.runFakeExecution();
+        // TODO remove after we've tested the hardkodadegrejer
+        view.hardkodadegrejer();
+//        view.runFakeExecution();
     }
 }
