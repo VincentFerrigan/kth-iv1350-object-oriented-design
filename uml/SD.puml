@@ -35,7 +35,8 @@ loop moreItems
         activate contr
 
         autonumber 1.1
-        contr -> InventorySystem : itemInfo = registerItem(itemID:int):ItemDTO
+'        contr -> InventorySystem : itemInfo = registerItem(itemID:int):ItemDTO
+        contr -> InventorySystem : itemInfo = getItemInfo(itemID:int):ItemDTO
         activate InventorySystem
         alt invalidItem
         autonumber 1.1.1

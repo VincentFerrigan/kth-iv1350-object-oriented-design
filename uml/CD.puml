@@ -84,7 +84,8 @@ package startup {
             +<<create>> DiscountRegister() : DiscountRegister
         }
         class InventorySystem{
-            +registerItem(itemID : int) : ItemDTO
+'            +registerItem(itemID : int) : ItemDTO TODO ersättes av getItemInfo. Stämm av med gruppen/VF
+            +getItemInfo(itemID : int) : ItemDTO
             +updateInventory(saleInfo : SaleDTO) : void
             +<<create>> InventorySystem() : InventorySystem
         }
