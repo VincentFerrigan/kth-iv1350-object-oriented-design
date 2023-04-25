@@ -14,10 +14,7 @@ public class SaleDTO {
     private CashPayment amountPaid;
     private CashPayment changeAmont;
 
-
-
-
-
-
-
+    public SaleDTO() {
+        // TODO
+    }
 }
