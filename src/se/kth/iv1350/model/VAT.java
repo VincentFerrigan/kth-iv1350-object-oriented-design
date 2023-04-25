@@ -37,16 +37,16 @@ public class VAT {
                 this.vatRate = 0;
                 break;
             case 1:
-                this.vatRate = 25 %;
+                this.vatRate = 0.25;
                 break;
             case 2:
-                this.vatRate = 12 %;
+                this.vatRate = 0.12;
                 break;
             case 3:
-                this.vatRate = 6 %;
+                this.vatRate = 0.6;
                 break;
             default:
-                this.vatRate = 25 %;
+                this.vatRate = 0.25;
                 break;
         }
     }
