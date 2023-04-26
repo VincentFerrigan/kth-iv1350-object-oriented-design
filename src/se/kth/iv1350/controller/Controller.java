@@ -45,13 +45,12 @@ public class Controller {
     }
 
     public SaleDTO endSale(){
-        //TODO do it
-        return new SaleDTO();
+        return currentSale.endSale();
     }
 
     public SaleDTO discountRequest (int customerID){
-        return new SaleDTO();
         //TODO do it
+        return currentSale.endSale();
     }
 
     public void pay(Amount paidAmt){
