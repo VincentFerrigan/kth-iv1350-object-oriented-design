@@ -9,10 +9,10 @@ public class Amount {
     String currency;
     double amount;
 
-    public Amount(int amount){
+    public Amount(double amount){
         this("SEK", amount);
     }
-    public Amount(String currency, int amount) {
+    public Amount(String currency, double amount) {
         this.currency = currency;
         this.amount = amount;
     }
@@ -44,9 +44,8 @@ public class Amount {
         this.amount *= factor;
     }
 
-    // TODO ändra till att den känner av vad som är lokal standard.
     @Override
     public String toString() {
-        return String.format(Locale.GERMANY, "%,.2f %s",this.amount, this.currency);
+        return String.format(Locale.getDefault(), "%,.2f %s",this.amount, this.currency);
     }
 }
