@@ -38,8 +38,9 @@ package startup {
             - items :Item[]
             - timeOfSale : LocalDateTime
             + <<create>> Sale() : Sale
-            + addItem(itemInfo : ItemDTO) : SaleDTO
-            + addItem(itemInfo : ItemDTO, quantity : int) : SaleDTO
+            + addItem(itemInfo : ItemDTO) : CurrentSaleDTO
+            + addItem(itemInfo : ItemDTO, quantity : int) : CurrentSaleDTO
+            - getItemArray() : Item[]
             - increaseQuantity() : void
             - increaseQuantity(quantity:int) : void
 '            - calculationOfPrice() : Amount

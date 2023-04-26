@@ -31,7 +31,7 @@ loop moreItems
 '[validIdentifier]
     alt multipleItem
         autonumber 1
-        View -> contr : saleInfo = registerItem(itemID:int, quantity:int) : SaleDTO
+        View -> contr : saleInfo = registerItem(itemID:int, quantity:int) : CurrentSaleDTO
         activate contr
 
         autonumber 1.1
@@ -50,7 +50,7 @@ loop moreItems
         note right: InventorySystem creates ItemDTO
 
         autonumber 1.2
-        contr -> currentSale : saleInfo = addItem(itemInfo:ItemDTO, quantity:int) : SaleDTO
+        contr -> currentSale : saleInfo = addItem(itemInfo:ItemDTO, quantity:int) : CurrentSaleDTO
         activate currentSale
         opt !newItem
             autonumber 1.2.1
@@ -68,7 +68,7 @@ loop moreItems
 
     else else
         autonumber 1
-        View -> contr : saleInfo = registerItem(itemID:int) : SaleDTO
+        View -> contr : saleInfo = registerItem(itemID:int) : CurrentSaleDTO
         activate contr
 
         autonumber 1.1
@@ -88,7 +88,7 @@ loop moreItems
 
 
         autonumber 1.2
-        contr -> currentSale : saleInfo = addItem(itemInfo:ItemDTO) : SaleDTO
+        contr -> currentSale : saleInfo = addItem(itemInfo:ItemDTO) : CurrentSaleDTO
         activate currentSale
     opt !newItem
         autonumber 1.2.1
