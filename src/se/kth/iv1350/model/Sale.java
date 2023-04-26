@@ -33,13 +33,9 @@ public class Sale {
     public CurrentSaleDTO addItem(ItemDTO itemInfo, int quantity){
         Item additionalItem = new Item(itemInfo, quantity);
 
-        int key = itemInfo.getItemID();
+        int key = itemInfo.getItemID(); // TODO hämta nyckeln från itemInfo eller additionalItem?
         if (items.containsKey(key)){
             this.items.get(key).addItem(additionalItem);
-//            Item item = this.items.get(key);
-//            item.addToQuantity(quantity);
-//            items.put(key,item);
-
         } else {
             items.put(key, additionalItem);
         }
