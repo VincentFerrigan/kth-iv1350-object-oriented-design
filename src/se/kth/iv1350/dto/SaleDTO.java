@@ -9,7 +9,7 @@ import src.se.kth.iv1350.model.Item;
 public class SaleDTO {
     private final Amount totalPrice;
     private final Item[] items;
-    private final LocalDateTime timeOfSale;
+    private final LocalDateTime timeOfSale; // TODO end of sale tidsstämpel!
     private final Amount vatAmount;
     private final Amount amountPaid;
     private final Amount changeAmount;
