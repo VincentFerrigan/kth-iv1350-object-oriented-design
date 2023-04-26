@@ -11,18 +11,20 @@ public class CurrentSaleDTO {
 
     public CurrentSaleDTO(Item[] items, Amount runningTotal) {
         this.items = items;
-        this.runningTotal = runningTotal;
+        this.runningTotal = new Amount(runningTotal);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for (Item item: this.items) {
+//            builder.append("Item: " + item.getItemDTO().getName() + ", "); //TODO är det namn eller description
+//            builder.append(item.getItemDTO().getPrice().getAmount() + " " + item.getItemDTO().getPrice().getCurrency());
             builder.append("Item: " + item.getItemDTO().getName() + ", "); //TODO är det namn eller description
-            builder.append(item.getItemDTO().getPrice().getAmount() + " " + item.getItemDTO().getPrice().getCurrency());
+            builder.append(item.getTotalAmount());
             builder.append("\n");
         }
-        builder.append(("Running total: " + this.runningTotal.getAmount() + " " + this.runningTotal.getCurrency()));
+        builder.append("Running total: " + this.runningTotal);
         return builder.toString();
     }
 }
