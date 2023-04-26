@@ -27,38 +27,26 @@ public class Sale {
     }
 
     public CurrentSaleDTO addItem(ItemDTO itemInfo){
-        int key = itemInfo.getItemID();
-        if (items.containsKey(key)){
-            Item item = this.items.get(key);
-            item.increment();
-            items.put(key,item);
-        } else {
-            items.put(key, new Item(itemInfo));
-        }
+        return addItem(itemInfo, 1);
 
-        this.runningTotal = new Amount(this.runningTotal.getAmount() + itemInfo.getPrice().getAmount());
-        Collection<Item> itemCollection = items.values();
-        Item[] itemArray = itemCollection.toArray(new Item[0]);
-        return new CurrentSaleDTO(itemArray, this.runningTotal);
-
-        //items.computeIfPresent(key, (key,val) -> val.increment());
     }
-
     public CurrentSaleDTO addItem(ItemDTO itemInfo, int quantity){
+        Item additionalItem = new Item(itemInfo, quantity);
+
         int key = itemInfo.getItemID();
         if (items.containsKey(key)){
-            Item item = this.items.get(key);
-            item.addQuantity(quantity);
-            items.put(key,item);
+            this.items.get(key).addItem(additionalItem);
+//            Item item = this.items.get(key);
+//            item.addToQuantity(quantity);
+//            items.put(key,item);
 
         } else {
-            items.put(key, new Item(itemInfo,quantity));
+            items.put(key, additionalItem);
         }
+        this.runningTotal.addAmount(additionalItem.getTotalAmount());
+        Item[] itemArray = getItemArray();
 
-        this.runningTotal = new Amount(this.runningTotal.getAmount() + itemInfo.getPrice().getAmount());
-        Collection<Item> itemCollection = items.values();
-        Item[] itemArray = itemCollection.toArray(new Item[0]);
-        return new CurrentSaleDTO(itemArray, runningTotal);
+        return new CurrentSaleDTO(itemArray, this.runningTotal);
     }
 
     private void increaseQuantity(){
@@ -70,22 +58,48 @@ public class Sale {
     }
 
     private void calclationOfPrice(){
+//        items.forEach();
         //TODO needs an attribute OR is this where we use SaleDTO?
     }
 
+    // Ska den vara sorterad? I sådana fall hur? Eller är det upp till den som kallar?
+    private Item[] getItemArray() {
+        Collection<Item> itemCollection = items.values();
+        return itemCollection.toArray(new Item[0]);
+        // TODO
+        // Alt 2.
+        // return items.values().toArray();
+        // Alt 3. Göra en orentlig kopia för att undvika en shallow copy?
+        // Alt 4. TODO sorterad? Alfabetiskt? När den las till? I sådana fall behöver vi göra om det hela till en list.
+
+    }
+
     public SaleDTO endSale(){
-        //TODO do it
-        return new SaleDTO();
+        Amount vatAmount = new Amount(0);
+        Item[] itemArray = getItemArray();
+        for (Item item: itemArray) {
+            vatAmount.addAmount(item.getVatAmount());
+        }
+        Amount amountPaid = new Amount(0);
+        Amount changeAmount = new Amount(0);
+        return new SaleDTO(runningTotal, itemArray, timeOfSale, vatAmount, amountPaid, changeAmount);
     }
 
     public SaleDTO applyDiscount(DiscountDTO discount){
             //TODO also do it
-        return new SaleDTO();
+        return endSale();
     }
 
     public SaleDTO pay(CashPayment payment){
-        //TODO also do it
-        return new SaleDTO();
+        Amount vatAmount = new Amount(0);
+        Item[] itemArray = getItemArray();
+        for (Item item: itemArray) {
+            vatAmount.addAmount(item.getVatAmount());
+        }
+        CashPayment amountPaid = payment;
+        amountPaid.setTotalCost(runningTotal);
+        return new SaleDTO(runningTotal, itemArray, timeOfSale, vatAmount, amountPaid.getPaidAmt(), amountPaid.getChange());
+        // Tror då att CashPayment behöver kunna subtrahera.
     }
 }
 
