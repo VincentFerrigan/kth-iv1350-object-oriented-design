@@ -5,6 +5,7 @@ import src.se.kth.iv1350.dto.ItemDTO;
 import src.se.kth.iv1350.dto.SaleDTO;
 import src.se.kth.iv1350.integration.InventorySystem;
 import src.se.kth.iv1350.integration.Printer;
+import src.se.kth.iv1350.model.CashPayment;
 import src.se.kth.iv1350.model.Sale;
 import src.se.kth.iv1350.model.Amount;
 import src.se.kth.iv1350.integration.SaleLog;
@@ -35,6 +36,8 @@ public class Controller {
     }
 
     public CurrentSaleDTO registerItem(int itemID){
+        // TODO ändra i UML
+        // TODO varför inte bara skicka en ny item?
         ItemDTO itemInfo = is.getItemInfo(itemID);
         return currentSale.addItem(itemInfo);
     }
@@ -53,8 +56,16 @@ public class Controller {
         return currentSale.endSale();
     }
 
-    public void pay(Amount paidAmt){
-        //TODO do it
+    public Amount pay(Amount paidAmt){
+        CashPayment payment = new CashPayment(paidAmt);
+        SaleDTO saleInfo = currentSale.pay(payment);
+        // TODO
+        // 1.3
+        // 1.4
+        // 1.5
+        // 1.6
+        // 1.7
+        return payment.getChange();
     }
 
 }
