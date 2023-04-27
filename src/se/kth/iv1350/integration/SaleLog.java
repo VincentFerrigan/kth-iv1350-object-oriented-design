@@ -1,16 +1,24 @@
 package src.se.kth.iv1350.integration;
 
-import src.se.kth.iv1350.dto.SaleDTO;
+import src.se.kth.iv1350.model.Sale;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Contains all sales performed in the POS.
+ */
 public class SaleLog {
-
-    //TODO why is there no attributes?
-    // TODO Whats this method for?
-    public void logSale(SaleDTO saleInfo){
-        //TODO this also needs to do it
-    }
+    private List<Sale> sales = new ArrayList<>();
     public SaleLog(){
         //TODO construct
     }
 
+    /**
+     * Saves the specified sale permanently
+     * @param sale The sale that will be saved.
+     */
+    public void logSale(Sale sale) {
+        sales.add(sale);
+    }
 }

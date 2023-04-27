@@ -62,10 +62,10 @@ public class Controller {
         CashPayment payment = new CashPayment(paidAmt);
         currentSale.pay(payment);
         // TODO
-        // 1.4 SaleLog.logSale
-        // 1.5 UpdateInventory
-        // 1.6 AccoutingSystem.updateToAccountingh
         cashRegister.addPayment(payment);
+        saleLog.logSale(currentSale);
+        // 1.5 UpdateInventory   // TODO till txt fil?
+        // 1.6 AccoutingSystem.updateToAccounting   // TODO till txt fil?
         currentSale.printReceipt(printer);
         currentSale = null;
     }
