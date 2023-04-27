@@ -1,7 +1,6 @@
 package src.se.kth.iv1350.integration;
 
 import src.se.kth.iv1350.dto.ItemDTO;
-import src.se.kth.iv1350.dto.SaleDTO;
 import src.se.kth.iv1350.model.Item;
 
 import java.io.BufferedReader;
@@ -64,11 +63,7 @@ public class InventorySystem {
         return item.getItemDTO();
     }
 
-    public void updateInventory(SaleDTO saleInfo){
-//        saleInfo
-        //TODO do it
-        // TODO Nedan skall istället finnas med i updateInventory
-//        item.decrement();
-//        this.inventoryTable.put(itemID, item); // Något osäker om replace eller ens put behövs
+    public void updateInventory(){
+        // TODO Flat based database. What parameters are needed?
     }
 }
