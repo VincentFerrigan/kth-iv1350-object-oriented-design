@@ -38,6 +38,7 @@ public class Controller {
     public CurrentSaleDTO registerItem(int itemID){
         // TODO ändra i UML
         // TODO varför inte bara skicka en ny item?
+        // TODO Ska den inte först kontrollera om itemID finns i shopping cart?
         ItemDTO itemInfo = is.getItemInfo(itemID);
         return currentSale.addItem(itemInfo);
     }

@@ -13,7 +13,7 @@ import src.se.kth.iv1350.integration.Printer;
 public class Sale {
     private LocalDateTime timeOfSale;
     private Amount runningTotal;
-    private Map<Integer, Item> items = new HashMap<>();
+    private Map<Integer, Item> items = new HashMap<>(); // TODO Ändra namn till shoppingCart?
     private Receipt receipt;            //TODO where is this from?
 
     /**
