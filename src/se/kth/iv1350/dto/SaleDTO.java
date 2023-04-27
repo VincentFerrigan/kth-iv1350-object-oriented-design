@@ -11,15 +11,21 @@ public class SaleDTO {
     private final Item[] items;
     private final LocalDateTime timeOfSale; // TODO end of sale tidsstämpel!
     private final Amount vatAmount;
-    private final Amount amountPaid;
-    private final Amount changeAmount;
+//    private final Amount amountPaid;
+//    private final Amount changeAmount;
 
-    public SaleDTO(Amount totalPrice, Item[] items, LocalDateTime timeOfSale, Amount vatAmount, Amount amountPaid, Amount changeAmount) {
+//    public SaleDTO(Amount totalPrice, Item[] items, LocalDateTime timeOfSale, Amount vatAmount, Amount amountPaid, Amount changeAmount) {
+//        this.totalPrice = totalPrice;
+//        this.items = items;
+//        this.timeOfSale = timeOfSale;
+//        this.vatAmount = vatAmount;
+//        this.amountPaid = amountPaid;
+//        this.changeAmount = changeAmount;
+//    }
+    public SaleDTO(Amount totalPrice, Item[] items, LocalDateTime timeOfSale, Amount vatAmount) {
         this.totalPrice = totalPrice;
         this.items = items;
         this.timeOfSale = timeOfSale;
         this.vatAmount = vatAmount;
-        this.amountPaid = amountPaid;
-        this.changeAmount = changeAmount;
     }
 }
