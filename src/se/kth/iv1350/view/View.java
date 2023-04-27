@@ -16,7 +16,7 @@ public class View {
     // 3. Hårdkodade
 
 // 3.
-    public void hardkodadegrejer() {
+    public void testPromt() {
         System.out.println("Welcome Veggie Shop \n");
         contr.startSale();
         System.out.println("New buy: \n Add items to the shoppingcart by typing (ID Quantity)\n");
@@ -43,14 +43,18 @@ public class View {
 
             }
         }
-
-//        System.out.println(contr.registerItem(5));
-//        System.out.println(contr.registerItem(5));
-//        System.out.println(contr.registerItem(8, 2));
-//        System.out.println(contr.registerItem(1));
-//        System.out.println(contr.registerItem(1, 2));
-
     }
+
+    public void hardkodadegrejer() {
+        contr.startSale();
+        System.out.println(contr.registerItem(5));
+        System.out.println(contr.registerItem(5));
+        System.out.println(contr.registerItem(8, 2));
+        System.out.println(contr.registerItem(5));
+        System.out.println(contr.registerItem(1));
+        System.out.println(contr.registerItem(1, 2));
+    }
+
 
     /**
      * Creates a new instance.
