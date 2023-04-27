@@ -1,13 +1,22 @@
 package src.se.kth.iv1350.model;
 
 public class CashRegister {
-    int balance;            //TODO should be Amount?
+    Amount balance;            //TODO should be Amount?
 
     public CashRegister(Amount initialAmount) {
-        //TODO check if we want to use balance or if we want attr balance and initialAmount?
+        this.balance = initialAmount;
+    }
+
+    public CashRegister(double initialAmount) {
+        this(new Amount(initialAmount));
+    }
+
+    public CashRegister() {
+        this(10000);
     }
 
     public void addPayment(CashPayment payment){
-        //TODO do it
+        balance = balance.plus(payment.getPaidAmt());
+        balance = balance.minus(payment.getChange());
     }
 }
