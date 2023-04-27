@@ -1,39 +1,50 @@
 package src.se.kth.iv1350.model;
 
+/**
+ * Represents one specific payment for one sale.
+ * The sale is paid in cash.
+ */
 public class CashPayment {
     private final Amount paidAmt; // TODO ändra till final
     private Amount totalCost;
 
     /**
-     * The cash that is paid for the entire sale.
-     * @param paidAmt The total amount given from costumer
+     * Creates a new instance of the cash that is
+     * paid for the entire sale.
+     * @param paidAmt The amount of cash that was given by the customer
      */
     public CashPayment(Amount paidAmt){
         this.paidAmt = paidAmt;
     }
 
-    //TODO make method after Sale class is done
-    void calculateTotalCost(Sale paidSale){
-
+    /**
+     * Calculates the total cost of the specified {@link Sale}
+     * @param paidSale The sale that the customer is paying.
+     */
+    public void calculateTotalCost(Sale paidSale) {
+        this.totalCost = paidSale.getRunningTotal();
     }
 
-    public void setTotalCost(Amount totalCost) {
-        this.totalCost = new Amount(totalCost);
-    }
-
-    //TODO look at getters
+    // TODO Bör denna användas över huvud taget?
     public Amount getPaidAmt() {
         return paidAmt;
     }
 
+    /**
+     * @return The total cost of the rental that was paid.
+     */
     Amount getTotalCost() {
         return totalCost;
     }
 
-    // TODO här är change negativt. Just nu är det det vi tror är rätt. Vi vet först efter accountinssystem är gjord.
+    // TODO här är change negativt om kund betalat för lite. Just nu är det det vi tror är rätt. Vi vet först efter accountinssystem är gjord.
+    // TODO Ett negativt belopp kan innebära att vi skickar ett "felmeddelande" om att kund betalat för lite.
+
+    /**
+     * @return The amount of change the customer shall receive.
+     */
     public Amount getChange() {
-        Amount change = new Amount(this.totalCost);
-        change.subtractAmount(this.paidAmt);
-        return change;
+//        return totalCost.minus(paidAmt);
+        return paidAmt.minus(totalCost);
     }
 }
