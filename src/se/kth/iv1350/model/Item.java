@@ -12,18 +12,19 @@ public class Item {
     public Item (ItemDTO item, int quantity){
         this.timeOfUpdate = LocalDateTime.now();
         this.itemInfo = item;
-        this.totalAmount = new Amount(itemInfo.getPrice());
         this.quantity = quantity;
-        this.totalAmount.multiptyAmount(quantity);
+        this.totalAmount = new Amount(itemInfo.getPrice());
+        this.totalAmount = totalAmount.multiply(quantity);
     }
     public Item (ItemDTO item){
         this(item, 1);
     }
-    public void addItem(Item termItem){
+    public void addItem(Item anotherItem){
         this.timeOfUpdate = LocalDateTime.now();
-        if (this.equals(termItem)) {
-            addToQuantity(termItem.getQuantity());
-            totalAmount.addAmount(termItem.getTotalAmount());
+        if (this.equals(anotherItem)) {
+            addToQuantity(anotherItem.getQuantity());
+//            totalAmount.addAmount(anotherItem.getTotalAmount());
+            totalAmount = totalAmount.plus(anotherItem.getTotalAmount());
         }
     }
     /**
@@ -64,10 +65,8 @@ public class Item {
     }
 
     public Amount getVatAmount() {
-        Amount vatAmount = new Amount(this.totalAmount);
         double vatRate = itemInfo.getVATRate();
-        vatAmount.multiptyAmount(vatRate);
-        return vatAmount;
+        return totalAmount.multiply(vatRate);
     }
 
     public String getName() {
