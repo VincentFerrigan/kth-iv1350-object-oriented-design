@@ -1,12 +1,11 @@
 package src.se.kth.iv1350.view;
 
 import src.se.kth.iv1350.controller.Controller;
-import src.se.kth.iv1350.dto.CurrentSaleDTO;
+import src.se.kth.iv1350.model.Amount;
 
 import java.util.Scanner;
 
 public class View {
-    private CurrentSaleDTO saleInfo;
     private Controller contr;
 
     Scanner input = new Scanner(System.in);
@@ -20,7 +19,7 @@ public class View {
         System.out.println("Welcome Veggie Shop \n");
         contr.startSale();
         System.out.println("New buy: \n Add items to the shoppingcart by typing (ID Quantity)\n");
-        System.out.println(contr.registerItem(input.nextInt(),input.nextInt()));
+        contr.registerItem(input.nextInt(),input.nextInt());
 
 
         String answer = "y";
@@ -30,7 +29,8 @@ public class View {
 
             if (answer.equalsIgnoreCase("y")) {
                 System.out.println("Enter next item (ID Quantity)\n");
-                System.out.println((contr.registerItem(input.nextInt(),input.nextInt()) + "\n"));
+                contr.registerItem(input.nextInt(),input.nextInt());
+                System.out.println("\n");
 
             } else if (answer.equalsIgnoreCase("n")) {
                 System.out.println("The purchase is completed...");
@@ -47,12 +47,14 @@ public class View {
 
     public void hardkodadegrejer() {
         contr.startSale();
-        System.out.println(contr.registerItem(5));
-        System.out.println(contr.registerItem(5));
-        System.out.println(contr.registerItem(8, 2));
-        System.out.println(contr.registerItem(5));
-        System.out.println(contr.registerItem(1));
-        System.out.println(contr.registerItem(1, 2));
+        contr.registerItem(5);
+        contr.registerItem(5);
+        contr.registerItem(8, 2);
+        contr.registerItem(5);
+        contr.registerItem(1);
+        contr.registerItem(1, 2);
+        contr.endSale();
+        contr.pay(new Amount(220));
     }
 
 
