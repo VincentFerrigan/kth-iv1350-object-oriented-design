@@ -10,6 +10,8 @@ import src.se.kth.iv1350.dto.SaleDTO;
 import src.se.kth.iv1350.model.Receipt;
 import src.se.kth.iv1350.integration.Printer;
 
+import static java.util.stream.Collectors.toList;
+
 public class Sale {
     private LocalDateTime timeOfSale;
     private Amount runningTotal;
@@ -37,7 +39,8 @@ public class Sale {
         } else {
             items.put(key, additionalItem);
         }
-        this.runningTotal.addAmount(additionalItem.getTotalAmount());
+//        this.runningTotal.addAmount(additionalItem.getTotalAmount());
+        this.runningTotal = this.runningTotal.plus(additionalItem.getTotalAmount());
         Item[] itemArray = getItemArraySortedByTimeOfUpdate();
         return new CurrentSaleDTO(itemArray, this.runningTotal);
     }
@@ -57,6 +60,11 @@ public class Sale {
 
     // Alt 4. TODO sorterad? Alfabetiskt? När den las till? I sådana fall behöver vi göra om det hela till en list.
     // Alt 3. Göra en orentlig kopia för att undvika en shallow copy?
+
+    public Amount getRunningTotal() {
+        return runningTotal;
+    }
+
     private Item[] getItemArray() {
         Collection<Item> itemCollection = items.values();
         return itemCollection.toArray(new Item[0]);
@@ -82,14 +90,13 @@ public class Sale {
     }
 
     public SaleDTO endSale(){
-        Amount vatAmount = new Amount(0);
+        Amount totalVATAmount = new Amount(0);
         Item[] itemArray = getItemArraySortedByItemName();
-        for (Item item: itemArray) {
-            vatAmount.addAmount(item.getVatAmount());
-        }
+        List<Amount> vatAmounts = items.values().stream().map(Item::getVatAmount).collect(toList());
+        totalVATAmount = totalVATAmount.plus(vatAmounts);
         Amount amountPaid = new Amount(0);
         Amount changeAmount = new Amount(0);
-        return new SaleDTO(runningTotal, itemArray, timeOfSale, vatAmount, amountPaid, changeAmount);
+        return new SaleDTO(runningTotal, itemArray, timeOfSale, totalVATAmount, amountPaid, changeAmount);
     }
 
     public SaleDTO applyDiscount(DiscountDTO discount){
@@ -98,14 +105,19 @@ public class Sale {
     }
 
     public SaleDTO pay(CashPayment payment){
-        Amount vatAmount = new Amount(0);
-        Item[] itemArray = getItemArraySortedByItemName(); // TODO hur vill du ha den sorterad?
-        for (Item item: itemArray) {
-            vatAmount.addAmount(item.getVatAmount());
-        }
+//        Amount vatAmount = new Amount(0);
+//        Item[] itemArray = getItemArraySortedByItemName(); // TODO hur vill du ha den sorterad?
+//        for (Item item: itemArray) {
+//            vatAmount.addAmount(item.getVatAmount());
+//        }
+        Amount totalVATAmount = new Amount(0);
+        Item[] itemArray = getItemArraySortedByItemName();
+        List<Amount> vatAmounts = items.values().stream().map(Item::getVatAmount).collect(toList());
+        totalVATAmount = totalVATAmount.plus(vatAmounts);
         CashPayment amountPaid = payment;
-        amountPaid.setTotalCost(runningTotal);
-        return new SaleDTO(runningTotal, itemArray, timeOfSale, vatAmount, amountPaid.getPaidAmt(), amountPaid.getChange());
+        amountPaid.calculateTotalCost(this);
+//        amountPaid.setTotalCost(runningTotal);
+        return new SaleDTO(runningTotal, itemArray, timeOfSale, totalVATAmount, amountPaid.getPaidAmt(), amountPaid.getChange());
         // Tror då att CashPayment behöver kunna subtrahera.
     }
 }
