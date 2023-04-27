@@ -1,8 +1,6 @@
 package src.se.kth.iv1350.model;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 
 import src.se.kth.iv1350.dto.CurrentSaleDTO;
@@ -40,8 +38,7 @@ public class Sale {
             items.put(key, additionalItem);
         }
         this.runningTotal.addAmount(additionalItem.getTotalAmount());
-        Item[] itemArray = getItemArray();
-
+        Item[] itemArray = getItemArraySortedByTimeOfUpdate();
         return new CurrentSaleDTO(itemArray, this.runningTotal);
     }
 
@@ -58,21 +55,35 @@ public class Sale {
         //TODO needs an attribute OR is this where we use SaleDTO?
     }
 
-    // Ska den vara sorterad? I sådana fall hur? Eller är det upp till den som kallar?
+    // Alt 4. TODO sorterad? Alfabetiskt? När den las till? I sådana fall behöver vi göra om det hela till en list.
+    // Alt 3. Göra en orentlig kopia för att undvika en shallow copy?
     private Item[] getItemArray() {
         Collection<Item> itemCollection = items.values();
         return itemCollection.toArray(new Item[0]);
-        // TODO
-        // Alt 2.
-        // return items.values().toArray();
-        // Alt 3. Göra en orentlig kopia för att undvika en shallow copy?
-        // Alt 4. TODO sorterad? Alfabetiskt? När den las till? I sådana fall behöver vi göra om det hela till en list.
+    }
 
+    private Item[] getItemArraySortedByItemID() {
+        List<Item> listOfItems = new ArrayList<>(items.values());
+        Collections.sort(listOfItems, Comparator.comparing(Item::getItemID));
+        return listOfItems.toArray(new Item[0]);
+    }
+    private Item[] getItemArraySortedByTimeOfUpdate() {
+        List<Item> listOfItems = new ArrayList<>(items.values());
+//        Collections.sort(listOfItems, Comparator.comparing(Item::getTimeOfUpdate));
+//        Collections.reverse(listOfItems);
+        Collections.sort(listOfItems, Comparator.comparing(Item::getTimeOfUpdate).reversed());
+        return listOfItems.toArray(new Item[0]);
+    }
+
+    private Item[] getItemArraySortedByItemName() {
+        List<Item> listOfItems = new ArrayList<>(items.values());
+        Collections.sort(listOfItems, Comparator.comparing(Item::getName));
+        return listOfItems.toArray(new Item[0]);
     }
 
     public SaleDTO endSale(){
         Amount vatAmount = new Amount(0);
-        Item[] itemArray = getItemArray();
+        Item[] itemArray = getItemArraySortedByItemName();
         for (Item item: itemArray) {
             vatAmount.addAmount(item.getVatAmount());
         }
@@ -88,7 +99,7 @@ public class Sale {
 
     public SaleDTO pay(CashPayment payment){
         Amount vatAmount = new Amount(0);
-        Item[] itemArray = getItemArray();
+        Item[] itemArray = getItemArraySortedByItemName(); // TODO hur vill du ha den sorterad?
         for (Item item: itemArray) {
             vatAmount.addAmount(item.getVatAmount());
         }
