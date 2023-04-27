@@ -4,10 +4,7 @@ import java.util.*;
 
 import src.se.kth.iv1350.dto.DiscountDTO;
 import src.se.kth.iv1350.dto.ItemDTO;
-import src.se.kth.iv1350.dto.SaleDTO;
 import src.se.kth.iv1350.integration.Printer;
-
-import static java.util.stream.Collectors.toList;
 
 public class Sale {
     private LocalDateTime timeOfSale;
@@ -73,22 +70,18 @@ public class Sale {
     }
 
     // TODO Bör nog ändras. Samma upplägg som Display. Logging kan ske med hjälp av SaleLog.
-    public SaleDTO endSale(){
-        Amount totalVATAmount = new Amount(0);
-        Item[] itemArray = getItemArraySortedByItemName();
-        List<Amount> vatAmounts = items.values().stream().map(Item::getVatAmount).collect(toList());
-        totalVATAmount = totalVATAmount.plus(vatAmounts);
-//        Amount amountPaid = new Amount(0);
-//        Amount changeAmount = new Amount(0);
-//        return new SaleDTO(runningTotal, itemArray, timeOfSale, totalVATAmount, amountPaid, changeAmount);
-        return new SaleDTO(runningTotal, itemArray, timeOfSale, totalVATAmount);
+    public void endSale(){
+        //TODO also do it
+//        Amount totalVATAmount = new Amount(0);
+//        Item[] itemArray = getItemArraySortedByItemName();
+//        List<Amount> vatAmounts = items.values().stream().map(Item::getVatAmount).collect(toList());
+//        totalVATAmount = totalVATAmount.plus(vatAmounts);
+//        return new SaleDTO(runningTotal, itemArray, timeOfSale, totalVATAmount);
     }
 
-    public SaleDTO applyDiscount(DiscountDTO discount){
+    public void applyDiscount(DiscountDTO discount){
             //TODO also do it
-        return endSale();
     }
-
 
     public void pay(CashPayment payment) {
         payment.calculateTotalCost(this);
@@ -103,20 +96,4 @@ public class Sale {
         Display display = new Display(this);
         printer.print(display);
     }
-//    public SaleDTO pay2(CashPayment payment){
-////        Amount vatAmount = new Amount(0);
-////        Item[] itemArray = getItemArraySortedByItemName(); // TODO hur vill du ha den sorterad?
-////        for (Item item: itemArray) {
-////            vatAmount.addAmount(item.getVatAmount());
-////        }
-//        Amount totalVATAmount = new Amount(0);
-//        Item[] itemArray = getItemArraySortedByItemName();
-//        List<Amount> vatAmounts = items.values().stream().map(Item::getVatAmount).collect(toList());
-//        totalVATAmount = totalVATAmount.plus(vatAmounts);
-//        CashPayment amountPaid = payment;
-//        amountPaid.calculateTotalCost(this);
-////        amountPaid.setTotalCost(runningTotal);
-//        return new SaleDTO(runningTotal, itemArray, timeOfSale, totalVATAmount, amountPaid.getPaidAmt(), amountPaid.getChange());
-//        // Tror då att CashPayment behöver kunna subtrahera.
-//    }
 }
