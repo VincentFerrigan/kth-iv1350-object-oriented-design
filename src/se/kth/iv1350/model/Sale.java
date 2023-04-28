@@ -6,6 +6,9 @@ import src.se.kth.iv1350.dto.DiscountDTO;
 import src.se.kth.iv1350.dto.ItemDTO;
 import src.se.kth.iv1350.integration.Printer;
 
+/**
+ * Represent a particular sale.
+ */
 public class Sale {
     private LocalDateTime timeOfSale;
     private Amount runningTotal;
@@ -15,10 +18,10 @@ public class Sale {
 //    private InventorySystem is; // För att kunna plocka från "lagret". Men då måste 'is' skickas med från kontrollern när Sale instansieras.
 
     /**
-     * Create a new instance and saves the time of sale.
+     * Create a new instance, representing a sale made by a customer.
      */
     public Sale(){
-        this.timeOfSale = LocalDateTime.now();          //TODO where is this from?
+        this.timeOfSale = LocalDateTime.now();
         this.runningTotal = new Amount(0);
     }
 
@@ -71,6 +74,7 @@ public class Sale {
 
     // TODO Bör nog ändras. Samma upplägg som Display. Logging kan ske med hjälp av SaleLog.
     public void endSale(){
+
         //TODO also do it
 //        Amount totalVATAmount = new Amount(0);
 //        Item[] itemArray = getItemArraySortedByItemName();
@@ -95,5 +99,10 @@ public class Sale {
     public void displayCurrentSale(Printer printer) {
         Display display = new Display(this);
         printer.print(display);
+    }
+
+    public void displayEndOfSale(Printer printer) {
+        Display display = new Display(this);
+        printer.printEndOfSale(display);
     }
 }
