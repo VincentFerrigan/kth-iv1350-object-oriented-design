@@ -25,7 +25,9 @@ public class CashPayment {
         this.totalCost = paidSale.getRunningTotal();
     }
 
-    // TODO Bör denna användas över huvud taget?
+    /**
+     * @return The amount of cash that was given by the customer.
+     */
     public Amount getPaidAmt() {
         return paidAmt;
     }
@@ -37,13 +39,12 @@ public class CashPayment {
         return totalCost;
     }
 
-    // TODO här är change negativt om kund betalat för lite. Just nu är det det vi tror är rätt. Vi vet först efter accountinssystem är gjord.
-    // TODO Ett negativt belopp kan innebära att vi skickar ett "felmeddelande" om att kund betalat för lite.
-
     /**
      * @return The amount of change the customer shall receive.
      */
     public Amount getChange() {
+        // TODO här är change negativt om kund betalat för lite. Just nu är det det vi tror är rätt. Vi vet först efter accountinssystem är gjord.
+        // TODO Ett negativt belopp kan innebära att vi skickar ett "felmeddelande" om att kund betalat för lite.
 //        return totalCost.minus(paidAmt);
         return paidAmt.minus(totalCost);
     }
