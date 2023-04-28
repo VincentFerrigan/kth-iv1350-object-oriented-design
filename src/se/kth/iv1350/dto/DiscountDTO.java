@@ -1,11 +1,11 @@
 package src.se.kth.iv1350.dto;
 
 //TODO
+// TODO Move to integration layer.
 public class DiscountDTO {
-    private int customerID;
-    //TODO Discounut rules?
+    private double discountMultiplier;
+    public DiscountDTO(double discountMultiplier){
+        this.discountMultiplier = discountMultiplier;
 
-    public DiscountDTO(int customerID){
-        this.customerID = customerID;
     }
 }
