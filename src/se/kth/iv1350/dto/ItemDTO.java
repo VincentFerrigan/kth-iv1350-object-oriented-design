@@ -3,9 +3,8 @@ package src.se.kth.iv1350.dto;
 import src.se.kth.iv1350.model.Amount;
 import src.se.kth.iv1350.model.VAT;
 
-//TODO ska pris vara inkl. moms?
-//TODO @Override toString()
-// TODO final?
+//TODO @Override toString()?
+// TODO Move to integration layer?
 
 /**
  * Contains information about one particular item.
