@@ -13,7 +13,7 @@ public class Main {
      * Starts the application.
      * @param args The application does not take any command line parameters.
      */
-    public static void main (String args[]){
+    public static void main (String[] args){
         //TODO look at these things: they are not in the UML CD
         Printer printer = new Printer();
         SaleLog saleLog = new SaleLog();
