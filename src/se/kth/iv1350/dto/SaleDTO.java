@@ -1,11 +1,10 @@
 package src.se.kth.iv1350.dto;
 import java.time.LocalDateTime;
 import src.se.kth.iv1350.model.Amount;
-import src.se.kth.iv1350.model.CashPayment;
 import src.se.kth.iv1350.model.Item;
 
 
-//TODO
+@Deprecated
 public class SaleDTO {
     private final Amount totalPrice;
     private final Item[] items;

@@ -5,6 +5,7 @@ import src.se.kth.iv1350.model.Item;
 
 import java.util.Arrays;
 
+@Deprecated
 public class CurrentSaleDTO {
     private Item[] items; // TODO ändra namn till shoppingCart eller enbart cart?
     private Amount runningTotal;
