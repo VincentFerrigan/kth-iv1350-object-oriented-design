@@ -19,7 +19,7 @@ public class Printer {
      * Prints the specified receipt.
      * It's a dummy implementation that prints to
      * <code>System.out</code>
-     * @param receipt
+     * @param receipt The receipt
      */
     public void print(Receipt receipt) {
         System.out.println("----------------- Receipt follows ----------------");
@@ -35,7 +35,7 @@ public class Printer {
      * Displays the shopping cart with running total
      * It's a dummy implementation that prints to
      * <code>System.out</code>
-     * @param display
+     * @param display The display
      */
     public void print(Display display) {
         // TODO Eventuellt ändra till public String createRunningSaleString()
@@ -49,7 +49,7 @@ public class Printer {
      * Displays the checkout shopping cart with total amount and vat.
      * It's a dummy implementation that prints to
      * <code>System.out</code>
-     * @param display
+     * @param display The display
      */
     public void printEndOfSale(Display display) {
         System.out.println("--------------- End of Sale follows --------------");
