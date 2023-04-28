@@ -40,12 +40,12 @@ public class InventorySystem {
             while((line = bufferedReader.readLine()) != null){
                 String [] splitArray = line.split(splitCsvBy);
                 Item item = new Item(new ItemDTO(
-                                Integer.parseInt(splitArray[0]),
-                                splitArray[1],
-                                splitArray[2],
-                                Integer.parseInt(splitArray[3]),
-                                Integer.parseInt(splitArray[4])),
-                                Integer.parseInt(splitArray[5]));
+                                Integer.parseInt(splitArray[0]),    //itemID
+                                splitArray[1],                      //name
+                                splitArray[2],                      //description
+                                Integer.parseInt(splitArray[3]),    //price
+                                Integer.parseInt(splitArray[4])),   //vatRateGroupCode
+                                Integer.parseInt(splitArray[5]));   //quantity
                 this.inventoryTable.put(item.getItemDTO().getItemID(), item);
             }
         } catch (FileNotFoundException e){
