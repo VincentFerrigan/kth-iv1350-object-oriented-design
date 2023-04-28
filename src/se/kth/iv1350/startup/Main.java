@@ -22,6 +22,6 @@ public class Main {
         View view = new View(contr);
         // TODO remove after we've tested the hardkodadegrejer
         view.hardkodadegrejer();
-//        view.runFakeExecution();
+//        view.testPromt();
     }
 }
