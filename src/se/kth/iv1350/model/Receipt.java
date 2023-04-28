@@ -43,18 +43,14 @@ public class Receipt {
         // Pretty printing
         StringBuilder builder = new StringBuilder();
         for (Item item: listOfItems) {
-            builder.append("Item: " + item.getItemDTO().getName() + ", "); //TODO är det namn eller description
-            builder.append(item.getTotalAmount());
-            builder.append("\n");
+            builder.append("%-40s%s%n".formatted(item.getItemDTO().getName(), item.getTotalAmount()));
+            builder.append("(" + item.getQuantity() + " * " + item.getItemDTO().getPrice() + "/each)\n");
         }
-        builder.append("Total VAT:\t" + totalVATAmount);
         builder.append("\n");
-        builder.append("Total cost:\t" + this.sale.getPayment().getTotalCost());
-        builder.append("\n");
-        builder.append("Paid amount:\t " + this.sale.getPayment().getPaidAmt());
-        builder.append("\n");
-        builder.append("Change:\t" + this.sale.getPayment().getChange());
-        builder.append("\n");
+        builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));
+        builder.append("%-40s%s%n".formatted("Total VAT:", totalVATAmount));
+        builder.append("%-40s%s%n".formatted("Paid Amount:", this.sale.getPayment().getPaidAmt()));
+        builder.append("%-40s%s%n".formatted("Change:", this.sale.getPayment().getChange()));
         return builder.toString();
     }
 }
