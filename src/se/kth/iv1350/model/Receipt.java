@@ -8,11 +8,26 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 // TODO package private kontruktor och final attribute?
+
+/**
+ * The receipt of a sale
+ */
 public class Receipt {
     private final Sale sale;
+
+    /**
+     * Creates a new instance of {@link Receipt}.
+     * @param sale The sale proved by this receipt.
+     */
     Receipt(Sale sale){
         this.sale = sale;
     }
+
+    /**
+     * Creates a pretty printing -- a well-formatted string
+     * with the entire content of the receipt.
+     * @return The receipt string.
+     */
     @Override
     public String toString() {
         List<Item> listOfItems = new ArrayList<>(sale.getCollectionOfItems());
