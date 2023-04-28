@@ -9,7 +9,7 @@ import src.se.kth.iv1350.model.Receipt;
  */
 public class Printer {
     /**
-     * Creates a instance of {@link Printer}
+     * Creates an instance of {@link Printer}
      */
     public Printer(){
         //TODO construct
@@ -37,10 +37,10 @@ public class Printer {
      * <code>System.out</code>
      * @param display The display
      */
-    public void print(Display display) {
+    public void printCurrentSale(Display display) {
         // TODO Eventuellt ändra till public String createRunningSaleString()
         System.out.println("----------------- Display follows ----------------");
-        System.out.println(display);
+        System.out.println(display.createRunningSaleString());
         System.out.println("------------------ End of Display ----------------");
 
     }
