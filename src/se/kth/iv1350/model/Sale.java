@@ -98,7 +98,7 @@ public class Sale {
 
     public void displayCurrentSale(Printer printer) {
         Display display = new Display(this);
-        printer.print(display);
+        printer.printCurrentSale(display);
     }
 
     public void displayEndOfSale(Printer printer) {
