@@ -3,7 +3,6 @@ import src.se.kth.iv1350.controller.Controller;
 import src.se.kth.iv1350.integration.RegisterCreator;
 import src.se.kth.iv1350.view.View;
 import src.se.kth.iv1350.integration.Printer;
-import src.se.kth.iv1350.integration.SaleLog;
 
 /**
  * Contains the <code>main</code> method. Performs all startup
