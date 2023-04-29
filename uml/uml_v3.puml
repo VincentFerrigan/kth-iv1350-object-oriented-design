@@ -40,85 +40,148 @@ package startup {
     }
     package model {
         class Sale{
+            - timeOfSale : LocalDateTime
             - runningTotal : Amount
+            - items : HashMap<Integer, Item>
+            - payment : CashPayment
+            - discount : DiscountDTO ???????
 '            - itemName : String
 '            - quantity : int
-            - items :Item[]
-            - timeOfSale : LocalDateTime
             + <<create>> Sale() : Sale
-            + addItem(itemInfo : ItemDTO) : CurrentSaleDTO
-            + addItem(itemInfo : ItemDTO, quantity : int) : CurrentSaleDTO
-            - getItemArray() : Item[]
-            - increaseQuantity() : void
-            - increaseQuantity(quantity:int) : void
-'            - calculationOfPrice() : Amount
-            - calculationOfPrice() : void
-            + endSale() : SaleDTO
-            + applyDiscount(discount : DiscountDTO) : SaleDTO
-            + pay(payment : CashPayment) : SaleDTO
+            + addItem(itemInfo : ItemDTO) : void --- OR SaleDTO?
+            + addItem(itemInfo : ItemDTO, quantity : int) : void --- OR SaleDTO?
+            + getPayment() : CashPayment
+            + getRunningTotal() : Amount
+            ~ getCollectionOfItems() : Collection<Item>
+            + endSale() : void --- or SaleDTO?
+            + applyDiscount(discount : DiscountDTO) : void ---- or SaleDTO?
+            + pay(payment : CashPayment) : void --- or SaleDTO?
+            + printReceipt(printer : Printer) : void
+            + displayCurrentSale(printer : Printer) : void
+            + displayEndOfSale(printer : Printer) : void
         }
         class Item{
-            - quantity: int
             - itemInfo : ItemDTO
-            + <<create>> Item(itemInfo:ItemDTO): Item
-            + increment():void
-            + setQuantity(quantity:int):void
+            - timeOfUpdate : LocalDateTime
+            - quantity : int
+            - totalPrice : Amount
+            + <<create>> Item(itemInfo:ItemDTO) : Item
+            + <<create>> Item(itemInfo:ItemDTO, quantity : int): Item
+            + addItem(anotherItem : Item) : void
+            + addToQuantity(additionalQuantity : int) : void
+            + setQuantity(quantity : int) : void
+            + getTotalPrice() : Amount
+            + getVatAmount() : Amount
+            + getTimeOfUpdate() : LocalDateTime
+            + getItemDTO : ItemDTO
+            + getQuantity : int
+            + getUnitPrice : Amount
+'            + increment():void
+'            + decrement():void
             }
         class CashPayment{
-            - paidAmt:Amount
-            - totalCost:Amount
+            - paidAmt : Amount
+            - totalCost : Amount
             + <<create>> CashPayment(paidAmt:Amount): CashPayment
             ~ calculateTotalCost(paidSale:Sale):void
-            ~ getTotalCost():Amount
-            ~ getChange():Amount
+            ~ getPaidAmt() : Amount
+            ~ getTotalCost() : Amount
+            ~ getChange() : Amount
             }
         class CashRegister{
-            - balance : int
-            + addPayment(payment : CashPayment) : void
+            - balance : Amount
             + <<create>> CashRegister(initialAmount : Amount) : CashRegister
+            + <<create>> CashRegister(initialAmount : double) : CashRegister
+            + <<create>> CashRegister() : CashRegister
+            + addPayment(payment : CashPayment) : void
         }
         class Receipt{
+            - sale : Sale
+            - timeOfSale : LocalDateTime
+            - locale : Locale
+            - formatter : DateTimeFormatter
             ~ <<create>> Receipt(saleInfo: SaleDTO, printer : Printer) : Receipt
+
         }
         class Amount{
-            - currency : String
-            - amount : int
-            ~ <<create>> Amount(amt: int) : Amount
+            - currency : Currency
+            - locale : Locale
+            - amount : double
+            ~ <<create>> Amount(amount : double, locale:Locale) : Amount
+            ~ <<create>> Amount(amount : double) : Amount
+            ~ <<create>> Amount(another : Amount) : Amount
+            + minus(other : Amount) : Amount
+            + plus(other : Amount) : Amount
+            + plus(amounts : List<Amount>) : Amount
+            + multiply(multiplier : double) : Amount
+        }
+        class VAT{
+            - vatRateGroupCode : int
+            - vatRate : double
+            + <<create>> VAT(vatRateGroupCode : int) : VAT
+            + getVATRateGroupCode() : Int
+            + getVATRate() : double
+        }
+        class Display {
+            - sale : Sale
+            - listOfItems : List<Item>
+            ~ <<create>> Display(sale : Sale) : Display
+            - getSaleItemsInfo() : List<SleItemDTO>
+            + getSaleInfo() : SaleDTO
+            + createRunningSaleString() : String
+            + createEndOfSaleString() : String
+'           Ska getSaleInfo vara private eller packageprivate? Hur ska den användas externt?
         }
     }
 }
     package integration {
+        class RegisterCreator{
+            + getSaleLog() : SaleLog
+            + getInventorySystem() : InventorySystem
+            + getDiscountRegister() : DiscountRegister
+            + getAccountingSystem() : AccountingSystem
+        }
         class DiscountRegister{
             +discountRequest(customerID : int) : DiscountDTO
-            +<<create>> DiscountRegister() : DiscountRegister
+            ~<<create>> DiscountRegister() : DiscountRegister
         }
         class InventorySystem{
 '            +registerItem(itemID : int) : ItemDTO TODO ersättes av getItemInfo. Stämm av med gruppen/VF
             +getItemInfo(itemID : int) : ItemDTO
             +updateInventory(saleInfo : SaleDTO) : void
-            +<<create>> InventorySystem() : InventorySystem
+            ~<<create>> InventorySystem() : InventorySystem
         }
         class SaleLog{
-            +logSale(SaleInfo : SaleDTO) : void
-            +<<create>>SalesLog() : SalesLog
+            + sales : List<Sale>
+            ~<<create>>SaleLog() : SaleLog
+            + logSale(sale : Sale) : void
         }
         class AccountingSystem{
             + updateAccounting(saleInfo : SaleDTO) : void
-            + <<create>> Accounting() : Accounting
+            ~ <<create>> Accounting() : Accounting
         }
         class Printer{
-            +<<create>>Printer() : Printer
-            +printReceipt(currentReceipt : Receipt) : void
+            + <<create>>Printer() : Printer
+            + printReceipt(receipt : Receipt) : void
+            + printCurrentSale(display : Display) : void
+            + printEndOfSale(display : Display) : void
+            + printSaleLog(saleLog : SaleLog) : void
         }
     }
 Main --> View
 Main -left-> Controller
-Main --> Printer
-Main --> SaleLog
+Main ---> Printer
+Main ---> RegisterCreator
 Controller -up-> CashRegister
-Controller -right-> DiscountRegister
-Controller -right-> AccountingSystem
-Controller -right-> InventorySystem
+Controller --> SaleLog
+Controller --> DiscountRegister
+Controller --> AccountingSystem
+Controller --> InventorySystem
+Controller --> RegisterCreator
+RegisterCreator --> DiscountRegister
+RegisterCreator --> AccountingSystem
+RegisterCreator --> InventorySystem
+RegisterCreator --> SaleLog
 View -right-> Controller
 Controller --> Sale
 Controller --> CashPayment
