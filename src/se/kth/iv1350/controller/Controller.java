@@ -15,11 +15,11 @@ import src.se.kth.iv1350.model.Amount;
  */
 public class Controller {
     private Printer printer;
-    private CashRegister cashRegister;
     private SaleLog saleLog;
     private InventorySystem inventorySystem;
     private DiscountRegister discountRegister;
     private AccountingSystem accountingSystem;
+    private CashRegister cashRegister;
     private Sale currentSale;
 
     /**
@@ -29,11 +29,11 @@ public class Controller {
      */
     public Controller (Printer printer, RegisterCreator registerCreator){
         this.printer = printer;
-        this.cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
         this.saleLog = registerCreator.getSaleLog();
         this.inventorySystem = registerCreator.getInventorySystem();
         this.discountRegister = registerCreator.getDiscountRegister();
         this.accountingSystem = registerCreator.getAccountingSystem();
+        this.cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
     }
 
     /**
