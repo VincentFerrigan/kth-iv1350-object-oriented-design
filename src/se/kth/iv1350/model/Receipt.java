@@ -49,8 +49,8 @@ public class Receipt {
         builder.append("%s\n%s\n".formatted("Receipt ", this.timeOfSale.format(formatter)));
         builder.append("\n");
         for (Item item: listOfItems) {
-            builder.append("%-40s%s%n".formatted(item.getItemDTO().getName(), item.getTotalAmount()));
-            builder.append("(" + item.getQuantity() + " * " + item.getItemDTO().getPrice() + "/each)\n");
+            builder.append("%-40s%s%n".formatted(item.getName(), item.getTotalPrice()));
+            builder.append("(" + item.getQuantity() + " * " + item.getUnitPrice() + "/each)\n");
         }
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));

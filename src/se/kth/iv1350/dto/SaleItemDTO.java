@@ -22,8 +22,8 @@ public class SaleItemDTO {
     public String getDescription() {
         return itemInfo.getDescription();
     }
-    public Amount getPrice() {
-        return itemInfo.getPrice();
+    public Amount getUnitPrice() {
+        return itemInfo.getUnitPrice();
     }
     public double getVATRate() {
         return itemInfo.getVATRate();
