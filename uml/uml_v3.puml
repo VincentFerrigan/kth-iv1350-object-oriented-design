@@ -131,35 +131,40 @@ Sale --> Item
 
 @startuml
 title DTO
+' //TODO Ska vi ha en customerDTO och customerDb?
 hide circle
+skinparam ClassAttributeIconSize 0
 skinparam linetype ortho
 skinparam package {
     BackgroundColor LightYellow
 }
     package dto {
         class SaleDTO{
-            -totalPrice : Amount
-            -items : Item[]
-            -timeOfSale : LocalDateTime
-            -VATAmount : Amount
-            ' Ska dessa finnas med och i sånnafall vilken datatyp?
-            -amountPaid: CashPayment
-            -changeAmount :CashPayment
-            +<<create>> SaleDTO() : SaleDTO
+            - timeOfSale : LocalDateTime
+            - saleItemsInfo : List<SaleItemDTO>
+            - totalPrice : Amount
+            - totalVATAmount : Amount
+            + <<create>> SaleDTO() : SaleDTO
         }
         class ItemDTO{
-            -name : String
-            -description : String
-            -price : Amount
-            -itemId : int
-            -VATRate : double
+            - itemId : int
+            - name : String
+            - description : String
+            - price : Amount
+            - vat : VAT
             +<<create>> ItemDTO() : ItemDTO
         }
+        class SaleItemDTO{
+            - itemInfo : ItemDTO
+            - quantity : Int
+            - totalPrice : Amount
+            + <<create>> SaleItemDTO() : SaleItemDTO
+        }
         class DiscountDTO{
+'            //TODO STÄMMER EJ
+'            // TODO ska discount finnas med i SaleDTO?
             -customerID : int
             -discountRules
-'            -peronalDiscount : Amount
-'            -dailyItemDiscount : Amount
             +<<create>>DiscountDTO() : DiscountDTO
         }
         note right : Attributes TBD based on Discount Rules.
