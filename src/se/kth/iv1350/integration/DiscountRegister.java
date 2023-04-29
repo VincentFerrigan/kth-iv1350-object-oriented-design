@@ -7,18 +7,17 @@ import java.util.Map;
 
 public class DiscountRegister {
     private Map<Integer, Discount> discountTable = new HashMap<>(); // TODO bör nog ändras till CustomerDTO där en DiscountDTO ingår
-    public static final String FLAT_FILE_DB = "src/se/kth/iv1350/integration/discounts.csv";
     private enum Discount {
         STAFF,
         VIP}
 
-    public DiscountRegister(){
+    DiscountRegister(){
         int testCustomer1 = 1;
         //TODO construct
     }
 
     // TODO, based on InventorySystems constructor.
-    public DiscountRegister(String file) {
+    DiscountRegister(String file) {
         String filePath = file;
         String splitCsvBy = ";";
     }

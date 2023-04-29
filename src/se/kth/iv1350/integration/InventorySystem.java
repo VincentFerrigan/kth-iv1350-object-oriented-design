@@ -12,10 +12,8 @@ import java.util.Map;
 
 public class InventorySystem {
     private Map<Integer, Item> inventoryTable = new HashMap<>();
-    public static final String FLAT_FILE_DB = "src/se/kth/iv1350/integration/inventory_items.csv";
 
-    //    public InventorySystem(File csvFile){}
-    public InventorySystem(){
+    InventorySystem(){
         // TODO skall läsa in från csv fil som skickas med som argument.
         // TODO Nedan är en hårdkodning tillsvidare
         ItemDTO marlboro = new ItemDTO(2001, "Marlboro", "Marlboro Cigaretter. 20 st/pkt", 70, 1);
@@ -29,7 +27,7 @@ public class InventorySystem {
      *
      * @param file filename with relative path
      */
-    public InventorySystem(String file) {
+    InventorySystem(String file) {
         // TODO ska vi flytta ut hela inläsningsprocessen till en separat metod????
         String filePath = file;
         String splitCsvBy = ";";
@@ -46,7 +44,7 @@ public class InventorySystem {
                                 Integer.parseInt(splitArray[3]),    //price
                                 Integer.parseInt(splitArray[4])),   //vatRateGroupCode
                                 Integer.parseInt(splitArray[5]));   //quantity
-                this.inventoryTable.put(item.getItemDTO().getItemID(), item);
+                this.inventoryTable.put(item.getItemID(), item);
             }
         } catch (FileNotFoundException e){
             System.out.println("The file was not found");
