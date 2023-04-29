@@ -21,14 +21,14 @@ public class CashPayment {
      * Calculates the total cost of the specified {@link Sale}
      * @param paidSale The sale that the customer is paying.
      */
-    public void calculateTotalCost(Sale paidSale) {
+    void calculateTotalCost(Sale paidSale) {
         this.totalCost = paidSale.getRunningTotal();
     }
 
     /**
      * @return The amount of cash that was given by the customer.
      */
-    public Amount getPaidAmt() {
+    Amount getPaidAmt() {
         return paidAmt;
     }
 
@@ -42,7 +42,7 @@ public class CashPayment {
     /**
      * @return The amount of change the customer shall receive.
      */
-    public Amount getChange() {
+    Amount getChange() {
         // TODO här är change negativt om kund betalat för lite. Just nu är det det vi tror är rätt. Vi vet först efter accountinssystem är gjord.
         // TODO Ett negativt belopp kan innebära att vi skickar ett "felmeddelande" om att kund betalat för lite.
 //        return totalCost.minus(paidAmt);
