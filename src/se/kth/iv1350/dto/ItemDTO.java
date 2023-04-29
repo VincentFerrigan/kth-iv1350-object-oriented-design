@@ -59,7 +59,7 @@ public class ItemDTO {
         return description;
     }
 
-    public Amount getPrice() {
+    public Amount getUnitPrice() {
         return price;
     }
 
