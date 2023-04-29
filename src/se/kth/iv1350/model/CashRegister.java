@@ -2,6 +2,7 @@ package src.se.kth.iv1350.model;
 
 public class CashRegister {
     Amount balance;            //TODO should be Amount?
+    public static final double INITIAL_BALANCE = 10_000;
 
     public CashRegister(Amount initialAmount) {
         this.balance = initialAmount;
@@ -12,7 +13,7 @@ public class CashRegister {
     }
 
     public CashRegister() {
-        this(10000);
+        this(0);
     }
 
     public void addPayment(CashPayment payment){

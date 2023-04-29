@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class InventorySystem {
     private Map<Integer, Item> inventoryTable = new HashMap<>();
-
+    public static final String FLAT_FILE_DB = "src/se/kth/iv1350/integration/inventory_items.csv";
 
     //    public InventorySystem(File csvFile){}
     public InventorySystem(){
