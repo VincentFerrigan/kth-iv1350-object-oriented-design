@@ -4,6 +4,7 @@ import java.util.List;
 import src.se.kth.iv1350.model.Amount;
 
 
+// TODO ska discountDTO finnas med i SaleDTO och/eller SaleItemDTO?
 public class SaleDTO {
     private final LocalDateTime timeOfSale;
     private final List<SaleItemDTO> saleItemsInfo;

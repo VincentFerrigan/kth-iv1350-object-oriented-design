@@ -15,6 +15,10 @@ public class Sale {
     private Map<Integer, Item> items = new HashMap<>(); // TODO Ändra namn till shoppingCart?
     private CashPayment payment;
 
+    // TODO ska ett discount attribute finnas med i både sale och saleDTO?
+    // TODO Ska den vara en tabell av rabatter, procentssats, belopp eller själva discountDTO?
+    // TODO Total cost - Total discount = total price? (Per vara eller hela försäljningen?)
+
 //    private InventorySystem is; // För att kunna plocka från "lagret". Men då måste 'is' skickas med från kontrollern när Sale instansieras.
 
     /**
