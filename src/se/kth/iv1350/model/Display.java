@@ -25,7 +25,7 @@ public class Display {
             saleItemsInfo.add(new SaleItemDTO(
                     item.getItemDTO(),        //itemInfo incl. name, description, price, vat rate
                     item.getQuantity(),       //quantity
-                    item.getTotalAmount()     //totalPrice
+                    item.getTotalPrice()     //totalPrice
             ));
         }
         return saleItemsInfo;
