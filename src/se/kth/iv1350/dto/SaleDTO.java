@@ -38,7 +38,7 @@ public class SaleDTO {
         StringBuilder builder = new StringBuilder();
         for (SaleItemDTO itemInfo: saleItemsInfo) {
             builder.append("%-40s%s%n".formatted(itemInfo.getName(), itemInfo.getTotalPrice()));
-            builder.append("(" + itemInfo.getQuantity() + " * " + itemInfo.getPrice() + "/each)\n");
+            builder.append("(" + itemInfo.getQuantity() + " * " + itemInfo.getPrice() + "/st.)\n");
         }
 //        builder.append("\n");
 //        builder.append("%-40s%s%n".formatted("Running total:",totalPrice));

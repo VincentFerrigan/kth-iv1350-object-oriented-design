@@ -3,30 +3,30 @@ package src.se.kth.iv1350.dto;
 import src.se.kth.iv1350.model.Amount;
 
 public class SaleItemDTO {
-    private final String name;
-    private final String description;
-    private final Amount price;
+    private final ItemDTO itemInfo;
     private final int quantity;
     private final Amount totalPrice;
 
-    public SaleItemDTO(String name, String description, Amount price, int quantity, Amount totalPrice) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
+    public SaleItemDTO(ItemDTO itemInfo, int quantity, Amount totalPrice) {
+        this.itemInfo = itemInfo;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
     }
 
     public String getName() {
-        return name;
+        return itemInfo.getName();
     }
 
     public String getDescription() {
-        return description;
+        return itemInfo.getDescription();
     }
 
     public Amount getPrice() {
-        return price;
+        return itemInfo.getPrice();
+    }
+
+    public double getVATRate() {
+        return itemInfo.getVATRate();
     }
 
     public int getQuantity() {

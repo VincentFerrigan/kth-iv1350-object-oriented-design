@@ -23,11 +23,9 @@ public class Display {
         List<SaleItemDTO> saleItemsInfo = new ArrayList<>();
         for (Item item : listOfItems) {
             saleItemsInfo.add(new SaleItemDTO(
-                    item.getItemDTO().getName(),        //itemName
-                    item.getItemDTO().getDescription(), //itemDescription
-                    item.getItemDTO().getPrice(),       //itemPrice
-                    item.getQuantity(),                 //itemQuantity
-                    item.getTotalAmount()               //totalPrice
+                    item.getItemDTO(),        //itemInfo incl. name, description, price, vat rate
+                    item.getQuantity(),       //quantity
+                    item.getTotalAmount()     //totalPrice
             ));
         }
         return saleItemsInfo;
