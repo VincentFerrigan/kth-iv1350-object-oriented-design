@@ -21,13 +21,13 @@ public class Printer {
      * <code>System.out</code>
      * @param receipt The receipt
      */
-    public void print(Receipt receipt) {
+    public void printReceipt(Receipt receipt) {
         System.out.println("----------------- Receipt follows ----------------");
         System.out.println(receipt);
         System.out.println("------------------ End of receipt ----------------");
 
     }
-    public void print(SaleLog saleLog) {
+    public void printSaleLog(SaleLog saleLog) {
         // TODO
     }
 
