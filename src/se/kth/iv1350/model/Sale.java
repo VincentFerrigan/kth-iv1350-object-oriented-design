@@ -29,6 +29,7 @@ public class Sale {
         this.runningTotal = new Amount(0);
     }
 
+    // TODO varför inte Item istället för ItemDTO?
     public void addItem(ItemDTO itemInfo){
         addItem(itemInfo, 1);
 
@@ -42,7 +43,7 @@ public class Sale {
         } else {
             items.put(key, additionalItem);
         }
-        this.runningTotal = this.runningTotal.plus(additionalItem.getTotalAmount());
+        this.runningTotal = this.runningTotal.plus(additionalItem.getTotalPrice());
     }
 
     private void increaseQuantity(){
@@ -60,20 +61,8 @@ public class Sale {
         return runningTotal;
     }
 
-    private Item[] getItemArray() {
-        Collection<Item> itemCollection = items.values();
-        return itemCollection.toArray(new Item[0]);
-    }
-
     Collection<Item> getCollectionOfItems() {
         return items.values();
-    }
-
-    // TODO. Bör tas bort/flyttas för att få High Cohesion.
-    private Item[] getItemArraySortedByItemName() {
-        List<Item> listOfItems = new ArrayList<>(items.values());
-        Collections.sort(listOfItems, Comparator.comparing(Item::getName));
-        return listOfItems.toArray(new Item[0]);
     }
 
     // TODO Bör nog ändras. Samma upplägg som Display. Logging kan ske med hjälp av SaleLog.
@@ -97,7 +86,7 @@ public class Sale {
     }
     public void printReceipt(Printer printer) {
         Receipt receipt = new Receipt(this);
-        printer.print(receipt);
+        printer.printReceipt(receipt);
     }
 
     public void displayCurrentSale(Printer printer) {
