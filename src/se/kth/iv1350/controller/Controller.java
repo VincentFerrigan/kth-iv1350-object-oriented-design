@@ -65,7 +65,6 @@ public class Controller {
     }
 
     public void discountRequest (int customerID){
-        //TODO do it
         DiscountDTO discountDTO = discountRegister.getDiscount(customerID);
         currentSale.applyDiscount(discountDTO);
         currentSale.displayCheckout(display);
@@ -84,8 +83,8 @@ public class Controller {
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
         saleLog.logSale(currentSale);
-        // 1.5 UpdateInventory   // TODO till txt fil?
-        // 1.6 AccountingSystem.updateToAccounting   // TODO till txt fil?
+        currentSale.updateInventory();
+        accountingSystem.updateToAccountingSystem(currentSale);  // TODO till txt fil?
         currentSale.printReceipt(printer);
         currentSale = null;
     }
