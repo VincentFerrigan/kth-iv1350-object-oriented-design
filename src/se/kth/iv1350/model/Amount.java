@@ -82,6 +82,7 @@ public class Amount {
     public Amount multiply(double multiplier) {
         return new Amount(multiplier * amount);
     }
+    public Double getAmount() {return amount;}
 
     @Override
     public String toString() {
