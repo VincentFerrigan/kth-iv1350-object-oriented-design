@@ -7,17 +7,17 @@ import src.se.kth.iv1350.model.CashRegister;
  */
 public class RegisterCreator {
     private SaleLog saleLog;
-    private InventorySystem inventorySystem;
+    private ItemRegistry itemRegistry;
     private CashRegister cashRegister;
     private DiscountRegister discountRegister;
     private AccountingSystem accountingSystem;
     private static final String AS_FLAT_FILE_DB = "src/se/kth/iv1350/integration/accounting.csv";
-    public static final String IS_FLAT_FILE_DB = "src/se/kth/iv1350/integration/inventory_items.csv";
-    public static final String DR_FLAT_FILE_DB = "src/se/kth/iv1350/integration/discounts.csv";
+    private static final String IS_FLAT_FILE_DB = "src/se/kth/iv1350/integration/inventory_items.csv";
+    private static final String DR_FLAT_FILE_DB = "src/se/kth/iv1350/integration/discounts.csv";
 
     public RegisterCreator() {
         this.saleLog = new SaleLog();
-        this.inventorySystem = new InventorySystem(IS_FLAT_FILE_DB);
+        this.itemRegistry = new ItemRegistry(IS_FLAT_FILE_DB);
         this.discountRegister = new DiscountRegister(DR_FLAT_FILE_DB);
         this.accountingSystem = new AccountingSystem(AS_FLAT_FILE_DB);
     }
@@ -26,8 +26,8 @@ public class RegisterCreator {
         return saleLog;
     }
 
-    public InventorySystem getInventorySystem() {
-        return inventorySystem;
+    public ItemRegistry getInventorySystem() {
+        return itemRegistry;
     }
 
     public CashRegister getCashRegister() {
