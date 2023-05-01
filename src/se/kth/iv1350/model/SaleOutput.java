@@ -11,10 +11,10 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 // TODO package private kontruktor och final attribute?
-public class Display {
+public class SaleOutput {
     private final Sale sale;
     private List<Item> listOfItems;
-    Display(Sale sale) {
+    SaleOutput(Sale sale) {
         this.sale = sale;
         this.listOfItems = new ArrayList<>(sale.getCollectionOfItems());
     }
@@ -43,7 +43,7 @@ public class Display {
                 sale.getRunningTotal(), // Running total
                 totalVATAmount);        // VAT for the total sale
     }
-    public String createRunningSaleString() {
+    public String createOpenSaleString() {
         // Sorterar listan efter när den reggats.
         Collections.sort(listOfItems, Comparator.comparing(Item::getTimeOfUpdate).reversed());
 
@@ -56,7 +56,7 @@ public class Display {
         return builder.toString();
     }
 
-    public String createEndOfSaleString() {
+    public String createCheckoutString() {
         // Sorterar listan per namn
         Collections.sort(listOfItems, Comparator.comparing(Item::getName));
 
@@ -73,6 +73,6 @@ public class Display {
     // TODO Eventuellt ändra till public String createRunningSaleString()
     @Override
     public String toString() {
-        return createRunningSaleString();
+        return createOpenSaleString();
     }
 }
