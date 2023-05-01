@@ -15,8 +15,9 @@ import src.se.kth.iv1350.model.Amount;
  */
 public class Controller {
     private Printer printer;
+    private Display display;
     private SaleLog saleLog;
-    private InventorySystem inventorySystem;
+    private ItemRegistry itemRegistry;
     private DiscountRegister discountRegister;
     private AccountingSystem accountingSystem;
     private CashRegister cashRegister;
@@ -27,10 +28,11 @@ public class Controller {
      * @param printer Interface to printer (prints receipts and display)
      * @param registerCreator Used to get all classes that handle database calls.
      */
-    public Controller (Printer printer, RegisterCreator registerCreator){
+    public Controller (Printer printer, Display display, RegisterCreator registerCreator){
         this.printer = printer;
+        this.display = display;
         this.saleLog = registerCreator.getSaleLog();
-        this.inventorySystem = registerCreator.getInventorySystem();
+        this.itemRegistry = registerCreator.getInventorySystem();
         this.discountRegister = registerCreator.getDiscountRegister();
         this.accountingSystem = registerCreator.getAccountingSystem();
         this.cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
@@ -40,7 +42,7 @@ public class Controller {
      * Start a new sale. This method must be called before doing anything else during a sale.
      */
     public void startSale(){
-        this.currentSale = new Sale();
+        this.currentSale = new Sale(itemRegistry);
     }
 
     // TODO ändra i UML
@@ -52,22 +54,22 @@ public class Controller {
     }
 
     public void registerItem(int itemID, int quantity){
-        ItemDTO itemInfo = inventorySystem.getItemInfo(itemID);
+        ItemDTO itemInfo = itemRegistry.getItemInfo(itemID);
         currentSale.addItem(itemInfo, quantity);
-        currentSale.displayCurrentSale(printer);
+        currentSale.displayOpenSale(display);
     }
 
     public void endSale(){
         currentSale.endSale();
-        currentSale.displayEndOfSale(printer);
+        currentSale.displayCheckout(display);
     }
 
     public void discountRequest (int customerID){
         //TODO do it
         DiscountDTO discountDTO = discountRegister.getDiscount(customerID);
         currentSale.applyDiscount(discountDTO);
+        currentSale.displayCheckout(display);
         currentSale.endSale();
-        currentSale.displayEndOfSale(printer);
     }
 
     /**
