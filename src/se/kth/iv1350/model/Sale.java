@@ -4,6 +4,8 @@ import java.util.*;
 
 import src.se.kth.iv1350.dto.DiscountDTO;
 import src.se.kth.iv1350.dto.ItemDTO;
+import src.se.kth.iv1350.integration.Display;
+import src.se.kth.iv1350.integration.ItemRegistry;
 import src.se.kth.iv1350.integration.Printer;
 
 /**
@@ -19,12 +21,12 @@ public class Sale {
     // TODO Ska den vara en tabell av rabatter, procentssats, belopp eller själva discountDTO?
     // TODO Total cost - Total discount = total price? (Per vara eller hela försäljningen?)
 
-//    private InventorySystem is; // För att kunna plocka från "lagret". Men då måste 'is' skickas med från kontrollern när Sale instansieras.
+    private ItemRegistry itemRegistry; // För att kunna plocka från "lagret". Men då måste 'is' skickas med från kontrollern när Sale instansieras.
 
     /**
      * Create a new instance, representing a sale made by a customer.
      */
-    public Sale(){
+    public Sale(ItemRegistry itemRegistry){
         this.timeOfSale = LocalDateTime.now();
         this.runningTotal = new Amount(0);
     }
@@ -89,13 +91,13 @@ public class Sale {
         printer.printReceipt(receipt);
     }
 
-    public void displayCurrentSale(Printer printer) {
-        Display display = new Display(this);
-        printer.printCurrentSale(display);
+    public void displayOpenSale(Display display) {
+        SaleOutput saleOutput = new SaleOutput(this);
+        display.displayOpenSale(saleOutput);
     }
 
-    public void displayEndOfSale(Printer printer) {
-        Display display = new Display(this);
-        printer.printEndOfSale(display);
+    public void displayCheckout(Display display) {
+        SaleOutput saleOutput = new SaleOutput(this);
+        display.displayCheckout(saleOutput);
     }
 }
