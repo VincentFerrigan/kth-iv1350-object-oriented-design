@@ -11,15 +11,16 @@ public class RegisterCreator {
     private CashRegister cashRegister;
     private DiscountRegister discountRegister;
     private AccountingSystem accountingSystem;
-    private static final String AS_FLAT_FILE_DB = "src/se/kth/iv1350/integration/accounting.csv";
-    private static final String IS_FLAT_FILE_DB = "src/se/kth/iv1350/integration/inventory_items.csv";
-    private static final String DR_FLAT_FILE_DB = "src/se/kth/iv1350/integration/discounts.csv";
+    private static final String FILE_PATH = "src/se/kth/iv1350/integration/";
+    private static final String AS_FLAT_FILE_DB = "accounting.csv";
+    private static final String IS_FLAT_FILE_DB = "inventory_items.csv";
+    private static final String DR_FLAT_FILE_DB = "discounts.csv";
 
     public RegisterCreator() {
         this.saleLog = new SaleLog();
-        this.itemRegistry = new ItemRegistry(IS_FLAT_FILE_DB);
-        this.discountRegister = new DiscountRegister(DR_FLAT_FILE_DB);
-        this.accountingSystem = new AccountingSystem(AS_FLAT_FILE_DB);
+        this.itemRegistry = new ItemRegistry(FILE_PATH, IS_FLAT_FILE_DB);
+        this.discountRegister = new DiscountRegister(FILE_PATH, DR_FLAT_FILE_DB);
+        this.accountingSystem = new AccountingSystem(FILE_PATH, AS_FLAT_FILE_DB);
     }
 
     public SaleLog getSaleLog() {
