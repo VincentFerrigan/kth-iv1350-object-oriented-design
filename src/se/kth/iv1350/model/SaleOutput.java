@@ -33,15 +33,16 @@ public class SaleOutput {
     public SaleDTO getSaleInfo() {
         List<SaleItemDTO> saleItems = getSaleItemsInfo();
 
+        // Totalbelopp
+        Amount runningTotal = sale.getRunningTotal();
+
         // Momsberäkning
-        Amount totalVATAmount = new Amount(0);
-        List<Amount> vatAmounts = listOfItems.stream().map(Item::getVatAmount).collect(toList());
-        totalVATAmount = totalVATAmount.plus(vatAmounts);
+        Amount totalVATAmount = sale.getTotalVATAmount();
 
         return new SaleDTO(
-                saleItems,              // list of saleItemInfo (DTO)
-                sale.getRunningTotal(), // Running total
-                totalVATAmount);        // VAT for the total sale
+                saleItems,            // list of saleItemInfo (DTO)
+                runningTotal,         // Running total
+                totalVATAmount);      // VAT for the total sale
     }
     public String createOpenSaleString() {
         // Sorterar listan efter när den reggats.
