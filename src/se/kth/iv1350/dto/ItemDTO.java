@@ -22,33 +22,15 @@ public class ItemDTO {
      * @param itemID            Unique itemID
      * @param name              Item's name
      * @param description       Item description e.g. xxxx // TODO
-     * @param price             Price incl. VAT
-     * @param vatRateGroupCode  The code for the VAT rate group, such as 0, 1, 2 or 3. Where currently
-     *                          0 is VAT Exempt e.g. Mus,
-     *                          1 is 25 %,
-     *                          2 is 12 % and
-     *                          3 is 6 %
+     * @param price             Price incl. VAT in {@link Amount}
+     * @param vat               {@link VAT} (with rate based on VAT Rate Group)
      */
-    public ItemDTO(int itemID, String name, String description, int price, int vatRateGroupCode) {
+    public ItemDTO(int itemID, String name, String description, Amount price, VAT vat) {
         this.itemID = itemID;
         this.name = name;
         this.description = description;
         this.price = new Amount(price);
-        this.vat = new VAT(vatRateGroupCode);
-    }
-
-    // TODO based on full constructor without item description
-    public ItemDTO(int itemID, String name, int price, int vatRateGroupCode) {
-        this(itemID, name, "", price, vatRateGroupCode);
-    }
-
-    // TODO based on full constructor without VAT rate group code
-    public ItemDTO(int itemID, String name, String description, int price) {
-        this(itemID, name, description, price, 1);
-    }
-    // TODO based on full constructor without item description and VAT rate group code
-    public ItemDTO(int itemID, String name, int price) {
-        this(itemID, name, "", price, 1);
+        this.vat = vat;
     }
 
     public String getName() {

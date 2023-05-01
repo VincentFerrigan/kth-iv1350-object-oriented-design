@@ -9,14 +9,14 @@ public class Item {
     private int quantity;
     private Amount totalPrice;
 
-    public Item (ItemDTO item, int quantity){
+    public Item(ItemDTO item, int quantity){
         this.timeOfUpdate = LocalDateTime.now();
         this.itemInfo = item;
         this.quantity = quantity;
         this.totalPrice = new Amount(itemInfo.getUnitPrice());
         this.totalPrice = totalPrice.multiply(quantity);
     }
-    public Item (ItemDTO item){
+    public Item(ItemDTO item){
         this(item, 1);
     }
     public void addItem(Item anotherItem){
