@@ -10,6 +10,13 @@ public class DiscountDTO {
     private double discountMultiplier;
     public DiscountDTO(double discountMultiplier){
         this.discountMultiplier = discountMultiplier;
+    }
 
+    public DiscountDTO() {
+        this.discountMultiplier = 1;
+    }
+
+    public double getDiscountMultiplier() {
+        return discountMultiplier;
     }
 }
