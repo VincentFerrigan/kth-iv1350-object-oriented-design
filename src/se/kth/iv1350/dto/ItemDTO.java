@@ -49,6 +49,7 @@ public class ItemDTO {
         return itemID;
     }
 
+    // returnera VAT istället för double?
     public double getVATRate() {
         return vat.getVATRate();
     }
