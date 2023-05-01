@@ -54,6 +54,9 @@ public class View {
         contr.registerItem(1);
         contr.registerItem(1, 2);
         contr.endSale();
+        // FRÅGA OM DISCOUNT???
+        contr.discountRequest(880822);
+//        contr.discountRequest(810222);
         contr.pay(new Amount(220));
     }
 
