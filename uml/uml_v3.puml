@@ -26,16 +26,16 @@ package startup {
             - display : Display
             - saleLog : SaleLog
             - inventorySystem : ItemRegistry
-            - cashRegister : CashRegister
             - discountRegister : DiscountRegister
             - accountingSystem : AccountingSystem
+            - cashRegister : CashRegister
             - currentSale : Sale
             +<<create>> Controller(printer : Printer, display : Display, registerCreator:RegisterCreator) : Controller
             +startSale() : void
             +registerItem(itemID : int) : SaleDTO
             +registerItem(itemID : int, quantity:int) : SaleDTO
             +endSale() : SaleDTO
-            +discountRequest(customerID : int) SaleDTO
+            +discountRequest(customerID : int) void
             +pay(paidAmt : Amount) : void
         }
     }
@@ -358,34 +358,35 @@ title registerItem
 hide unlinked
 participant ":View" as View
 participant "contr:Controller" as contr
-participant ":ItemRegistry" as ItemRegistry
+participant "itemRegistry:ItemRegistry" as itemRegistry
 participant "currentSale:Sale" as currentSale
 participant "shoppingCart:Map<Integer, Item>" as shoppingCart
 participant ":Item" as Item
 participant ":SaleOutput" as SaleOutput
+participant "saleOutput:SaleOutput" as saleOutput
 participant "display:Display" as display
 
 loop moreItems
 '[validIdentifier]
     alt multipleItem
         autonumber 1
-        View -> contr : saleInfo = registerItem(itemID:int, quantity:int) : SaleDTO?
+        View -> contr : saleInfo = registerItem(itemID:int, quantity:int) : SaleDTO
         activate contr
 
         autonumber 1.1
-'        contr -> InventorySystem : itemInfo = registerItem(itemID:int):ItemDTO
-        contr -> ItemRegistry : itemInfo = getItemInfo(itemID:int):ItemDTO
-        activate ItemRegistry
+'        contr -> inventorySystem : itemInfo = registerItem(itemID:int):ItemDTO
+        contr -> itemRegistry : itemInfo = getItemInfo(itemID:int):ItemDTO
+        activate itemRegistry
         alt invalidItem
         autonumber 1.1.1
-        contr <-- ItemRegistry : itemNotFound(itemID:int)
-        deactivate ItemRegistry
+        contr <-- itemRegistry : itemNotFound(itemID:int)
+        deactivate itemRegistry
         autonumber 1.2
         View <-- contr : itemNotFound(itemID:int)
 
         else else
-        deactivate ItemRegistry
-        note right: ItemRegistry creates ItemDTO
+        deactivate itemRegistry
+        note right: itemRegistry creates ItemDTO
 
         autonumber 1.2
         contr -> currentSale : addItem(itemInfo:ItemDTO, quantity:int) : void
@@ -408,17 +409,23 @@ loop moreItems
         end
         deactivate currentSale
         autonumber 1.3
-        contr -> currentSale : displayOpenSale(display : Display) : void
+        contr -> currentSale : displayOpenSale(display : Display) : SaleDTO
         activate currentSale
+        autonumber 1.3.1
         currentSale -> SaleOutput : <<create>> \n saleOutput = SaleOutput(sale : Sale) : SaleOutput
         activate SaleOutput
         deactivate SaleOutput
+        autonumber 1.3.2
         currentSale -> display : displayOpenSale(saleOutput : SaleOutput)
         activate display
 '        display -> saleOutput : createOpenSaleString() : String
 '        activate saleOutput
 '        deactivate saleOutput
         deactivate display
+        autonumber 1.3.3
+        currentSale -> saleOutput : getSaleInfo() : SaleDTO
+        activate saleOutput
+        deactivate saleOutput
         deactivate currentSale
 
         deactivate contr
@@ -426,23 +433,23 @@ loop moreItems
 
         else else
             autonumber 1
-            View -> contr : saleInfo = registerItem(itemID:int) : SaleDTO ???
+            View -> contr : saleInfo = registerItem(itemID:int) : SaleDTO
             activate contr
 
             autonumber 1.1
     '        create InventorySystem
-            contr -> ItemRegistry : itemInfo = registerItem(itemID:int):ItemDTO
-            activate ItemRegistry
+            contr -> itemRegistry : itemInfo = registerItem(itemID:int):ItemDTO
+            activate itemRegistry
             alt invalidItem
 
             autonumber 1.1.1
-            contr <-- ItemRegistry : itemNotFound(itemID:int)
-            deactivate ItemRegistry
+            contr <-- itemRegistry : itemNotFound(itemID:int)
+            deactivate itemRegistry
             autonumber 1.2
             View <-- contr : itemNotFound(itemID:int)
 
             else else
-            deactivate ItemRegistry
+            deactivate itemRegistry
 
             autonumber 1.2
             contr -> currentSale : addItem(itemInfo:ItemDTO) : void
@@ -467,14 +474,20 @@ loop moreItems
         deactivate currentSale
 
         autonumber 1.3
-        contr -> currentSale : displayOpenSale(display : Display) : void
+        contr -> currentSale : displayOpenSale(display : Display) : SaleDTO
         activate currentSale
+        autonumber 1.3.1
         currentSale -> SaleOutput : <<create>> \n saleOutput= SaleOutput(sale : Sale) : SaleOutput
         activate SaleOutput
         deactivate SaleOutput
+        autonumber 1.3.2
         currentSale -> display : displayOpenSale(saleOutput : SaleOutput)
         activate display
         deactivate display
+        autonumber 1.3.3
+        currentSale -> saleOutput : getSaleInfo() : SaleDTO
+        activate saleOutput
+        deactivate saleOutput
         deactivate currentSale
 
         deactivate contr
@@ -491,16 +504,35 @@ title EndSale
 participant ":View" as View
 participant "contr:Controller" as contr
 participant "currentSale:Sale" as currentSale
+participant "display:Display" as display
+participant ":SaleOutput" as SaleOutput
+participant "saleOutput:SaleOutput" as saleOutput
 
 autonumber 1
 View -> contr : saleInfo = endSale() : SaleDTO
 activate contr
 autonumber 1.1
-contr -> currentSale : saleInfo = endSale (): SaleDTO
+contr -> currentSale : saleInfo = endSale (): void (DEN GÖR INGET NU)
 activate currentSale
 deactivate currentSale
+autonumber 1.2
+contr -> currentSale : displayCheckout(display : Display) : SaleDTO
+activate currentSale
+autonumber 1.2.1
+currentSale -> SaleOutput : <<create>> \n saleOutput= SaleOutput(sale : Sale) : SaleOutput
+activate SaleOutput
+deactivate SaleOutput
+autonumber 1.2.2
+currentSale -> display : displayCheckout(saleOutput : SaleOutput)
+activate display
+deactivate display
+autonumber 1.2.3
+currentSale -> saleOutput : getSaleInfo() : SaleDTO
+activate saleOutput
+deactivate saleOutput
+deactivate currentSale
 deactivate contr
-note right: Sale creates saleDTO
+note right: saleOutput creates saleDTO
 
 autonumber stop
 @enduml
@@ -513,11 +545,9 @@ participant ":View" as View
 participant "contr:Controller" as contr
 participant ":DiscountRegister" as DiscountRegister
 participant "currentSale:Sale" as currentSale
-participant "display:Display" as display
-participant ":SaleOutput" as SaleOutput
 
 autonumber 1
-View -> contr : saleInfo = discountRequest(customerID:int): SaleDTO ??
+View -> contr : discountRequest(customerID:int): void
 activate contr
 note right : gets new SaleDTO after discount
 autonumber 1.1
@@ -530,17 +560,8 @@ autonumber 1.2
 contr -> currentSale : applyDiscount(discount:DiscountDTO): void
 activate currentSale
 deactivate currentSale
-note right: discountDTO is used by currentSale \nto create a new SaleDTO.
-        autonumber 1.3
-        contr -> currentSale : displayCheckout(display : Display) : SaleDTO
-        activate currentSale
-        currentSale -> SaleOutput : <<create>> \n saleOutput= SaleOutput(sale : Sale) : SaleOutput
-        activate SaleOutput
-        deactivate SaleOutput
-        currentSale -> display : displayCheckout(saleOutput : SaleOutput)
-        activate display
-        deactivate display
-        deactivate currentSale
+note right: discountDTO is used to \nupdate currentSale to \ninclude discount(s)
+
 deactivate contr
 
 autonumber stop
