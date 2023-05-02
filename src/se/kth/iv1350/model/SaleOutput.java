@@ -14,6 +14,8 @@ import static java.util.stream.Collectors.toList;
 public class SaleOutput {
     private final Sale sale;
     private List<Item> listOfItems;
+
+    private SaleDTO saleInfo;
     SaleOutput(Sale sale) {
         this.sale = sale;
         this.listOfItems = new ArrayList<>(sale.getCollectionOfItems());
@@ -31,6 +33,12 @@ public class SaleOutput {
         return saleItemsInfo;
     }
     public SaleDTO getSaleInfo() {
+        if (saleInfo == null) {
+            updateSaleInfo();
+        }
+        return new SaleDTO(saleInfo);
+    }
+    public void updateSaleInfo() {
         List<SaleItemDTO> saleItems = getSaleItemsInfo();
 
         // Totalbelopp
@@ -39,37 +47,49 @@ public class SaleOutput {
         // Momsberäkning
         Amount totalVATAmount = sale.getTotalVATAmount();
 
-        return new SaleDTO(
+        this.saleInfo = new SaleDTO(
                 saleItems,            // list of saleItemInfo (DTO)
                 runningTotal,         // Running total
                 totalVATAmount);      // VAT for the total sale
     }
     public String createOpenSaleString() {
         // Sorterar listan efter när den reggats.
-        Collections.sort(listOfItems, Comparator.comparing(Item::getTimeOfUpdate).reversed());
+        sortShoppingCartListAfterDescendingTimeOrder();
 
         // Pretty printing
         StringBuilder builder = new StringBuilder();
-        SaleDTO currentSaleInfo = getSaleInfo();
-        builder.append(currentSaleInfo);
+        updateSaleInfo();
+        builder.append(saleInfo);
         builder.append("\n");
-        builder.append("%-40s%s%n".formatted("Running total:", currentSaleInfo.getTotalPrice()));
+        builder.append("%-40s%s%n".formatted("Running total:", saleInfo.getTotalPrice()));
         return builder.toString();
     }
 
     public String createCheckoutString() {
         // Sorterar listan per namn
-        Collections.sort(listOfItems, Comparator.comparing(Item::getName));
+        sortShoppingCartListAfterAscendingNameOrder();
 
         // Pretty printing
         StringBuilder builder = new StringBuilder();
-        SaleDTO saleInfo = getSaleInfo();
+        updateSaleInfo();
         builder.append(saleInfo);
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Total Price:", saleInfo.getTotalPrice()));
         builder.append("%-40s%s%n".formatted("Total VAT:", saleInfo.getTotalVATAmount()));
         return builder.toString();
     }
+
+    private void sortShoppingCartListAfterDescendingTimeOrder() {
+        Collections.sort(listOfItems, Comparator.comparing(Item::getTimeOfUpdate).reversed());
+    }
+
+    private void sortShoppingCartListAfterAscendingNameOrder() {
+        Collections.sort(listOfItems, Comparator.comparing(Item::getName));
+    }
+    private void sortShoppingCartListAfterItemID() {
+        Collections.sort(listOfItems, Comparator.comparing(Item::getItemID));
+    }
+
 
     // TODO Eventuellt ändra till public String createRunningSaleString()
     @Override

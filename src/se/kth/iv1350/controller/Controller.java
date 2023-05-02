@@ -2,6 +2,7 @@ package src.se.kth.iv1350.controller;
 
 import src.se.kth.iv1350.dto.DiscountDTO;
 import src.se.kth.iv1350.dto.ItemDTO;
+import src.se.kth.iv1350.dto.SaleDTO;
 import src.se.kth.iv1350.integration.*;
 import src.se.kth.iv1350.model.CashPayment;
 import src.se.kth.iv1350.model.CashRegister;
@@ -49,26 +50,24 @@ public class Controller {
     // TODO varför inte bara skicka en ny item?
     // TODO Ska den inte först kontrollera om itemID finns i shopping cart?
 //    public CurrentSaleDTO registerItem(int itemID){
-    public void registerItem(int itemID){
-        registerItem(itemID, 1);
+    public SaleDTO registerItem(int itemID){
+        return registerItem(itemID, 1);
     }
 
-    public void registerItem(int itemID, int quantity){
+    public SaleDTO registerItem(int itemID, int quantity){
         ItemDTO itemInfo = itemRegistry.getItemInfo(itemID);
         currentSale.addItem(itemInfo, quantity);
-        currentSale.displayOpenSale(display);
+        return currentSale.displayOpenSale(display);
     }
 
-    public void endSale(){
+    public SaleDTO endSale(){
         currentSale.endSale();
-        currentSale.displayCheckout(display);
+        return currentSale.displayCheckout(display);
     }
 
     public void discountRequest (int customerID){
         DiscountDTO discountDTO = discountRegister.getDiscount(customerID);
         currentSale.applyDiscount(discountDTO);
-        currentSale.displayCheckout(display);
-        currentSale.endSale();
     }
 
     /**

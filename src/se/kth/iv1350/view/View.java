@@ -56,6 +56,7 @@ public class View {
         contr.endSale();
         // FRÅGA OM DISCOUNT???
         contr.discountRequest(880822);
+        contr.endSale();
 //        contr.discountRequest(810222);
         contr.pay(new Amount(220));
     }

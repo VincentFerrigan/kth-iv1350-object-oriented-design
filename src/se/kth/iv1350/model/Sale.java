@@ -4,6 +4,7 @@ import java.util.*;
 
 import src.se.kth.iv1350.dto.DiscountDTO;
 import src.se.kth.iv1350.dto.ItemDTO;
+import src.se.kth.iv1350.dto.SaleDTO;
 import src.se.kth.iv1350.integration.Display;
 import src.se.kth.iv1350.integration.ItemRegistry;
 import src.se.kth.iv1350.integration.Printer;
@@ -127,17 +128,17 @@ public class Sale {
     }
 
 //    public SaleDTO displayOpenSale(Display display) {
-    public void displayOpenSale(Display display) {
+    public SaleDTO displayOpenSale(Display display) {
         SaleOutput saleOutput = new SaleOutput(this);
         display.displayOpenSale(saleOutput);
-//        return saleOutput.getSaleInfo();
+        return saleOutput.getSaleInfo();
     }
 
 //    public SaleDTO displayCheckout(Display display) {
-    public void displayCheckout(Display display) {
+    public SaleDTO displayCheckout(Display display) {
         SaleOutput saleOutput = new SaleOutput(this);
         display.displayCheckout(saleOutput);
-//        return saleOutput.getSaleInfo();
+        return saleOutput.getSaleInfo();
     }
 
     public void updateInventory() {
