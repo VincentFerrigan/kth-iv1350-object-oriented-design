@@ -236,11 +236,14 @@ skinparam package {
             + <<create>> SaleItemDTO() : SaleItemDTO
         }
         class DiscountDTO{
-'            //TODO STÄMMER EJ
 '            // TODO ska discount finnas med i SaleDTO?
-            -customerID : int
-            -discountRules
+'            -customerID : int
+'            -discountRules
+            - discountRate : Double
             +<<create>>DiscountDTO() : DiscountDTO
+            +<<create>>DiscountDTO(discountRate : Double) : DiscountDTO
+            + getDiscountRate() : double
+            + getDiscountMultiplier() : double
         }
         note right : Attributes TBD based on Discount Rules.
     }
