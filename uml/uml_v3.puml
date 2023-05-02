@@ -42,24 +42,26 @@ package startup {
     package model {
         class Sale{
             - timeOfSale : LocalDateTime
-            - runningTotal : Amount
             - shoppingCart : HashMap<Integer, Item>
             - payment : CashPayment
-            - discount : DiscountDTO ???????
-'            - itemName : String
-'            - quantity : int
-            + <<create>> Sale() : Sale
-            + addItem(itemInfo : ItemDTO) : void --- OR SaleDTO?
-            + addItem(itemInfo : ItemDTO, quantity : int) : void --- OR SaleDTO?
-            + getPayment() : CashPayment
+            - discount : DiscountDTO
+            - itemRegistry : ItemRegistry
+            + <<create>> Sale(itemRegistry : ItemRegistry) : Sale
+            + addItem(itemID : int, quantity : int) : void
+            + addItem(itemID : int) : void
+            + addItem(itemInfo : ItemDTO, quantity : int) : void
+            + addItem(itemInfo : ItemDTO) : void
             + getRunningTotal() : Amount
+            + getTotalVATAmount() : Amount
+            ~ getPayment() : CashPayment
             ~ getCollectionOfItems() : Collection<Item>
-            + endSale() : void --- or SaleDTO?
-            + applyDiscount(discount : DiscountDTO) : void ---- or SaleDTO?
-            + pay(payment : CashPayment) : void --- or SaleDTO?
+            + endSale() : void
+            + applyDiscount(discount : DiscountDTO) : void
+            + pay(payment : CashPayment) : void
             + printReceipt(printer : Printer) : void
-            + displayCurrentSale(printer : Printer) : void
-            + displayEndOfSale(printer : Printer) : void
+            + displayCurrentSale(printer : Printer) : SaleDTO
+            + displayEndOfSale(printer : Printer) : SaleDTO
+            + updateInventory : void
         }
         class Item{
             - itemInfo : ItemDTO

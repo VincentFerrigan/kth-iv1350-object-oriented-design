@@ -50,10 +50,6 @@ public class Sale {
     public void addItem(int itemID) {
         addItem(itemID, 1);
     }
-
-    public void addItem(ItemDTO itemInfo){
-        addItem(itemInfo, 1);
-    }
     public void addItem(ItemDTO itemInfo, int quantity){
         Item item = new Item(itemInfo, quantity);
 
@@ -64,17 +60,8 @@ public class Sale {
             shoppingCart.put(key, item);
         }
     }
-
-    private void increaseQuantity(){
-        //TODO needs an attribute to increase: ItemDTO?
-    }
-
-    private void increaseQuantity(int quantity){
-        //TODO what is happening here? is that the attribute? SaleDTO?
-    }
-
-    CashPayment getPayment(){
-        return payment;
+    public void addItem(ItemDTO itemInfo){
+        addItem(itemInfo, 1);
     }
     public Amount getRunningTotal() {
         // Totalbelopp
@@ -99,6 +86,9 @@ public class Sale {
         return totalVATAmount;
     }
 
+    CashPayment getPayment(){
+        return payment;
+    }
     Collection<Item> getCollectionOfItems() {
         return shoppingCart.values();
     }
