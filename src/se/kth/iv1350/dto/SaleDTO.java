@@ -16,6 +16,12 @@ public class SaleDTO {
         this.totalPrice = totalPrice;
         this.totalVATAmount = totalVATAmount;
     }
+    public SaleDTO(SaleDTO other) {
+        this.timeOfSale = other.timeOfSale;
+        this.saleItemsInfo = other.saleItemsInfo;
+        this.totalPrice = other.totalPrice;
+        this.totalVATAmount = other.totalVATAmount;
+    }
 
     public LocalDateTime getTimeOfSale() {
         return timeOfSale;
