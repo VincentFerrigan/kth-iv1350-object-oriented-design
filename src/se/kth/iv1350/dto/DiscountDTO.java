@@ -7,16 +7,19 @@ package src.se.kth.iv1350.dto;
 // TODO Ska den vara en tabell av rabatter, procentssats, belopp eller själva discountDTO?
 // TODO Total cost - Total discount = total price? (Per vara eller hela försäljningen?)
 public class DiscountDTO {
-    private double discountMultiplier;
-    public DiscountDTO(double discountMultiplier){
-        this.discountMultiplier = discountMultiplier;
+    private double discountRate;
+    public DiscountDTO(double discountRate){
+        this.discountRate = discountRate;
     }
 
     public DiscountDTO() {
-        this.discountMultiplier = 1;
+        this.discountRate= 1;
     }
 
+    public double getDiscountRate(){
+        return discountRate;
+    }
     public double getDiscountMultiplier() {
-        return discountMultiplier;
+        return 1 - discountRate;
     }
 }

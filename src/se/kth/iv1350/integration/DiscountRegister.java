@@ -47,19 +47,19 @@ public class DiscountRegister {
     }
 
     public DiscountDTO getDiscount(int customerID){
-        double discountMultiplier;
+        double discountRate;
 
         switch (discountTable.get(customerID)){
             case STAFF:
-                discountMultiplier = 1 - 0.10;
+                discountRate = 0.10;
                 break;
             case MEMBER:
-                discountMultiplier = 1 - 0.05;
+                discountRate = 0.05;
                 break;
             default:
-                discountMultiplier = 1;
+                discountRate = 0;
                 break;
         }
-        return new DiscountDTO(discountMultiplier);
+        return new DiscountDTO(discountRate);
     }
 }
