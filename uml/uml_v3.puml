@@ -126,11 +126,16 @@ package startup {
         class SaleOutput {
             - sale : Sale
             - listOfItems : List<Item>
+            - saleInfo : SaleDTO
             ~ <<create>> SaleOutput(sale : Sale) : SaleOutput
-            - getSaleItemsInfo() : List<SleItemDTO>
             + getSaleInfo() : SaleDTO
             + createOpenSaleString() : String
             + createCheckoutString() : String
+            - updateSaleInfo() : void
+            - getSaleItemsInfo() : List<SleItemDTO>
+            - sortShoppingCartListAfterDescendingTimeOrder() : void
+            - sortShoppingCartListAfterAscendingNameOrder() : void
+            - sortShoppingCartListAfterAscendingItemID() : void
 '           Ska getSaleInfo vara private eller packageprivate? Hur ska den användas externt?
         }
     }
@@ -522,7 +527,7 @@ activate currentSale
 deactivate currentSale
 note right: discountDTO is used by currentSale \nto create a new SaleDTO.
         autonumber 1.3
-        contr -> currentSale : displayCheckout(display : Display) : void
+        contr -> currentSale : displayCheckout(display : Display) : SaleDTO
         activate currentSale
         currentSale -> SaleOutput : <<create>> \n saleOutput= SaleOutput(sale : Sale) : SaleOutput
         activate SaleOutput
