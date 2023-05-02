@@ -1,5 +1,5 @@
-package src.se.kth.iv1350.model;
-import src.se.kth.iv1350.dto.ItemDTO;
+package se.kth.iv1350.model;
+import se.kth.iv1350.dto.ItemDTO;
 
 import java.time.LocalDateTime;
 

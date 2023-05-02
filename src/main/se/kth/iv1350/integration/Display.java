@@ -1,6 +1,6 @@
-package src.se.kth.iv1350.integration;
+package se.kth.iv1350.integration;
 
-import src.se.kth.iv1350.model.SaleOutput;
+import se.kth.iv1350.model.SaleOutput;
 
 /**
  * The interface to the display,

@@ -1,4 +1,4 @@
-package src.se.kth.iv1350.model;
+package se.kth.iv1350.model;
 
 /**
  * Represents a cash register. There shall be one instance of this class for each register.

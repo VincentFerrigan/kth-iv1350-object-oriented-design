@@ -1,7 +1,7 @@
-package src.se.kth.iv1350.model;
+package se.kth.iv1350.model;
 
-import src.se.kth.iv1350.dto.SaleDTO;
-import src.se.kth.iv1350.dto.SaleItemDTO;
+import se.kth.iv1350.dto.SaleDTO;
+import se.kth.iv1350.dto.SaleItemDTO;
 
 import java.util.ArrayList;
 import java.util.Collections;

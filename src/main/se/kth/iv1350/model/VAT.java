@@ -1,4 +1,4 @@
-package src.se.kth.iv1350.model;
+package se.kth.iv1350.model;
 
 // TODO Is this considered to be a DTO? (SHOW STOPPER)
 // TODO @Override toString()

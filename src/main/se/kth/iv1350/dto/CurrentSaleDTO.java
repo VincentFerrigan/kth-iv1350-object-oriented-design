@@ -1,7 +1,7 @@
-package src.se.kth.iv1350.dto;
+package se.kth.iv1350.dto;
 
-import src.se.kth.iv1350.model.Amount;
-import src.se.kth.iv1350.model.Item;
+import se.kth.iv1350.model.Amount;
+import se.kth.iv1350.model.Item;
 
 @Deprecated
 public class CurrentSaleDTO {

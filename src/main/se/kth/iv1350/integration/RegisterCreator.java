@@ -1,6 +1,6 @@
-package src.se.kth.iv1350.integration;
+package se.kth.iv1350.integration;
 
-import src.se.kth.iv1350.model.CashRegister;
+import se.kth.iv1350.model.CashRegister;
 
 /**
      * The class is responsible for instantiating all registers (external systems/databases)
@@ -11,7 +11,7 @@ public class RegisterCreator {
     private CashRegister cashRegister;
     private DiscountRegister discountRegister;
     private AccountingSystem accountingSystem;
-    private static final String FILE_PATH = "src/se/kth/iv1350/integration/";
+    private static final String FILE_PATH = "src/main/se/kth/iv1350/integration/";
     private static final String AS_FLAT_FILE_DB = "accounting.csv";
     private static final String IS_FLAT_FILE_DB = "inventory_items.csv";
     private static final String DR_FLAT_FILE_DB = "discounts.csv";

@@ -1,7 +1,7 @@
-package src.se.kth.iv1350.view;
+package se.kth.iv1350.view;
 
-import src.se.kth.iv1350.controller.Controller;
-import src.se.kth.iv1350.model.Amount;
+import se.kth.iv1350.controller.Controller;
+import se.kth.iv1350.model.Amount;
 
 import java.util.Scanner;
 

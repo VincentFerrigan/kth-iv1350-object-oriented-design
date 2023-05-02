@@ -1,7 +1,7 @@
-package src.se.kth.iv1350.dto;
+package se.kth.iv1350.dto;
 
-import src.se.kth.iv1350.model.Amount;
-import src.se.kth.iv1350.model.VAT;
+import se.kth.iv1350.model.VAT;
+import se.kth.iv1350.model.Amount;
 
 //TODO @Override toString()?
 // TODO Move to integration layer?

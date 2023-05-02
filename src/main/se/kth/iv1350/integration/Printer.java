@@ -1,7 +1,7 @@
-package src.se.kth.iv1350.integration;
+package se.kth.iv1350.integration;
 
-import src.se.kth.iv1350.model.SaleOutput;
-import src.se.kth.iv1350.model.Receipt;
+import se.kth.iv1350.model.SaleOutput;
+import se.kth.iv1350.model.Receipt;
 
 /**
  * The interface to the printer and display, used for all printouts initiated by this

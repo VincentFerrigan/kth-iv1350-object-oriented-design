@@ -1,6 +1,6 @@
-package src.se.kth.iv1350.integration;
+package se.kth.iv1350.integration;
 
-import src.se.kth.iv1350.model.Sale;
+import se.kth.iv1350.model.Sale;
 
 import java.util.ArrayList;
 import java.util.List;

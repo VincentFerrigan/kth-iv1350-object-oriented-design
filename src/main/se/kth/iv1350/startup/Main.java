@@ -1,9 +1,9 @@
-package src.se.kth.iv1350.startup;
-import src.se.kth.iv1350.controller.Controller;
-import src.se.kth.iv1350.integration.Display;
-import src.se.kth.iv1350.integration.RegisterCreator;
-import src.se.kth.iv1350.view.View;
-import src.se.kth.iv1350.integration.Printer;
+package se.kth.iv1350.startup;
+import se.kth.iv1350.controller.Controller;
+import se.kth.iv1350.integration.Display;
+import se.kth.iv1350.integration.RegisterCreator;
+import se.kth.iv1350.view.View;
+import se.kth.iv1350.integration.Printer;
 
 /**
  * Contains the <code>main</code> method. Performs all startup

@@ -1,9 +1,9 @@
-package src.se.kth.iv1350.integration;
+package se.kth.iv1350.integration;
 
-import src.se.kth.iv1350.dto.ItemDTO;
-import src.se.kth.iv1350.model.Amount;
-import src.se.kth.iv1350.model.Item;
-import src.se.kth.iv1350.model.VAT;
+import se.kth.iv1350.dto.ItemDTO;
+import se.kth.iv1350.model.Amount;
+import se.kth.iv1350.model.Item;
+import se.kth.iv1350.model.VAT;
 
 import java.io.*;
 import java.time.LocalDate;

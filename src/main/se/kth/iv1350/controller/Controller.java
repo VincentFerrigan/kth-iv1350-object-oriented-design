@@ -1,13 +1,13 @@
-package src.se.kth.iv1350.controller;
+package se.kth.iv1350.controller;
 
-import src.se.kth.iv1350.dto.DiscountDTO;
-import src.se.kth.iv1350.dto.ItemDTO;
-import src.se.kth.iv1350.dto.SaleDTO;
-import src.se.kth.iv1350.integration.*;
-import src.se.kth.iv1350.model.CashPayment;
-import src.se.kth.iv1350.model.CashRegister;
-import src.se.kth.iv1350.model.Sale;
-import src.se.kth.iv1350.model.Amount;
+import se.kth.iv1350.dto.DiscountDTO;
+import se.kth.iv1350.dto.ItemDTO;
+import se.kth.iv1350.dto.SaleDTO;
+import se.kth.iv1350.integration.*;
+import se.kth.iv1350.model.CashPayment;
+import se.kth.iv1350.model.CashRegister;
+import se.kth.iv1350.model.Sale;
+import se.kth.iv1350.model.Amount;
 
 // TODO Registry createor for external database setup?????????? Use getters. What about salelog?
 /**

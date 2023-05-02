@@ -1,4 +1,4 @@
-package src.se.kth.iv1350.model;
+package se.kth.iv1350.model;
 
 import java.util.Currency;
 import java.util.List;

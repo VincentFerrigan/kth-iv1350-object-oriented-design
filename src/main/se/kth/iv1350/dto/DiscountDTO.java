@@ -1,4 +1,4 @@
-package src.se.kth.iv1350.dto;
+package se.kth.iv1350.dto;
 
 //TODO s:
 // TODO Ska vi ha en customerDTO och customerDb?

@@ -1,13 +1,13 @@
-package src.se.kth.iv1350.model;
+package se.kth.iv1350.model;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import src.se.kth.iv1350.dto.DiscountDTO;
-import src.se.kth.iv1350.dto.ItemDTO;
-import src.se.kth.iv1350.dto.SaleDTO;
-import src.se.kth.iv1350.integration.Display;
-import src.se.kth.iv1350.integration.ItemRegistry;
-import src.se.kth.iv1350.integration.Printer;
+import se.kth.iv1350.dto.DiscountDTO;
+import se.kth.iv1350.dto.ItemDTO;
+import se.kth.iv1350.dto.SaleDTO;
+import se.kth.iv1350.integration.Display;
+import se.kth.iv1350.integration.ItemRegistry;
+import se.kth.iv1350.integration.Printer;
 
 import static java.util.stream.Collectors.toList;
 

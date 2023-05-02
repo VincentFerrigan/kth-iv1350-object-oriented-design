@@ -1,6 +1,6 @@
-package src.se.kth.iv1350.dto;
+package se.kth.iv1350.dto;
 
-import src.se.kth.iv1350.model.Amount;
+import se.kth.iv1350.model.Amount;
 
 // TODO ska discountDTO finnas med i SaleDTO och/eller SaleItemDTO?
 public class SaleItemDTO {
