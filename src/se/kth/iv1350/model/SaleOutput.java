@@ -14,43 +14,18 @@ import static java.util.stream.Collectors.toList;
 public class SaleOutput {
     private final Sale sale;
     private List<Item> listOfItems;
-
     private SaleDTO saleInfo;
+
     SaleOutput(Sale sale) {
         this.sale = sale;
         this.listOfItems = new ArrayList<>(sale.getCollectionOfItems());
     }
 
-    private List<SaleItemDTO> getSaleItemsInfo() {
-        List<SaleItemDTO> saleItemsInfo = new ArrayList<>();
-        for (Item item : listOfItems) {
-            saleItemsInfo.add(new SaleItemDTO(
-                    item.getItemDTO(),        //itemInfo incl. name, description, price, vat rate
-                    item.getQuantity(),       //quantity
-                    item.getTotalPrice()     //totalPrice
-            ));
-        }
-        return saleItemsInfo;
-    }
     public SaleDTO getSaleInfo() {
         if (saleInfo == null) {
             updateSaleInfo();
         }
         return new SaleDTO(saleInfo);
-    }
-    public void updateSaleInfo() {
-        List<SaleItemDTO> saleItems = getSaleItemsInfo();
-
-        // Totalbelopp
-        Amount runningTotal = sale.getRunningTotal();
-
-        // Momsberäkning
-        Amount totalVATAmount = sale.getTotalVATAmount();
-
-        this.saleInfo = new SaleDTO(
-                saleItems,            // list of saleItemInfo (DTO)
-                runningTotal,         // Running total
-                totalVATAmount);      // VAT for the total sale
     }
     public String createOpenSaleString() {
         // Sorterar listan efter när den reggats.
@@ -79,6 +54,31 @@ public class SaleOutput {
         return builder.toString();
     }
 
+    private void updateSaleInfo() {
+        List<SaleItemDTO> saleItems = getSaleItemsInfo();
+
+        // Totalbelopp
+        Amount runningTotal = sale.getRunningTotal();
+
+        // Momsberäkning
+        Amount totalVATAmount = sale.getTotalVATAmount();
+
+        this.saleInfo = new SaleDTO(
+                saleItems,            // list of saleItemInfo (DTO)
+                runningTotal,         // Running total
+                totalVATAmount);      // VAT for the total sale
+    }
+    private List<SaleItemDTO> getSaleItemsInfo() {
+        List<SaleItemDTO> saleItemsInfo = new ArrayList<>();
+        for (Item item : listOfItems) {
+            saleItemsInfo.add(new SaleItemDTO(
+                    item.getItemDTO(),        //itemInfo incl. name, description, price, vat rate
+                    item.getQuantity(),       //quantity
+                    item.getTotalPrice()     //totalPrice
+            ));
+        }
+        return saleItemsInfo;
+    }
     private void sortShoppingCartListAfterDescendingTimeOrder() {
         Collections.sort(listOfItems, Comparator.comparing(Item::getTimeOfUpdate).reversed());
     }
@@ -86,7 +86,7 @@ public class SaleOutput {
     private void sortShoppingCartListAfterAscendingNameOrder() {
         Collections.sort(listOfItems, Comparator.comparing(Item::getName));
     }
-    private void sortShoppingCartListAfterItemID() {
+    private void sortShoppingCartListAscendingItemID() {
         Collections.sort(listOfItems, Comparator.comparing(Item::getItemID));
     }
 
