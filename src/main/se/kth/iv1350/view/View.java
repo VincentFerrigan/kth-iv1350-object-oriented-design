@@ -46,6 +46,7 @@ public class View {
     }
 
     public void hardkodadegrejer() {
+        // FirstSale
         contr.startSale();
         contr.registerItem(5);
         contr.registerItem(5);
@@ -59,6 +60,33 @@ public class View {
         contr.endSale();
 //        contr.discountRequest(810222);
         contr.pay(new Amount(220));
+
+        // SecondSale
+        contr.startSale();
+        contr.registerItem(5);
+        contr.registerItem(5);
+        contr.registerItem(7, 2);
+        contr.registerItem(5);
+        contr.registerItem(1);
+        contr.registerItem(1, 2);
+        contr.endSale();
+        // FRÅGA OM DISCOUNT???
+//        contr.discountRequest(880822);
+        contr.endSale();
+        contr.discountRequest(810222);
+        contr.pay(new Amount(2220));
+
+        // ThirdSale
+        contr.startSale();
+        contr.registerItem(5);
+        contr.registerItem(7, 2);
+        contr.registerItem(1);
+        contr.endSale();
+        // FRÅGA OM DISCOUNT???
+//        contr.discountRequest(880822);
+        contr.endSale();
+//        contr.discountRequest(810222);
+        contr.pay(new Amount(2220));
     }
 
 
