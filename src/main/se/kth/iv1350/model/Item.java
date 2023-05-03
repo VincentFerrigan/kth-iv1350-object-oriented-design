@@ -16,6 +16,7 @@ public class Item {
     public Item(ItemDTO item){
         this(item, 1);
     }
+    @Deprecated
     public void addItem(Item anotherItem){
         //TODO denna är bättre i sale
         this.timeOfUpdate = LocalDateTime.now();
@@ -68,6 +69,7 @@ public class Item {
     public String getName() {
         return itemInfo.getName();
     }
+    @Deprecated
     @Override
     public boolean equals(Object o) {
         //TODO DOas väl också i sale?
@@ -76,19 +78,18 @@ public class Item {
         return Integer.compare(this.getItemID(), c.getItemID()) == 0;
     }
 
-    // TODO exemptions?
-    // TODO increment och decrement()? OBS! uppdatera totalbelopp!
     // Eventuellt för salelog/sales
     /**
      * Increment an already added item when it's more than one of the same.
      */
+    @Deprecated
     public void increment(){
         this.timeOfUpdate = LocalDateTime.now();
         this.quantity++;
     }
 
-    // TODO increment och decrement()? OBS! uppdatera totalbelopp!
     // Eventuellt för när vi uppdaterar inventory.
+    @Deprecated
     public void decrement(){
         //TODO denna används väl inte?
         this.timeOfUpdate = LocalDateTime.now();
