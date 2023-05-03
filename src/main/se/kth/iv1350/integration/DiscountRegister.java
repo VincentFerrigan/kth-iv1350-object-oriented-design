@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * Represents an external discount database
+ * This class is a placeholder for a future external discount database.
  */
 public class DiscountRegister {
     private final String flatFileDb;
@@ -31,9 +32,8 @@ public class DiscountRegister {
         addDiscount();
     }
 
-
     /**
-     *
+     * Adds discounts to the hashmap from the flat file database.
      */
     private void addDiscount() {
        String splitCsvBy = ";" ;
@@ -57,6 +57,11 @@ public class DiscountRegister {
         }
     }
 
+    /**
+     * Get the discount as a {@link DiscountDTO}
+     * @param customerID The customer identification
+     * @return the discount as a {@link DiscountDTO}
+     */
     public DiscountDTO getDiscount(int customerID){
         double discountRate;
 

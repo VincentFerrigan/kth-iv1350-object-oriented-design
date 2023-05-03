@@ -47,8 +47,8 @@ public class Controller {
 
     /**
      * Registers an item for sale with its item identifier.
-     * @param itemID Item identifier
-     * @return Sale information as a Data Transfer Object
+     * @param itemID Item identifier.
+     * @return Sale information as a Data Transfer Object.
      */
     public SaleDTO registerItem(int itemID){
         return registerItem(itemID, 1);
@@ -56,8 +56,9 @@ public class Controller {
 
     /**
      * Registers an item for sale by entering its item identifier and quantity.
-     * @param itemID Item identifier
-     * @return Sale information as a Data Transfer Object
+     * @param itemID The item identifier.
+     * @param quantity The item quantity.
+     * @return Sale information as a Data Transfer Object.
      */
     public SaleDTO registerItem(int itemID, int quantity){
         currentSale.addItem(itemID, quantity);

@@ -24,7 +24,7 @@ public class CashRegister {
     }
 
     /**
-     * Creates a instance. Initial balance is the default value of 0;
+     * Creates an instance. Initial balance is the default value of 0;
      */
     public CashRegister() {
         this(0);

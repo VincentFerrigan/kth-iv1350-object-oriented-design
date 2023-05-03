@@ -5,7 +5,7 @@ import se.kth.iv1350.model.Amount;
 // TODO ska discountDTO finnas med i SaleDTO och/eller SaleItemDTO?
 
 /**
- * Contains information about a registered item (item info, quantity and total price)
+ * Contains information about a registered item (item info, quantity and total price) as a Data Transfer Object.
  */
 public class SaleItemDTO {
     private final ItemDTO itemInfo;
