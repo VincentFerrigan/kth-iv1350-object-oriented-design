@@ -8,7 +8,7 @@ public class CashRegister {
     public static final double INITIAL_BALANCE = 10_000;
 
     /**
-     * Creates a instance. Initial balance according to specified amount.
+     * Creates an instance. Initial balance according to specified amount.
      * @param initialAmount
      */
     public CashRegister(Amount initialAmount) {

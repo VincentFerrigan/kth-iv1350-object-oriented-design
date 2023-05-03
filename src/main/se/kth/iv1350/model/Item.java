@@ -17,6 +17,7 @@ public class Item {
         this(item, 1);
     }
     public void addItem(Item anotherItem){
+        //TODO denna är bättre i sale
         this.timeOfUpdate = LocalDateTime.now();
         if (this.equals(anotherItem)) {
             addToQuantity(anotherItem.getQuantity());
@@ -69,6 +70,7 @@ public class Item {
     }
     @Override
     public boolean equals(Object o) {
+        //TODO DOas väl också i sale?
         if (o == this) {return true;}
         Item c = (Item) o;
         return Integer.compare(this.getItemID(), c.getItemID()) == 0;
@@ -88,6 +90,7 @@ public class Item {
     // TODO increment och decrement()? OBS! uppdatera totalbelopp!
     // Eventuellt för när vi uppdaterar inventory.
     public void decrement(){
+        //TODO denna används väl inte?
         this.timeOfUpdate = LocalDateTime.now();
         this.quantity--;
     }
