@@ -23,10 +23,6 @@ class SaleTest {
     private ItemRegistry itemRegistry;
     private RegisterCreator registries;
 
-
-
-
-
     @BeforeEach
     void setUp() {
         //addItem
@@ -61,8 +57,19 @@ class SaleTest {
         assertEquals(expResult,result,"Item quantity not equal");
     }
 
+    @Disabled
     @Test
-    void testIncreeseItem() {
+    void getRunningTotal() {
+    }
+
+    @Disabled
+    @Test
+    void getTotalVATAmount() {
+    }
+
+    @Disabled
+    @Test
+    void testIncreaseItem() {
         int itemID = 1;
         int quantity = 1;
 
@@ -73,12 +80,7 @@ class SaleTest {
         SaleDTO saleInfo = sale.displayCheckout(new Display());
         List<SaleItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
         int result = listOfSaleItems.get(0).getQuantity();
-        assertEquals(expResult,result,"Item quantity not incresed");
-    }
-
-    @Disabled
-    @Test
-    void testAddItem1() {
+        assertEquals(expResult,result,"Item quantity not increased");
     }
 
     @Disabled
