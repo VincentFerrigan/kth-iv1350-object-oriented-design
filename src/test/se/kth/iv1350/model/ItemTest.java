@@ -12,15 +12,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ItemTest {
     private Item testItem;
-    private ItemDTO itemInfo;
-    private final int quantity = 5;
+    private final ItemDTO ITEM_INFO = new ItemDTO(3, "Jordgubbe", "", new Amount(15), new VAT(1));
+    private final int QUANTITY = 5;
     Object a;
     Object b;
     Object c;
     Object d;
     @BeforeEach
     void setUp() {
-        testItem = new Item(this.itemInfo, quantity);
+        testItem = new Item(this.ITEM_INFO, QUANTITY);
         a = 2;
         b = 2;
         c = 3;
@@ -53,11 +53,9 @@ class ItemTest {
     void testAddToQuantity() {
         int addedQuantity = 4;
         testItem.addToQuantity(addedQuantity);
-        assertEquals(quantity+addedQuantity, testItem.getQuantity(),
+        assertEquals(QUANTITY +addedQuantity, testItem.getQuantity(),
                 "Item did not have correct quantity when quantity was added to an existing Item.");
     }
-
-
 
     @Disabled
     @Test
@@ -102,7 +100,7 @@ class ItemTest {
     @Disabled
     @Test
     void testIncrement() {
-        int incrementedAmount = quantity + 1;
+        int incrementedAmount = QUANTITY + 1;
         testItem.increment();
         assertEquals(incrementedAmount, testItem.getQuantity(),
                 "Item did not have correct quantity when incremented.");
