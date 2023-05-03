@@ -7,7 +7,6 @@ import se.kth.iv1350.dto.DiscountDTO;
 import se.kth.iv1350.dto.SaleDTO;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.model.Item;
 import se.kth.iv1350.model.Sale;
 
 import java.io.ByteArrayOutputStream;
