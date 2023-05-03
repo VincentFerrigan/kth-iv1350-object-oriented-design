@@ -6,7 +6,9 @@ import se.kth.iv1350.model.Sale;
 import java.io.*;
 import java.time.LocalDate;
 
-//TODO flat file dB.
+/**
+ * Represents the external accounting system.
+ */
 public class AccountingSystem {
     private final String flatFileDb;
     private final String filePath;
@@ -14,18 +16,30 @@ public class AccountingSystem {
     private Amount vat = new Amount(0);
     private Amount totalSale = new Amount(0);
 
-    // TODO, based on InventorySystems constructor.
+    /**
+     * Creates a new instance of an accounting system.
+     * @param filePath the file path to the flat file database
+     * @param fileName the file name of the flat file database.
+     */
     AccountingSystem(String filePath, String fileName) {
         this.filePath = filePath;
         this.flatFileDb = fileName;
         String splitCsvBy = ";";
     }
+
+    /**
+     * Updates the accounting system by adding the specified {@link Sale}.
+     * @param closedSale The sale to be added to the accounting system.
+     */
     public void updateToAccountingSystem(Sale closedSale){
         vat = vat.plus(closedSale.getTotalVATAmount());
         totalSale = totalSale.plus(closedSale.getRunningTotal());
         updateDatabase();
     }
 
+    /**
+     * Accounting by creating (and writing to) a flat file database
+     */
     private void updateDatabase() {
         FileWriter fileWriter;
         try {
@@ -45,5 +59,4 @@ public class AccountingSystem {
             e.printStackTrace();
         }
     }
-
 }

@@ -33,23 +33,44 @@ public class ItemDTO {
         this.vat = vat;
     }
 
+    /**
+     * Get the item identifier
+     * @return the item identifier
+     */
+    public int getItemID() {
+        return itemID;
+    }
+    /**
+     * Get the name of the item
+     * @return the name of the item
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get the items description
+     * @return the description of the item
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Get the unit price
+     * @return the unit price
+     */
     public Amount getUnitPrice() {
         return price;
     }
 
-    public int getItemID() {
-        return itemID;
-    }
 
     // returnera VAT istället för double?
+
+    /**
+     * Get the items VAT Rate
+     * @return the VAT Rate
+     */
     public double getVATRate() {
         return vat.getVATRate();
     }
