@@ -46,17 +46,12 @@ public class Controller {
         this.currentSale = new Sale(itemRegistry);
     }
 
-    // TODO ändra i UML
-    // TODO varför inte bara skicka en ny item?
-    // TODO Ska den inte först kontrollera om itemID finns i shopping cart?
-//    public CurrentSaleDTO registerItem(int itemID){
     public SaleDTO registerItem(int itemID){
         return registerItem(itemID, 1);
     }
 
     public SaleDTO registerItem(int itemID, int quantity){
-        ItemDTO itemInfo = itemRegistry.getItemInfo(itemID);
-        currentSale.addItem(itemInfo, quantity);
+        currentSale.addItem(itemID, quantity);
         return currentSale.displayOpenSale(display);
     }
 

@@ -13,7 +13,7 @@ public class DiscountDTO {
     }
 
     public DiscountDTO() {
-        this.discountRate= 1;
+        this.discountRate = 0;
     }
 
     public double getDiscountRate(){

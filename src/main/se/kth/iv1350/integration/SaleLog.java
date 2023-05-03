@@ -15,9 +15,9 @@ public class SaleLog {
 
     /**
      * Saves the specified sale permanently
-     * @param sale The sale that will be saved.
+     * @param closedSale The sale that will be saved.
      */
-    public void logSale(Sale sale) {
-        sales.add(sale);
+    public void logSale(Sale closedSale) {
+        sales.add(closedSale);
     }
 }

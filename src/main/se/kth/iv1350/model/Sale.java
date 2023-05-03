@@ -36,7 +36,6 @@ public class Sale {
         this.itemRegistry = itemRegistry;
     }
 
-    // TODO varför inte Item eller itemID istället för ItemDTO?
     public void addItem(int itemID, int quantity) {
         if (shoppingCart.containsKey(itemID)) {
             this.shoppingCart.get(itemID).addToQuantity(quantity);
@@ -50,6 +49,9 @@ public class Sale {
     public void addItem(int itemID) {
         addItem(itemID, 1);
     }
+
+
+    @Deprecated
     public void addItem(ItemDTO itemInfo, int quantity){
         Item item = new Item(itemInfo, quantity);
 
@@ -60,6 +62,7 @@ public class Sale {
             shoppingCart.put(key, item);
         }
     }
+    @Deprecated
     public void addItem(ItemDTO itemInfo){
         addItem(itemInfo, 1);
     }

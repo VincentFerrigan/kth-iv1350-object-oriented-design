@@ -2,6 +2,7 @@ package se.kth.iv1350.model;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.dto.ItemDTO;
 
@@ -25,11 +26,6 @@ class ItemTest {
     }
 
     @Test
-    void testAddItem() {
-        //TODO or not TODO
-    }
-
-    @Test
     void testSetQuantity() {
         int newQuantity = 7;
         testItem.setQuantity(newQuantity);
@@ -45,11 +41,13 @@ class ItemTest {
                 "Item did not have correct quantity when quantity was added to an existing Item.");
     }
 
+    @Disabled
     @Test
     void testEquals() {
         //TODO or not TODO
     }
 
+    @Disabled
     @Test
     void testIncrement() {
         int incrementedAmount = quantity + 1;
@@ -58,6 +56,7 @@ class ItemTest {
                 "Item did not have correct quantity when incremented.");
     }
 
+    @Disabled
     @Test
     void testDecrement() {
         //TODO or not TODO

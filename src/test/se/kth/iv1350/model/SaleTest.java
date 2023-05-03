@@ -24,19 +24,11 @@ class SaleTest {
     }
 
     @Test
-    void addItem() {
-    }
-
-    @Test
     void testAddItem() {
     }
 
     @Test
     void testAddItem1() {
-    }
-
-    @Test
-    void testAddItem2() {
     }
 
     @Test
