@@ -19,6 +19,10 @@ public class SaleDTO {
         this.totalVATAmount = other.totalVATAmount;
     }
 
+    public List<SaleItemDTO> getSaleItemsInfo() {
+        return saleItemsInfo;
+    }
+
     public Amount getTotalPrice() {
         return totalPrice;
     }
