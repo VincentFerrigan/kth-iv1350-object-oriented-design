@@ -50,7 +50,7 @@ public class Receipt {
         builder.append("\n");
         for (Item item: listOfItems) {
             builder.append("%-40s%s%n".formatted(item.getName(), item.getTotalPrice()));
-            builder.append("(" + item.getQuantity() + " * " + item.getUnitPrice() + "/each)\n");
+            builder.append("(%d * %s)\n".formatted(item.getQuantity(), item.getUnitPrice()));
         }
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));
