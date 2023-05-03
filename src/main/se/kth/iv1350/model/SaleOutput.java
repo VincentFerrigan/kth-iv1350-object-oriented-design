@@ -10,23 +10,38 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-// TODO package private kontruktor och final attribute?
+/**
+ * Contains all the output to the display regarding the current sale.
+ */
 public class SaleOutput {
     private final Sale sale;
     private List<Item> listOfItems;
     private SaleDTO saleInfo;
 
+    /**
+     * Creates a new instance of a {@link SaleOutput} for the specified sale.
+     * @param sale The sale.
+     */
     SaleOutput(Sale sale) {
         this.sale = sale;
         this.listOfItems = new ArrayList<>(sale.getCollectionOfItems());
     }
 
-    public SaleDTO getSaleInfo() {
+    /**
+     * Get information about the sale.
+     * @return Information about the sale as a {@link SaleDTO}
+     */
+    SaleDTO getSaleInfo() {
         if (saleInfo == null) {
             updateSaleInfo();
         }
         return new SaleDTO(saleInfo);
     }
+
+    /**
+     * Pretty printing for the output of current sale, sorted by the time when items are registered.
+     * @return Pretty printing of sale, with items sorted by time of registration.
+     */
     public String createOpenSaleString() {
         // Sorterar listan efter när den reggats.
         sortShoppingCartListAfterDescendingTimeOrder();
@@ -41,6 +56,10 @@ public class SaleOutput {
         return builder.toString();
     }
 
+    /**
+     * Pretty printing for the output of current sale, with items sorted alphabetically.
+     * @return Pretty printing of sale, with items sorted alphabetically.
+     */
     public String createCheckoutString() {
         // Sorterar listan per namn
         sortShoppingCartListAfterAscendingNameOrder();
@@ -87,12 +106,16 @@ public class SaleOutput {
     private void sortShoppingCartListAfterAscendingNameOrder() {
         Collections.sort(listOfItems, Comparator.comparing(Item::getName));
     }
+
+    @Deprecated
     private void sortShoppingCartListAscendingItemID() {
         Collections.sort(listOfItems, Comparator.comparing(Item::getItemID));
     }
 
-
-    // TODO Eventuellt ändra till public String createRunningSaleString()
+    /**
+     * Pretty printing of {@link SaleOutput} based on <code>this.createOpenSaleString()</code>
+     * @return Pretty printing of this instance.
+     */
     @Override
     public String toString() {
         return createOpenSaleString();

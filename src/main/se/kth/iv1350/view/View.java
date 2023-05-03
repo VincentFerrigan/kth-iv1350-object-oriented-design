@@ -5,17 +5,26 @@ import se.kth.iv1350.model.Amount;
 
 import java.util.Scanner;
 
+/**
+ * Represents the interface of the program. Since the program does not have
+ * an interface or view on its own, this class is a placeholder.
+ */
 public class View {
     private Controller contr;
 
-    Scanner input = new Scanner(System.in);
+    private Scanner input = new Scanner(System.in);
 
     // 1. En med prompt
     // 2. Fil med itemID och ev. quantity
     // 3. Hårdkodade
 
 // 3.
-    public void testPromt() {
+
+    /**
+     * Manual tests in the form of a prompt.
+     */
+    @Deprecated
+    public void testPrompt() {
         System.out.println("Welcome Veggie Shop \n");
         contr.startSale();
         System.out.println("New buy: \n Add items to the shoppingcart by typing (ID Quantity)\n");
@@ -45,8 +54,12 @@ public class View {
         }
     }
 
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * in all possible ways.
+     */
     public void hardkodadegrejer() {
-        // FirstSale
+        // FirstSale - with staff discount
         contr.startSale();
         contr.registerItem(5);
         contr.registerItem(5);
@@ -55,13 +68,11 @@ public class View {
         contr.registerItem(1);
         contr.registerItem(1, 2);
         contr.endSale();
-        // FRÅGA OM DISCOUNT???
         contr.discountRequest(880822);
         contr.endSale();
-//        contr.discountRequest(810222);
         contr.pay(new Amount(220));
 
-        // SecondSale
+        // SecondSale - with member discount
         contr.startSale();
         contr.registerItem(5);
         contr.registerItem(5);
@@ -70,22 +81,16 @@ public class View {
         contr.registerItem(1);
         contr.registerItem(1, 2);
         contr.endSale();
-        // FRÅGA OM DISCOUNT???
-//        contr.discountRequest(880822);
-        contr.endSale();
         contr.discountRequest(810222);
+        contr.endSale();
         contr.pay(new Amount(2220));
 
-        // ThirdSale
+        // ThirdSale - without discount
         contr.startSale();
         contr.registerItem(5);
         contr.registerItem(7, 2);
         contr.registerItem(1);
         contr.endSale();
-        // FRÅGA OM DISCOUNT???
-//        contr.discountRequest(880822);
-        contr.endSale();
-//        contr.discountRequest(810222);
         contr.pay(new Amount(2220));
     }
 
@@ -101,6 +106,7 @@ public class View {
     /**
      * Performs a fake sale by calling all system operations in the controller.
      */
+    @Deprecated
     public void runFakeExecution(){     //TODO delete this when done
         contr.startSale();
         System.out.println("A new sale i started");
