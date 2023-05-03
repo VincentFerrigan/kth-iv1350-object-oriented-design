@@ -20,4 +20,6 @@ public class SaleLog {
     public void logSale(Sale closedSale) {
         sales.add(closedSale);
     }
+
+    //TODO get a sale based on some input. Time, Amount, customerID......
 }

@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents an external discount database
+ */
 public class DiscountRegister {
     private final String flatFileDb;
     private final String filePath;
@@ -17,13 +20,21 @@ public class DiscountRegister {
         STAFF,
         MEMBER}
 
-    // TODO, based on InventorySystems constructor.
-    DiscountRegister(String filePath, String file) {
+    /**
+     * Creates a new instance of a discount registry.
+     * @param filePath the file path to the flat file database
+     * @param fileName the file name of the flat file database.
+     */
+    DiscountRegister(String filePath, String fileName) {
         this.filePath = filePath;
-        this.flatFileDb = file;
+        this.flatFileDb = fileName;
         addDiscount();
     }
 
+
+    /**
+     *
+     */
     private void addDiscount() {
        String splitCsvBy = ";" ;
         FileReader reader;

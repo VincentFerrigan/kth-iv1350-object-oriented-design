@@ -9,7 +9,6 @@ import se.kth.iv1350.model.CashRegister;
 import se.kth.iv1350.model.Sale;
 import se.kth.iv1350.model.Amount;
 
-// TODO Registry createor for external database setup?????????? Use getters. What about salelog?
 /**
  * This is the application's only controller class. All calls to the model pass
  * through here.
@@ -46,20 +45,37 @@ public class Controller {
         this.currentSale = new Sale(itemRegistry);
     }
 
+    /**
+     * Registers an item for sale with its item identifier.
+     * @param itemID Item identifier
+     * @return Sale information as a Data Transfer Object
+     */
     public SaleDTO registerItem(int itemID){
         return registerItem(itemID, 1);
     }
 
+    /**
+     * Registers an item for sale by entering its item identifier and quantity.
+     * @param itemID Item identifier
+     * @return Sale information as a Data Transfer Object
+     */
     public SaleDTO registerItem(int itemID, int quantity){
         currentSale.addItem(itemID, quantity);
         return currentSale.displayOpenSale(display);
     }
 
+    /**
+     * Checkout. Displays the checked out shopping cart.
+     * @return Sale information as a Data Transfer Object
+     */
     public SaleDTO endSale(){
-        currentSale.endSale();
         return currentSale.displayCheckout(display);
     }
 
+    /**
+     * Fetches discount from the discount database and applies it to the sale.
+     * @param customerID
+     */
     public void discountRequest (int customerID){
         DiscountDTO discountDTO = discountRegister.getDiscount(customerID);
         currentSale.applyDiscount(discountDTO);
@@ -78,7 +94,7 @@ public class Controller {
         cashRegister.addPayment(payment);
         saleLog.logSale(currentSale);
         currentSale.updateInventory();
-        accountingSystem.updateToAccountingSystem(currentSale);  // TODO till txt fil?
+        accountingSystem.updateToAccountingSystem(currentSale);
         currentSale.printReceipt(printer);
         currentSale = null;
     }

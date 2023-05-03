@@ -96,17 +96,6 @@ public class Sale {
         return shoppingCart.values();
     }
 
-    // TODO Bör nog ändras. Samma upplägg som Display. Logging kan ske med hjälp av SaleLog.
-    public void endSale(){
-
-        //TODO also do it
-//        Amount totalVATAmount = new Amount(0);
-//        Item[] itemArray = getItemArraySortedByItemName();
-//        List<Amount> vatAmounts = items.values().stream().map(Item::getVatAmount).collect(toList());
-//        totalVATAmount = totalVATAmount.plus(vatAmounts);
-//        return new SaleDTO(runningTotal, itemArray, timeOfSale, totalVATAmount);
-    }
-
     public void applyDiscount(DiscountDTO discount){
         this.discount = discount;
     }
