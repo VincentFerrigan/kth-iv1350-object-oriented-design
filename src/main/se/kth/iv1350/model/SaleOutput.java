@@ -37,6 +37,7 @@ public class SaleOutput {
         builder.append(saleInfo);
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Running total:", saleInfo.getTotalPrice()));
+        builder.append("%-40s%s%n".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
         return builder.toString();
     }
 
@@ -50,7 +51,7 @@ public class SaleOutput {
         builder.append(saleInfo);
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Total Price:", saleInfo.getTotalPrice()));
-        builder.append("%-40s%s%n".formatted("Total VAT:", saleInfo.getTotalVATAmount()));
+        builder.append("%-40s%s%n".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
         return builder.toString();
     }
 
