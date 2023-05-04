@@ -1,7 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.dto.DiscountDTO;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

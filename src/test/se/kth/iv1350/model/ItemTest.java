@@ -4,9 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import se.kth.iv1350.dto.ItemDTO;
-
-import java.time.LocalDateTime;
+import se.kth.iv1350.integration.ItemDTO;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

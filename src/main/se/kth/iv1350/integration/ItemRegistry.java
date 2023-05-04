@@ -1,6 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.dto.ItemDTO;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Item;
 import se.kth.iv1350.model.VAT;
