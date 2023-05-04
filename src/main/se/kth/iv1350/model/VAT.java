@@ -74,4 +74,15 @@ public class VAT {
     public double getVATRate() {
         return vatRate;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof VAT)) return false;
+
+        VAT vat = (VAT) o;
+
+        if (vatRateGroupCode != vat.vatRateGroupCode) return false;
+        return Double.compare(vat.vatRate, vatRate) == 0;
+    }
 }
