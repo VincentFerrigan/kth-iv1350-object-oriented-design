@@ -16,7 +16,7 @@ import java.util.Map;
  * This class is a placeholder for a future external inventory system.
  */
 public class ItemRegistry {
-    private final String CSV_DELIMITER = ";";
+    private static final String CSV_DELIMITER = ";";
     private String recordHeader;
     private final String flatFileDb;
     private final String filePath;
@@ -149,18 +149,22 @@ public class ItemRegistry {
 
         @Override
         public String toString() {
-            String splitCsvBy = ";";
-//            StringBuilder builder = new StringBuilder();
-//            builder.append(articleNo);
-//            builder.append(splitCsvBy);
+            StringBuilder builder = new StringBuilder();
+            builder.append(articleNo);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(name);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(description);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(price.getAmount());
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(vat.getVATRateGroupCode());
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(inStore);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(sold);
 
-            return articleNo + splitCsvBy +
-                    name + splitCsvBy +
-                    description + splitCsvBy +
-                    price.getAmount() + splitCsvBy +
-                    vat.getVATRateGroupCode() + splitCsvBy +
-                    inStore + splitCsvBy +
-                    sold;
+            return builder.toString();
         }
     }
 }
