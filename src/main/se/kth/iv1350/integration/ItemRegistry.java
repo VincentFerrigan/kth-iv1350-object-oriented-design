@@ -1,6 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.dto.ItemDTO;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Item;
 import se.kth.iv1350.model.VAT;
@@ -16,6 +15,8 @@ import java.util.Map;
  * This class is a placeholder for a future external inventory system.
  */
 public class ItemRegistry {
+    private static final String CSV_DELIMITER = ";";
+    private String recordHeader;
     private final String flatFileDb;
     private final String filePath;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
@@ -35,15 +36,14 @@ public class ItemRegistry {
      * Adds items to the hashmap from the flat file database.
      */
     private void addItemData() {
-        String splitCsvBy = ";";
         FileReader reader;
         try{
             reader = new FileReader(this.filePath + this.flatFileDb);
             BufferedReader bufferedReader = new BufferedReader(reader);
             String line = "";
-            line = bufferedReader.readLine();
+            recordHeader = bufferedReader.readLine();
             while((line = bufferedReader.readLine()) != null){
-                String [] splitArray = line.split(splitCsvBy);
+                String [] splitArray = line.split(CSV_DELIMITER);
                 ItemData item = new ItemData(
                         Integer.parseInt(splitArray[0]),    //itemID
                         splitArray[1],                      //name
@@ -96,6 +96,8 @@ public class ItemRegistry {
         try {
             fileWriter = new FileWriter(this.filePath + "inventory_" + LocalDate.now() + ".csv");
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(recordHeader);
+            bufferedWriter.newLine();
             for (ItemData item : inventoryTable.values()) {
                 bufferedWriter.write(item.toString());
                 bufferedWriter.newLine();
@@ -146,18 +148,22 @@ public class ItemRegistry {
 
         @Override
         public String toString() {
-            String splitCsvBy = ";";
-//            StringBuilder builder = new StringBuilder();
-//            builder.append(articleNo);
-//            builder.append(splitCsvBy);
+            StringBuilder builder = new StringBuilder();
+            builder.append(articleNo);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(name);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(description);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(price.getAmount());
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(vat.getVATRateGroupCode());
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(inStore);
+            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(sold);
 
-            return articleNo + splitCsvBy +
-                    name + splitCsvBy +
-                    description + splitCsvBy +
-                    price.getAmount() + splitCsvBy +
-                    vat.getVATRateGroupCode() + splitCsvBy +
-                    inStore + splitCsvBy +
-                    sold;
+            return builder.toString();
         }
     }
 }

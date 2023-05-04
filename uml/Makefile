@@ -1,4 +1,3 @@
-# Please note that one has to add an ouput folder in order for this to work.
 # Define variables
 PLANTUML := java -jar plantuml.jar
 PUML_FILES := $(wildcard *.puml)

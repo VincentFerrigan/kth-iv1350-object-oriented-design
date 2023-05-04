@@ -3,15 +3,14 @@ package se.kth.iv1350.controller;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import se.kth.iv1350.dto.DiscountDTO;
-import se.kth.iv1350.dto.SaleDTO;
+import se.kth.iv1350.integration.DiscountDTO;
+import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.model.Sale;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -94,6 +93,16 @@ class ControllerTest {
         assertNotNull(testRegIDQ, "Item registration did not work");
         assertEquals(QUANTITY, testRegIDQ.getSaleItemsInfo().get(0).getQuantity(),
                 "Item did not have the right quantity when added with quantity.");
+    }
+
+    @Test
+    void testRegisterItemNEW() {
+        controller.startSale();
+        int expectedSingularQuantity = 1;
+
+        SaleItemDTO expResult = new SaleItemDTO(new ItemDTO(0, "", "", new Amount(1.0), new VAT(1)), expectedSingularQuantity, new Amount(1.0 * expectedSingularQuantity));
+        SaleItemDTO result = controller.registerItem(0).getSaleItemsInfo().get(0);
+        assertEquals(expResult, result, "Wrong quantity, expected %d".formatted(expectedSingularQuantity));
     }
 
     @Test

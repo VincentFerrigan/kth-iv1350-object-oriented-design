@@ -1,14 +1,9 @@
 package se.kth.iv1350.model;
 
-import se.kth.iv1350.dto.SaleDTO;
-import se.kth.iv1350.dto.SaleItemDTO;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Contains all the output to the display regarding the current sale.

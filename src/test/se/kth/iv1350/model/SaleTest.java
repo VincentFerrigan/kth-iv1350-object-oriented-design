@@ -4,17 +4,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import se.kth.iv1350.dto.DiscountDTO;
-import se.kth.iv1350.dto.SaleDTO;
-import se.kth.iv1350.dto.SaleItemDTO;
-import se.kth.iv1350.integration.DiscountRegister;
 import se.kth.iv1350.integration.ItemRegistry;
 import se.kth.iv1350.integration.RegisterCreator;
 import se.kth.iv1350.integration.Display;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 

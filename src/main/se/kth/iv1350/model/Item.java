@@ -1,7 +1,9 @@
 package se.kth.iv1350.model;
-import se.kth.iv1350.dto.ItemDTO;
+
+import se.kth.iv1350.integration.ItemDTO;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Contains information about a particular item added to the shopping cart. Contains item information,
@@ -116,15 +118,17 @@ public class Item {
     public String getName() {
         return itemInfo.getName();
     }
-    @Deprecated
+
     @Override
     public boolean equals(Object o) {
-        //TODO DOas väl också i sale?
-        if (o == this) {return true;}
-        Item c = (Item) o;
-        return Integer.compare(this.getItemID(), c.getItemID()) == 0;
-    }
+        if (this == o) return true;
+        if (o == null || !(o instanceof SaleDTO)) return false;
 
+        Item item = (Item) o;
+
+        if (quantity != item.quantity) return false;
+        return itemInfo.equals(item.itemInfo);
+    }
     /**
      * Increment an already added item when it's more than one of the same.
      */

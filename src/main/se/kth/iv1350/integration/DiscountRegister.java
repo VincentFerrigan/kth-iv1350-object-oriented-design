@@ -1,7 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.dto.DiscountDTO;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,6 +12,8 @@ import java.util.Map;
  * This class is a placeholder for a future external discount database.
  */
 public class DiscountRegister {
+    private final String CSV_DELIMITER = ";" ;
+    private String recordHeader;
     private final String flatFileDb;
     private final String filePath;
     private Map<Integer, Discount> discountTable = new HashMap<>(); // TODO bör nog ändras till CustomerDTO där en DiscountDTO ingår
@@ -36,15 +36,14 @@ public class DiscountRegister {
      * Adds discounts to the hashmap from the flat file database.
      */
     private void addDiscount() {
-       String splitCsvBy = ";" ;
         FileReader reader;
         try {
             reader = new FileReader(this.filePath + this.flatFileDb);
             BufferedReader bufferedReader = new BufferedReader(reader);
             String line = "";
-            line = bufferedReader.readLine();
+            recordHeader = bufferedReader.readLine();
             while((line = bufferedReader.readLine()) != null) {
-                String[] splitArray = line.split(splitCsvBy);
+                String[] splitArray = line.split(CSV_DELIMITER);
                 this.discountTable.put(Integer.parseInt(splitArray[0]), Discount.valueOf(splitArray[1]));
             }
         } catch (FileNotFoundException e){

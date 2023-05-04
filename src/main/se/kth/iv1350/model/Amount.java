@@ -101,4 +101,17 @@ public class Amount {
         return String.format(locale, "%,.2f %s",this.amount, this.currency.getSymbol(locale));
     }
     // TODO behövs en override på equal?
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof Amount)) return false;
+
+        Amount amount1 = (Amount) o;
+
+        if (Double.compare(amount1.amount, amount) != 0) return false;
+        if (!currency.equals(amount1.currency)) return false;
+        return locale.equals(amount1.locale);
+    }
 }

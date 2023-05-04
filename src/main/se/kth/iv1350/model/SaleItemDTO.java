@@ -1,6 +1,8 @@
-package se.kth.iv1350.dto;
+package se.kth.iv1350.model;
 
-import se.kth.iv1350.model.Amount;
+import se.kth.iv1350.integration.ItemDTO;
+
+import java.util.Objects;
 
 // TODO ska discountDTO finnas med i SaleDTO och/eller SaleItemDTO?
 
@@ -78,5 +80,17 @@ public class SaleItemDTO {
      */
     public Amount getTotalPrice() {
         return totalPrice;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof SaleItemDTO)) return false;
+
+        SaleItemDTO that = (SaleItemDTO) o;
+
+        if (quantity != that.quantity) return false;
+        if (!(itemInfo.equals(that.itemInfo))) return false;
+        return totalPrice.equals(that.totalPrice);
     }
 }

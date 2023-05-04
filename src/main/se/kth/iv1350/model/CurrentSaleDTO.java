@@ -1,4 +1,4 @@
-package se.kth.iv1350.dto;
+package se.kth.iv1350.model;
 
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Item;

@@ -70,7 +70,7 @@ public class View {
         contr.endSale();
         contr.discountRequest(880822);
         contr.endSale();
-        contr.pay(new Amount(220));
+        contr.pay(new Amount(500));
 
         // SecondSale - with member discount
         contr.startSale();
@@ -83,7 +83,7 @@ public class View {
         contr.endSale();
         contr.discountRequest(810222);
         contr.endSale();
-        contr.pay(new Amount(2220));
+        contr.pay(new Amount(500));
 
         // ThirdSale - without discount
         contr.startSale();
@@ -91,7 +91,7 @@ public class View {
         contr.registerItem(7, 2);
         contr.registerItem(1);
         contr.endSale();
-        contr.pay(new Amount(2220));
+        contr.pay(new Amount(500));
     }
 
 

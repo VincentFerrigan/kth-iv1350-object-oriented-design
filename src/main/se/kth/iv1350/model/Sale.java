@@ -2,12 +2,7 @@ package se.kth.iv1350.model;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import se.kth.iv1350.dto.DiscountDTO;
-import se.kth.iv1350.dto.ItemDTO;
-import se.kth.iv1350.dto.SaleDTO;
-import se.kth.iv1350.integration.Display;
-import se.kth.iv1350.integration.ItemRegistry;
-import se.kth.iv1350.integration.Printer;
+import se.kth.iv1350.integration.*;
 
 import static java.util.stream.Collectors.toList;
 

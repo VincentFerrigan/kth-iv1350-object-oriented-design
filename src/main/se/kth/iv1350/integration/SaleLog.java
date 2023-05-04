@@ -1,5 +1,6 @@
 package se.kth.iv1350.integration;
 
+import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Sale;
 
 import java.util.ArrayList;
@@ -20,5 +21,13 @@ public class SaleLog {
         sales.add(closedSale);
     }
 
-    //TODO get a sale based on some input. Time, Amount, customerID......
+    public List<Sale> findSalesByTotalAmount(Amount totalAmount) {
+        List<Sale> salesWithSpecifiedTotalAmount = new ArrayList<>();
+        for (Sale sale : sales) {
+            if (sale.getRunningTotal().equals(totalAmount)) {
+                salesWithSpecifiedTotalAmount.add(sale);
+            }
+        }
+        return salesWithSpecifiedTotalAmount;
+    }
 }

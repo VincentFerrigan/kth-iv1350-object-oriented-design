@@ -1,7 +1,9 @@
-package se.kth.iv1350.dto;
+package se.kth.iv1350.integration;
 
 import se.kth.iv1350.model.VAT;
 import se.kth.iv1350.model.Amount;
+
+import java.util.Objects;
 
 //TODO @Override toString()?
 // TODO Move to integration layer?
@@ -73,5 +75,19 @@ public class ItemDTO {
      */
     public double getVATRate() {
         return vat.getVATRate();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof ItemDTO)) return false;
+
+        ItemDTO itemDTO = (ItemDTO) o;
+
+        if (itemID != itemDTO.itemID) return false;
+        if (!(name.equals(itemDTO.name))) return false;
+        if (!(description.equals(itemDTO.description))) return false;
+        if (!(price.equals(itemDTO.price))) return false;
+        return vat.equals(itemDTO.vat);
     }
 }

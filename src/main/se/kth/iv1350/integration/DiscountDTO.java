@@ -1,4 +1,4 @@
-package se.kth.iv1350.dto;
+package se.kth.iv1350.integration;
 
 //TODO s:
 // TODO Ska vi ha en customerDTO och customerDb?
@@ -44,5 +44,15 @@ public class DiscountDTO {
      */
     public double getDiscountMultiplier() {
         return 1 - discountRate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof DiscountDTO)) return false;
+
+        DiscountDTO that = (DiscountDTO) o;
+
+        return Double.compare(that.discountRate, discountRate) == 0;
     }
 }
