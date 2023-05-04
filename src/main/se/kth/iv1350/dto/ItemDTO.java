@@ -7,21 +7,21 @@ import se.kth.iv1350.model.Amount;
 // TODO Move to integration layer?
 
 /**
- * Contains information about one particular item.
+ * Contains information about one particular item (as a Data Transfer Object).
  */
 public class ItemDTO {
     private final int itemID; // Alt. a String
     private final String name;
     private final String description;
     private final Amount price;
-    private final VAT vat; // TODO Bättre namn? OBS! Enligt namn convention.
+    private final VAT vat;
 
     /**
      * Creates a new instance representing a particular item.
      *
      * @param itemID            Unique itemID
      * @param name              Item's name
-     * @param description       Item description e.g. xxxx // TODO
+     * @param description       Item description
      * @param price             Price incl. VAT in {@link Amount}
      * @param vat               {@link VAT} (with rate based on VAT Rate Group)
      */

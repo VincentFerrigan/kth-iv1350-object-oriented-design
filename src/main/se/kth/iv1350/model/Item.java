@@ -3,16 +3,29 @@ import se.kth.iv1350.dto.ItemDTO;
 
 import java.time.LocalDateTime;
 
+/**
+ * Contains information about a particular item added to the shopping cart. Contains item information,
+ * quantity and time of update.
+ */
 public class Item {
     private final ItemDTO itemInfo;
     private LocalDateTime timeOfUpdate;
     private int quantity;
 
+    /**
+     * Creates a new instance representing the added item.
+     * @param item Item information as a {@link ItemDTO}
+     * @param quantity The quantity
+     */
     public Item(ItemDTO item, int quantity){
         this.timeOfUpdate = LocalDateTime.now();
         this.itemInfo = item;
         this.quantity = quantity;
     }
+    /**
+     * Creates a new instance representing the added item.
+     * @param item Item information as a {@link ItemDTO}
+     */
     public Item(ItemDTO item){
         this(item, 1);
     }
@@ -25,47 +38,81 @@ public class Item {
         }
     }
     /**
-     * Sets the quantity of items with same ID number.
-     * @param   quantity    nbr of items
+     * Set the quantity.
+     * @param  quantity nbr of items.
      */
     public void setQuantity(int quantity){
         this.timeOfUpdate = LocalDateTime.now();
         this.quantity = quantity;
     }
 
+    /**
+     * Add quantity to item.
+     * @param additionalQuantity
+     */
     public void addToQuantity(int additionalQuantity){
         this.timeOfUpdate = LocalDateTime.now();
         this.quantity += additionalQuantity;
     }
 
-    // Getters
+    /**
+     * Get time of update
+     * @return time of update
+     */
     public LocalDateTime getTimeOfUpdate() {
         return timeOfUpdate;
     }
+
+    /**
+     * Get item data information as {@link ItemDTO}
+     * @return The item data information as {@link ItemDTO}
+     */
     public ItemDTO getItemDTO() {
         return itemInfo;
     }
 
+    /**
+     * Get the item identifier
+     * @return the item identifier
+     */
     public int getItemID() {
         return itemInfo.getItemID();
     }
 
+    /**
+     * Get the quantity of the particular item.
+     * @return quantity of the particular item
+     */
     public int getQuantity() {
         return quantity;
     }
 
-    /**
-     * Returns the total amount i.e. the item price x quantity.
+     /**
+     * Get the total price as {@link Amount} i.e. quantity x unit price
+     * @return the total price for all the same items.
      */
     public Amount getTotalPrice() {
         return getUnitPrice().multiply(quantity);
     }
+
+    /**
+     * Get the total VAT as {@link Amount}.
+     * @return the total VAT
+     */
     public Amount getVatAmount() {
         double vatRate = itemInfo.getVATRate();
         return getTotalPrice().multiply(vatRate);
     }
+    /**
+     * Get the unit price
+     * @return the unit price
+     */
     public Amount getUnitPrice() {return itemInfo.getUnitPrice();}
 
+    /**
+     * Get the name of the item
+     * @return the name of the item
+     */
     public String getName() {
         return itemInfo.getName();
     }
@@ -78,7 +125,6 @@ public class Item {
         return Integer.compare(this.getItemID(), c.getItemID()) == 0;
     }
 
-    // Eventuellt för salelog/sales
     /**
      * Increment an already added item when it's more than one of the same.
      */
@@ -88,7 +134,9 @@ public class Item {
         this.quantity++;
     }
 
-    // Eventuellt för när vi uppdaterar inventory.
+    /**
+     * Decrement an already added item when it's more than one of the same.
+     */
     @Deprecated
     public void decrement(){
         //TODO denna används väl inte?

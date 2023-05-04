@@ -27,8 +27,4 @@ public class Printer {
         System.out.println("------------------ End of receipt ----------------");
 
     }
-    public void printSaleLog(SaleLog saleLog) {
-        // TODO
-    }
-
 }

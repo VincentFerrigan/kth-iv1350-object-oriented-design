@@ -30,14 +30,15 @@ public class DiscountDTO {
 
     /**
      * Get the discount rate
-     * @return the discount rate as float number
+     * @return the discount rate as a floating point number.
      */
     public double getDiscountRate(){
         return discountRate;
     }
 
     /**
-     * Get the discount multiplier i.e. 1 subtracted by the discount rate (in float number)
+     * Get the discount multiplier i.e. 1 subtracted by the discount rate
+     * (as a floating point number).
      * It is used when applying the discount on a particular sale.
      * @return 1 subtracted by the discount rate.
      */

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 /**
  * Represents the external accounting system.
+ * This class is a placeholder for a future external accounting system.
  */
 public class AccountingSystem {
     private final String flatFileDb;

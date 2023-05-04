@@ -36,11 +36,4 @@ public class Display {
         System.out.println(saleOutput.createCheckoutString());
         System.out.println("---------------- End of End of Sale --------------");
     }
-
-    public void displaySaleLog(SaleOutput saleOutput) {
-        // TODO
-    }
-    public void displaySaleLog(SaleLog saleLog) {
-        // TODO
-    }
 }

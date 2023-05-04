@@ -9,7 +9,7 @@ import java.util.Locale;
  */
 public class Amount {
     private final Currency currency;
-    Locale locale;
+    private Locale locale;
     private final double amount;
 
     /**
@@ -37,7 +37,6 @@ public class Amount {
         this.amount = another.amount;
     }
 
-
     /**
      * Subtracts the specified {@link Amount} from
      * this object and returns an {@link Amount}
@@ -64,7 +63,15 @@ public class Amount {
         return new Amount(amount + other.amount);
     }
 
-    // TODO testa då jag är osäker. Annars får man göra en statisk metod som summerar en lista istället.
+    /**
+     * Adds the list of {@link Amount} to
+     * this object and returns an {@link Amount}
+     * instance with the result.
+     * The operation will overflow if the result
+     * is larger than <code>Integer.MAX_VALUE</code>.
+     * @param amounts The <code>List</code> of <code><Amount></code> to add.
+     * @return The result of the addition.
+     */
     public Amount plus(List<Amount> amounts) {
         return new Amount(amounts.stream().reduce(this, Amount::plus));
     }
@@ -82,6 +89,11 @@ public class Amount {
     public Amount multiply(double multiplier) {
         return new Amount(multiplier * amount);
     }
+
+    /**
+     * Get the amount as floating point number.
+     * @return the amount as a floating point number.
+     */
     public Double getAmount() {return amount;}
 
     @Override

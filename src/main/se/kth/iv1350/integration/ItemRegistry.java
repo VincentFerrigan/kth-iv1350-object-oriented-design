@@ -11,15 +11,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents an external inventory system. Contains all the item data that are stored in the store.
+ * This class is a placeholder for a future external inventory system.
+ */
 public class ItemRegistry {
     private final String flatFileDb;
     private final String filePath;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
 
     /**
-     *
-     * @param filePath relative file path
-     * @param fileName filename
+     * Creates a new instance of an inventory system as {@link ItemRegistry}.
+     * @param filePath relative file path to the flat file database (csv)
+     * @param fileName filename of the flat file database (csv)
      */
     ItemRegistry(String filePath, String fileName) {
         // TODO ska vi flytta ut hela inläsningsprocessen till en separat metod????
@@ -27,6 +31,9 @@ public class ItemRegistry {
         this.flatFileDb = fileName;
         addItemData();
     }
+    /**
+     * Adds items to the hashmap from the flat file database.
+     */
     private void addItemData() {
         String splitCsvBy = ";";
         FileReader reader;
@@ -59,8 +66,8 @@ public class ItemRegistry {
 
     /**
      *
-     * @param  articleNo The items unique article number.
-     * @return Item information in a Data Transfer Object.
+     * @param  articleNo The items unique article number a.k.a item identifier.
+     * @return Item information as a {@link ItemDTO}.
      */
     public ItemDTO getItemInfo(int articleNo){
         ItemData item = this.inventoryTable.get(articleNo);
@@ -68,6 +75,10 @@ public class ItemRegistry {
                 item.articleNo, item.name, item.description, item.price, item.vat);
     }
 
+    /**
+     * Updates the inventory system by adding the bag of items sold as a collection of {@Item}
+     * @param items The bag (collection) of items sold
+     */
     public void updateInventory(Collection<Item> items){
         for (Item item : items) {
             int key = item.getItemID();
@@ -77,14 +88,15 @@ public class ItemRegistry {
         updateDatabase();
     }
 
+    /**
+     * Update database by writing to the flat file database
+     */
     private void updateDatabase() {
         FileWriter fileWriter;
         try {
             fileWriter = new FileWriter(this.filePath + "inventory_" + LocalDate.now() + ".csv");
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-//            bufferedWriter.write("test;test;");
             for (ItemData item : inventoryTable.values()) {
-//                bufferedWriter.write(String.valueOf(item));
                 bufferedWriter.write(item.toString());
                 bufferedWriter.newLine();
             }
@@ -97,10 +109,6 @@ public class ItemRegistry {
         } catch (IOException e){
             System.out.println("IOE exception");
             e.printStackTrace();
-//        } finally {
-//            try {
-//                buffered
-//            }
         }
     }
 
