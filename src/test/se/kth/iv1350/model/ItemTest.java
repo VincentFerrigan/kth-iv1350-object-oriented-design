@@ -14,31 +14,19 @@ class ItemTest {
     private Item testItem;
     private final ItemDTO ITEM_INFO = new ItemDTO(3, "Jordgubbe", "", new Amount(15), new VAT(1));
     private final int QUANTITY = 5;
-    Object a;
-    Object b;
-    Object c;
-    Object d;
+
     @BeforeEach
     void setUp() {
         testItem = new Item(this.ITEM_INFO, QUANTITY);
-        a = 2;
-        b = 2;
-        c = 3;
-        d = null;
-
     }
 
     @AfterEach
     void tearDown() {
         testItem = null;
-        a = null;
-        b = null;
-        c = null;
     }
-
+    @Disabled
     @Test
     void testAddItem() {
-        //TODO or not TODO
     }
 
     @Test
@@ -60,42 +48,12 @@ class ItemTest {
     @Disabled
     @Test
     void testEquals() {
+        Item a = new Item(ITEM_INFO);
+        Item b = new Item(ITEM_INFO,2);
         boolean expResult = true;
         boolean result =  a.equals(b);
         assertEquals(expResult,result,"Objects not equal");
     }
-    @Disabled
-    @Test
-    void testNotEqual() {
-        boolean expResult = false;
-        boolean result =  a.equals(c);
-        assertEquals(expResult,result,"Objects are equal");
-    }
-    @Disabled
-    @Test
-    void testEqualsNull() {
-        boolean expResult = false;
-        boolean result = a.equals(d);
-        assertEquals(expResult,result,"insance equals null");
-    }
-    @Disabled
-    @Test
-    void testEqualsJavaLangObject() {
-        Object other = new Object();
-        boolean expResult = false;
-        boolean result = other.equals(testItem);
-        assertEquals(expResult,result,"insance equal java lang Object");
-    }
-
-    @Disabled
-    @Test
-    void testNotEqualNoArgConstr() {
-        Object other = new Object();
-        boolean expResult = false;
-        boolean result = other.equals(d);
-        assertEquals(expResult,result,"insance with different states is equal");
-    }
-
 
     @Disabled
     @Test
@@ -109,6 +67,9 @@ class ItemTest {
     @Disabled
     @Test
     void testDecrement() {
-        //TODO or not TODO
+        int decrementedAmount = QUANTITY - 1;
+        testItem.increment();
+        assertEquals(decrementedAmount, testItem.getQuantity(),
+                "Item did not have correct quantity when decremented.");
     }
 }

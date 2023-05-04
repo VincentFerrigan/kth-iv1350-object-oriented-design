@@ -18,7 +18,7 @@ package se.kth.iv1350.model;
  *  passenger transport (taxis, buses, flights and trains) in Sweden and concerts.
  */
 public class VAT {
-//    private String countryCode; // If the POS wants to go global.
+//    private Locale locale; // If the POS wants to go global. (<3/e)
     private int vatRateGroupCode;
     private double vatRate;
 
@@ -59,10 +59,18 @@ public class VAT {
         this(1);
     }
 
+    /**
+     * Get the code for the VAT rate group.
+     * @return The code for the VAT rate group.
+     */
     public int getVATRateGroupCode() {
         return vatRateGroupCode;
     }
 
+    /**
+     * Get VAT rate
+     * @return The VAT rate.
+     */
     public double getVATRate() {
         return vatRate;
     }
