@@ -16,6 +16,8 @@ import java.util.Map;
  * This class is a placeholder for a future external inventory system.
  */
 public class ItemRegistry {
+    private final String CSV_DELIMITER = ";";
+    private String recordHeader;
     private final String flatFileDb;
     private final String filePath;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
@@ -35,15 +37,14 @@ public class ItemRegistry {
      * Adds items to the hashmap from the flat file database.
      */
     private void addItemData() {
-        String splitCsvBy = ";";
         FileReader reader;
         try{
             reader = new FileReader(this.filePath + this.flatFileDb);
             BufferedReader bufferedReader = new BufferedReader(reader);
             String line = "";
-            line = bufferedReader.readLine();
+            recordHeader = bufferedReader.readLine();
             while((line = bufferedReader.readLine()) != null){
-                String [] splitArray = line.split(splitCsvBy);
+                String [] splitArray = line.split(CSV_DELIMITER);
                 ItemData item = new ItemData(
                         Integer.parseInt(splitArray[0]),    //itemID
                         splitArray[1],                      //name
@@ -96,6 +97,8 @@ public class ItemRegistry {
         try {
             fileWriter = new FileWriter(this.filePath + "inventory_" + LocalDate.now() + ".csv");
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(recordHeader);
+            bufferedWriter.newLine();
             for (ItemData item : inventoryTable.values()) {
                 bufferedWriter.write(item.toString());
                 bufferedWriter.newLine();

@@ -11,6 +11,8 @@ import java.time.LocalDate;
  * This class is a placeholder for a future external accounting system.
  */
 public class AccountingSystem {
+    private final String CSV_DELIMITER = ";";
+    private String recordHeader;
     private final String flatFileDb;
     private final String filePath;
 
@@ -25,7 +27,29 @@ public class AccountingSystem {
     AccountingSystem(String filePath, String fileName) {
         this.filePath = filePath;
         this.flatFileDb = fileName;
-        String splitCsvBy = ";";
+        addRecord();
+    }
+
+    private void addRecord() {
+        FileReader reader;
+        try {
+            reader = new FileReader(this.filePath + this.flatFileDb);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String line = "";
+            recordHeader = bufferedReader.readLine();
+            if ((line = bufferedReader.readLine()) != null) {
+                String[] splitArray = line.split(CSV_DELIMITER);
+                totalSale = new Amount(Double.parseDouble(splitArray[1]));
+                vat = new Amount(Double.parseDouble(splitArray[1]));
+            }
+        } catch(FileNotFoundException e){
+            System.out.println("The file was not found");
+            e.printStackTrace(); //Skriver ut vart felet var någonstans.
+
+        } catch(IOException e){
+            System.out.println("IOE exception");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -46,8 +70,10 @@ public class AccountingSystem {
         try {
             fileWriter = new FileWriter(this.filePath + "accounting" + LocalDate.now() + ".csv");
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(String.valueOf(totalSale));
+            bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
+            bufferedWriter.write(String.valueOf(totalSale));
+            bufferedWriter.write(CSV_DELIMITER);
             bufferedWriter.write(String.valueOf(vat));
             bufferedWriter.flush();
             bufferedWriter.close();

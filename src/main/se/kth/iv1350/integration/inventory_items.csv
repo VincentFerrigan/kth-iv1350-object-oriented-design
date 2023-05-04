@@ -1,4 +1,4 @@
-itemID;name;description;price;vatRateGroupCode;quantity
+ITEM ID;NAME;DESCRIPTION;PRICE;VAT RATE GROUP CODE;IN STORE;SOLD
 1;Banana;Dole, organic;5;2;10;0
 2;Apple;Eva-Marie, organic;4;2;20;0
 3;Coffe;Johan & Nyström;80;2;50;0
