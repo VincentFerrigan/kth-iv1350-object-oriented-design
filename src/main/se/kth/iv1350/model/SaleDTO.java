@@ -1,6 +1,6 @@
-package se.kth.iv1350.dto;
+package se.kth.iv1350.model;
 import java.util.List;
-import se.kth.iv1350.model.Amount;
+import java.util.Objects;
 
 
 // TODO ska discountDTO finnas med i SaleDTO och/eller SaleItemDTO?
@@ -69,4 +69,18 @@ public class SaleDTO {
         }
         return builder.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SaleDTO saleDTO = (SaleDTO) o;
+
+        if (!Objects.equals(saleItemsInfo, saleDTO.saleItemsInfo))
+            return false;
+        if (!Objects.equals(totalPrice, saleDTO.totalPrice)) return false;
+        return Objects.equals(totalVATAmount, saleDTO.totalVATAmount);
+    }
+
 }
