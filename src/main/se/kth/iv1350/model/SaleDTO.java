@@ -73,14 +73,12 @@ public class SaleDTO {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof SaleDTO)) return false;
 
         SaleDTO saleDTO = (SaleDTO) o;
 
-        if (!Objects.equals(saleItemsInfo, saleDTO.saleItemsInfo))
-            return false;
-        if (!Objects.equals(totalPrice, saleDTO.totalPrice)) return false;
-        return Objects.equals(totalVATAmount, saleDTO.totalVATAmount);
+        if (!(saleItemsInfo.equals(saleDTO.saleItemsInfo))) return false;
+        if (!(totalPrice.equals(saleDTO.totalPrice))) return false;
+        return totalVATAmount.equals(saleDTO.totalVATAmount);
     }
-
 }

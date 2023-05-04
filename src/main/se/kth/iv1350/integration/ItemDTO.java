@@ -80,14 +80,14 @@ public class ItemDTO {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof ItemDTO)) return false;
 
         ItemDTO itemDTO = (ItemDTO) o;
 
         if (itemID != itemDTO.itemID) return false;
-        if (!Objects.equals(name, itemDTO.name)) return false;
-        if (!Objects.equals(description, itemDTO.description)) return false;
-        if (!price.equals(itemDTO.price)) return false;
-        return Objects.equals(vat, itemDTO.vat);
+        if (!(name.equals(itemDTO.name))) return false;
+        if (!(description.equals(itemDTO.description))) return false;
+        if (!(price.equals(itemDTO.price))) return false;
+        return vat.equals(itemDTO.vat);
     }
 }

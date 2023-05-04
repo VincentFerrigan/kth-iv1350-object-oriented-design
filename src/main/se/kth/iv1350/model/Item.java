@@ -122,14 +122,13 @@ public class Item {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof SaleDTO)) return false;
 
         Item item = (Item) o;
 
         if (quantity != item.quantity) return false;
-        return Objects.equals(itemInfo, item.itemInfo);
+        return itemInfo.equals(item.itemInfo);
     }
-
     /**
      * Increment an already added item when it's more than one of the same.
      */
