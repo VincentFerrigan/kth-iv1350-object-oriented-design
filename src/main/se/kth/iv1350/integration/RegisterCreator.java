@@ -1,7 +1,9 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.util.LogHandler;
 
+import se.kth.iv1350.util.LogHandler;
+import se.kth.iv1350.model.CashRegister;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**

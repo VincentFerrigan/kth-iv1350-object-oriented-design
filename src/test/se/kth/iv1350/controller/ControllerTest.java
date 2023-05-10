@@ -7,7 +7,6 @@ import se.kth.iv1350.integration.DiscountDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.util.LogHandler;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
