@@ -10,18 +10,11 @@ import static java.util.stream.Collectors.toList;
  * Represents a particular sale.
  */
 public class Sale {
-    // ska timeOfSale vara final?
     private LocalDateTime timeOfSale;
-    private Map<Integer, Item> shoppingCart = new HashMap<>(); // TODO Ändra namn till shoppingCart?
+    private Map<Integer, Item> shoppingCart = new HashMap<>();
     private CashPayment payment;
-
     private DiscountDTO discount = new DiscountDTO();
-
-    // TODO ska ett discount attribute finnas med i både sale och saleDTO?
-    // TODO Ska den vara en tabell av rabatter, procentssats, belopp eller själva discountDTO?
-    // TODO Total cost - Total discount = total price? (Per vara eller hela försäljningen?)
-
-    private ItemRegistry itemRegistry; // För att kunna plocka från "lagret". Men då måste 'is' skickas med från kontrollern när Sale instansieras.
+    private ItemRegistry itemRegistry;
 
     /**
      * Creates a new instance, representing a sale made by a customer.
@@ -52,35 +45,8 @@ public class Sale {
      * Adds an item to the shopping cart.
      * @param itemID The item identifier.
      */
-    @Deprecated
     public void addItem(int itemID) {
         addItem(itemID, 1);
-    }
-
-    /**
-     * Adds an item to the shopping cart.
-     * @param itemInfo Item information as an {@link ItemDTO}.
-     * @param quantity The item
-     */
-    @Deprecated
-    public void addItem(ItemDTO itemInfo, int quantity){
-        Item item = new Item(itemInfo, quantity);
-
-        int key = itemInfo.getItemID(); // TODO hämta nyckeln från itemInfo eller additionalItem?
-        if (shoppingCart.containsKey(key)){
-            this.shoppingCart.get(key).addItem(item);
-        } else {
-            shoppingCart.put(key, item);
-        }
-    }
-
-    /**
-     * Adds an item to the shopping cart.
-     * @param itemInfo Item information as an {@link ItemDTO}.
-     */
-    @Deprecated
-    public void addItem(ItemDTO itemInfo){
-        addItem(itemInfo, 1);
     }
 
     /**

@@ -1,12 +1,5 @@
 package se.kth.iv1350.integration;
 
-//TODO s:
-// TODO Ska vi ha en customerDTO och customerDb?
-// TODO Move to integration layer.
-// TODO ska ett discount attribute finnas med i både sale och saleDTO?
-// TODO Ska den vara en tabell av rabatter, procentssats, belopp eller själva discountDTO?
-// TODO Total cost - Total discount = total price? (Per vara eller hela försäljningen?)
-
 /**
  * Contains information about one particular discount
  */
