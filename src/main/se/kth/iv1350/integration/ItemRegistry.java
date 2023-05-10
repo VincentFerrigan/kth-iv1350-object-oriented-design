@@ -26,7 +26,7 @@ public class ItemRegistry {
      * @param filePath relative file path to the flat file database (csv)
      * @param fileName filename of the flat file database (csv)
      */
-    ItemRegistry(String filePath, String fileName) {
+    ItemRegistry(String filePath, String fileName) throws IOException {
         // TODO ska vi flytta ut hela inläsningsprocessen till en separat metod????
         this.filePath = filePath;
         this.flatFileDb = fileName;
@@ -35,11 +35,9 @@ public class ItemRegistry {
     /**
      * Adds items to the hashmap from the flat file database.
      */
-    private void addItemData() {
-        FileReader reader;
-        try{
-            reader = new FileReader(this.filePath + this.flatFileDb);
-            BufferedReader bufferedReader = new BufferedReader(reader);
+    private void addItemData () throws IOException {
+        try (FileReader reader = new FileReader(this.filePath + this.flatFileDb);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
             recordHeader = bufferedReader.readLine();
             while((line = bufferedReader.readLine()) != null){
@@ -54,13 +52,12 @@ public class ItemRegistry {
                         Integer.parseInt(splitArray[6]));   //quantity
                 this.inventoryTable.put(item.articleNo, item);
             }
-        } catch (FileNotFoundException e){
-            System.out.println("The file was not found");
-            e.printStackTrace(); //Skriver ut vart felet var någonstans.
-
         } catch (IOException e){
+            // TODO. Logga här, catch och rethrow eller ingen try catch alls?
             System.out.println("IOE exception");
+            // Logga här?
             e.printStackTrace();
+            throw e;
         }
     }
 
@@ -92,10 +89,8 @@ public class ItemRegistry {
      * Update database by writing to the flat file database
      */
     private void updateDatabase() {
-        FileWriter fileWriter;
-        try {
-            fileWriter = new FileWriter(this.filePath + "inventory_" + LocalDate.now() + ".csv");
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        try (FileWriter fileWriter = new FileWriter(this.filePath + "inventory_" + LocalDate.now() + ".csv");
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
             for (ItemData item : inventoryTable.values()) {
@@ -103,7 +98,6 @@ public class ItemRegistry {
                 bufferedWriter.newLine();
             }
             bufferedWriter.flush();
-            bufferedWriter.close();
         } catch (FileNotFoundException e){
             System.out.println("The file was not found");
             e.printStackTrace(); //Skriver ut vart felet var någonstans.
