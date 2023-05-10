@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import se.kth.iv1350.integration.ItemRegistry;
 import se.kth.iv1350.integration.RegisterCreator;
 import se.kth.iv1350.integration.Display;
+import util.LogHandler;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,9 +22,14 @@ class SaleTest {
     @BeforeEach
     void setUp() {
         //addItem
-        registries = new RegisterCreator();
-        itemRegistry = registries.getInventorySystem();
-        sale = new Sale(itemRegistry);
+        try {
+            registries = new RegisterCreator(new LogHandler());
+            itemRegistry = registries.getInventorySystem();
+            sale = new Sale(itemRegistry);
+        } catch (IOException ex) {
+            System.out.println("Unable to set up SaleTest");
+            ex.printStackTrace();
+        }
 
         //applyDiscount
 //          RegisterCreator disReg = new RegisterCreator();

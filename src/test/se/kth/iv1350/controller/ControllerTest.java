@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import se.kth.iv1350.integration.DiscountDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
+import util.LogHandler;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,22 +39,26 @@ class ControllerTest {
 
     @BeforeEach
     void setUp() {
-        registerCreator = new RegisterCreator();
-        itemRegistry = registerCreator.getInventorySystem();
-        testSale = new Sale(itemRegistry);
-        discountRegister = registerCreator.getDiscountRegister();
-        printer = new Printer();
-        display = new Display();
-        controller = new Controller(printer, display, registerCreator);
-        testRegID = null;
-        testRegIDQ = null;
-        currentSale = null;
-        originalSysOut = System.out;
-        outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-        paidAmount = new Amount(1000);
+        try {
+            registerCreator = new RegisterCreator(new LogHandler());
+            itemRegistry = registerCreator.getInventorySystem();
+            testSale = new Sale(itemRegistry);
+            discountRegister = registerCreator.getDiscountRegister();
+            printer = new Printer();
+            display = new Display();
+            controller = new Controller(printer, display, registerCreator);
+            testRegID = null;
+            testRegIDQ = null;
+            currentSale = null;
+            originalSysOut = System.out;
+            outContent = new ByteArrayOutputStream();
+            System.setOut(new PrintStream(outContent));
+            paidAmount = new Amount(1000);
+        } catch (IOException ex)  {
+            System.out.println("Unable to set up the ControllerTest");
+            ex.printStackTrace();
+        }
     }
-
     @AfterEach
     void tearDown() {
         registerCreator = null;
