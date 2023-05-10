@@ -2,7 +2,7 @@ package se.kth.iv1350.view;
 
 import se.kth.iv1350.controller.Controller;
 import se.kth.iv1350.model.Amount;
-import util.LogHandler;
+import se.kth.iv1350.util.LogHandler;
 
 import java.util.Scanner;
 
