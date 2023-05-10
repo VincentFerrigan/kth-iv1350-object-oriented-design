@@ -45,11 +45,14 @@ public class Controller {
     }
 
     /**
-     * Registers an item for sale with its item identifier.
+     * Registers an item for sale with its item identifier and adds quantity 1.
      * @param itemID Item identifier.
      * @return Sale information as a Data Transfer Object.
+     * @throws ItemNotFoundException when item ID does not exist in inventory
+     * @throws OperationFailedException when there is a fail with inventory system
      */
-    public SaleDTO registerItem(int itemID){
+    //TODO ILLEGAL SMEAGAL
+    public SaleDTO registerItem(int itemID) throws OperationFailedException, ItemNotFoundException {
         return registerItem(itemID, 1);
     }
 
@@ -58,9 +61,20 @@ public class Controller {
      * @param itemID The item identifier.
      * @param quantity The item quantity.
      * @return Sale information as a Data Transfer Object.
+     * @throws ItemNotFoundException when item ID does not exist in inventory
+     * @throws OperationFailedException when there is a fail with inventory system
      */
-    public SaleDTO registerItem(int itemID, int quantity){
-        currentSale.addItem(itemID, quantity);
+    //TODO ILLEGAL SMEAGAL
+    public SaleDTO registerItem(int itemID, int quantity) throws ItemNotFoundException, OperationFailedException {
+        if(itemID < 0){
+            throw new IllegalArgumentException("ItemID has to be a positive int.");
+        }
+        try {
+            currentSale.addItem(itemID, quantity);
+        } catch (InventorySystemException itmRegExc) {
+            //logger.logException(itmRegExc); //TODO add this
+            throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
+        }
         return currentSale.displayOpenSale(display);
     }
 

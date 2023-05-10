@@ -62,14 +62,23 @@ public class ItemRegistry {
     }
 
     /**
-     *
-     * @param  articleNo The items unique article number a.k.a item identifier.
+     * Searches for item in the inventory system with specified ID.
+     * @param  itemID The items unique article number a.k.a item identifier.
      * @return Item information as a {@link ItemDTO}.
+     * @throws ItemNotFoundException when item ID does not exist in inventory.
+     * @throws InventorySystemException when database call failed.
      */
-    public ItemDTO getItemInfo(int articleNo){
-        ItemData item = this.inventoryTable.get(articleNo);
-        return new ItemDTO(
-                item.articleNo, item.name, item.description, item.price, item.vat);
+    //TODO Are we supposed to throw InventorySystemException as well with method?
+    public ItemDTO getItemInfo(int itemID) throws ItemNotFoundException {
+        if (itemID == DATABASE_NOT_FOUND) {
+            throw new InventorySystemException("Detailed message about database fail");
+        } else if (inventoryTable.containsKey(itemID)) {
+            ItemData item = this.inventoryTable.get(itemID);
+            return new ItemDTO(
+                    item.articleNo, item.name, item.description, item.price, item.vat);
+        } else {
+            throw new ItemNotFoundException(itemID);
+        }
     }
 
     /**
@@ -79,7 +88,7 @@ public class ItemRegistry {
     public void updateInventory(Collection<Item> items){
         for (Item item : items) {
             int key = item.getItemID();
-            inventoryTable.get(key).sold = (item.getQuantity()); // TODO alt. ta bort och ha enbart inStore?
+            inventoryTable.get(key).sold = (item.getQuantity());
             inventoryTable.get(key).inStore -= (item.getQuantity());
         }
         updateDatabase();

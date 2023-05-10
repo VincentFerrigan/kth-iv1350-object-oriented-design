@@ -29,8 +29,10 @@ public class Sale {
      * Adds an item to the shopping cart.
      * @param itemID The item identifier.
      * @param quantity The item quantity.
+     * @throws ItemNotFoundException when item ID does not exist in inventory
+     * @throws InventorySystemException when there is an unknown fail with inventory system
      */
-    public void addItem(int itemID, int quantity) {
+    public void addItem(int itemID, int quantity) throws ItemNotFoundException {
         if (shoppingCart.containsKey(itemID)) {
             this.shoppingCart.get(itemID).addToQuantity(quantity);
         }
@@ -45,7 +47,7 @@ public class Sale {
      * Adds an item to the shopping cart.
      * @param itemID The item identifier.
      */
-    public void addItem(int itemID) {
+    public void addItem(int itemID) throws ItemNotFoundException {
         addItem(itemID, 1);
     }
 

@@ -7,8 +7,6 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
-// TODO package private kontruktor och final attribute?
-
 /**
  * The receipt of a sale
  */
