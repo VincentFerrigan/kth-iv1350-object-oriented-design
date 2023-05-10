@@ -31,7 +31,7 @@ public class View {
      * in all possible ways.
      */
     //TODO Make this pretty again
-    public void hardkodadegrejer() throws OperationFailedException, ItemNotFoundException {
+    public void harKodadeGrejer() throws OperationFailedException, ItemNotFoundException {
         try{
             // FirstSale: with itemID 404 for exception handling - with staff discount, not yet implemented
             contr.startSale();
