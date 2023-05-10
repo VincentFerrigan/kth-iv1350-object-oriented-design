@@ -207,7 +207,7 @@ Sale --> Item
 @enduml
 
 @startuml
-title DTO
+'title DTO
 ' //TODO Ska vi ha en customerDTO och customerDb?
 hide circle
 skinparam ClassAttributeIconSize 0
@@ -246,10 +246,10 @@ skinparam package {
             +<<create>>DiscountDTO(discountRate : Double) : DiscountDTO
             + getDiscountRate() : double
             + getDiscountMultiplier() : double
+'        note bottom : Attributes TBD based on Discount Rules.
         }
-        note right : Attributes TBD based on Discount Rules.
     }
-note left : getters are included as methods for all DTO attributes
+note top: getters, toString and equals are included as methods for all DTO attributes
 @enduml
 
 @startuml
@@ -331,7 +331,7 @@ skinparam style strictuml
 'autoactivate on 'TODO activationbars!!!!!!!
 ' actor user
 hide unlinked
-title "startSale"
+'title "startSale"
 participant ":View" as View
 participant "contr:Controller" as contr
 participant "currentSale:Sale" as currentSale
@@ -353,7 +353,7 @@ autonumber stop
 @startuml
 skinparam style strictuml
 
-title registerItem
+'title registerItem
 'REGISTERITEM
 hide unlinked
 participant ":View" as View
@@ -454,7 +454,7 @@ autonumber stop
 
 @startuml
 skinparam style strictuml
-title EndSale
+'title EndSale
 
 participant ":View" as View
 participant "contr:Controller" as contr
@@ -494,7 +494,7 @@ autonumber stop
 
 @startuml
 skinparam style strictuml
-title discountRequest
+'title discountRequest
 
 participant ":View" as View
 participant "contr:Controller" as contr
@@ -524,7 +524,7 @@ autonumber stop
 
 @startuml
 skinparam style strictuml
-title addPayment
+'title addPayment
 
 participant ":View" as View
 participant "contr:Controller" as contr
