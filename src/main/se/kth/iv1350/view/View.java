@@ -2,6 +2,7 @@ package se.kth.iv1350.view;
 
 import se.kth.iv1350.controller.Controller;
 import se.kth.iv1350.model.Amount;
+import util.LogHandler;
 
 import java.util.Scanner;
 
@@ -11,6 +12,7 @@ import java.util.Scanner;
  */
 public class View {
     private Controller contr;
+    private LogHandler logger;
 
     private Scanner input = new Scanner(System.in);
 
@@ -19,6 +21,14 @@ public class View {
     // 3. Hårdkodade
 
 // 3.
+    /**
+     * Creates a new instance.
+     * @param contr The Controller to use for all calls to other layers.
+     */
+    public View(Controller contr, LogHandler logger) {
+        this.contr = contr;
+        this.logger = logger;
+    }
 
     /**
      * Manual tests in the form of a prompt.
@@ -58,7 +68,7 @@ public class View {
      * Simulates a user input that generates calls to all system operations,
      * in all possible ways.
      */
-    public void hardkodadegrejer() {
+    public void hardKodadeGrejer() {
         // FirstSale - with staff discount, not yet implemented
         contr.startSale();
         contr.registerItem(5);
@@ -95,13 +105,6 @@ public class View {
     }
 
 
-    /**
-     * Creates a new instance.
-     * @param contr The Controller to use for all calls to other layers.
-     */
-    public View(Controller contr) {
-        this.contr = contr;
-    }
 
     /**
      * Performs a fake sale by calling all system operations in the controller.
