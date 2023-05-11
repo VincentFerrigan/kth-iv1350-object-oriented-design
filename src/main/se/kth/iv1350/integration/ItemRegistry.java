@@ -67,12 +67,12 @@ public class ItemRegistry {
      * @param  itemID The items unique article number a.k.a item identifier.
      * @return Item information as a {@link ItemDTO}.
      * @throws ItemNotFoundException when item ID does not exist in inventory.
-     * @throws InventorySystemException when database call failed.
+     * @throws ItemRegistryException when database call failed.
      */
-    //TODO Are we supposed to throw InventorySystemException as well with method?
+    //TODO Are we supposed to throw ItemRegistryException as well with method?
     public ItemDTO getItemInfo(int itemID) throws ItemNotFoundException {
         if (itemID == DATABASE_NOT_FOUND) {
-            throw new InventorySystemException("Detailed message about database fail");
+            throw new ItemRegistryException("Detailed message about database fail");
         } else if (inventoryTable.containsKey(itemID)) {
             ItemData item = this.inventoryTable.get(itemID);
             return new ItemDTO(
