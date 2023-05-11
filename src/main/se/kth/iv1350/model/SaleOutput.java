@@ -64,6 +64,9 @@ public class SaleOutput {
         updateSaleInfo();
         builder.append(saleInfo);
         builder.append("\n");
+        if (sale.getDiscountAmount() != null) {
+            builder.append("%-40s-%s%n".formatted("Total discount:", saleInfo.getTotalDiscounts()));
+        }
         builder.append("%-40s%s%n".formatted("Total Price:", saleInfo.getTotalPrice()));
         builder.append("%-40s%s%n".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
         return builder.toString();
@@ -73,15 +76,19 @@ public class SaleOutput {
         List<SaleItemDTO> saleItems = getSaleItemsInfo();
 
         // Totalbelopp
-        Amount runningTotal = sale.calculateRunningTotal();
+        Amount runningTotal = sale.getTotalAmount() == null ? sale.calculateRunningTotal() : sale.getTotalAmount();
 
         // Momsberäkning
-        Amount totalVATAmount = sale.calculateTotalVATAmount();
+        Amount totalVATAmount = sale.getTotalVAT() == null? sale.calculateTotalVATAmount() : sale.getTotalVAT();
+
+        // Rabattberäkning
+        Amount totalDiscounts = sale.getDiscountAmount() == null? new Amount(0) : sale.getDiscountAmount();
 
         this.saleInfo = new SaleDTO(
                 saleItems,            // list of saleItemInfo (DTO)
                 runningTotal,         // Running total
-                totalVATAmount);      // VAT for the total sale
+                totalVATAmount,       // VAT for the total sale
+                totalDiscounts);      // Total discounts for the total sale
     }
     private List<SaleItemDTO> getSaleItemsInfo() {
         List<SaleItemDTO> saleItemsInfo = new ArrayList<>();

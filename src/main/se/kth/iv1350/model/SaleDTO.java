@@ -12,17 +12,20 @@ public class SaleDTO {
     private final List<SaleItemDTO> saleItemsInfo;
     private final Amount totalPrice;
     private final Amount totalVATAmount;
+    private final Amount totalDiscounts;
 
     /**
      * Creates a new instance representing a particular sale.
      * @param saleItemsInfo The shopping cart as a list of Sale Item Data Transfer Objects
      * @param totalPrice The total price
      * @param totalVATAmount The total VAT amount
+     * @param totalDiscounts The total discount amount if any.
      */
-    public SaleDTO(List<SaleItemDTO> saleItemsInfo, Amount totalPrice, Amount totalVATAmount) {
+    public SaleDTO(List<SaleItemDTO> saleItemsInfo, Amount totalPrice, Amount totalVATAmount, Amount totalDiscounts) {
         this.saleItemsInfo = saleItemsInfo;
         this.totalPrice = totalPrice;
         this.totalVATAmount = totalVATAmount;
+        this.totalDiscounts = totalDiscounts;
     }
 
     /**
@@ -33,6 +36,7 @@ public class SaleDTO {
         this.saleItemsInfo = other.saleItemsInfo;
         this.totalPrice = other.totalPrice;
         this.totalVATAmount = other.totalVATAmount;
+        this.totalDiscounts = other.totalDiscounts;
     }
 
     /**
@@ -57,6 +61,14 @@ public class SaleDTO {
      */
     public Amount getTotalVATAmount() {
         return totalVATAmount;
+    }
+
+    /**
+     * Get the total discounts of a sale
+     * @return the total discounts of a sale
+     */
+    public Amount getTotalDiscounts() {
+        return totalDiscounts;
     }
 
     @Override
