@@ -90,6 +90,9 @@ public class Controller {
      * @return Sale information as a Data Transfer Object
      */
     public SaleDTO endSale(){
+        if (currentSale == null) {
+            throw new IllegalStateException("Call to endSale before initiating a new sale");
+        }
         currentSale.endSale();
         return currentSale.displayCheckout(display);
     }
@@ -99,6 +102,10 @@ public class Controller {
      * @param customerID
      */
     public void discountRequest (int customerID){
+        if (currentSale == null || currentSale.getTotalAmount() == null) {
+            throw new IllegalStateException(
+                    "Call to discountRequest before initiating a new sale and/or registering items.");
+        }
         DiscountDTO discountDTO = discountRegister.getDiscount(customerID);
         currentSale.applyDiscount(discountDTO);
     }
