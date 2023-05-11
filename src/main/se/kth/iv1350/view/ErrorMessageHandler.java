@@ -6,17 +6,27 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 
 /**
- * This class creates and shows error messages to the user.
+ * This class is responsible for showing error messages to the user.
  */
-public class ErrorMessageHandler {
+class ErrorMessageHandler {
     private Locale locale = new Locale("sv", "SE");
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
 
     /**
-     * Creates and displays the specified error message.
-     * @param msg The error message to be displayed.
+     * Displays the specified error message.
+     * @param msg The error message.
      */
-    public void showErrorMessage(String msg) {
-        System.out.println("%s, ERROR: %s".formatted(LocalDateTime.now().format(formatter), msg));
+    void showErrorMessage(String msg) {
+        StringBuilder errorMsgBuilder = new StringBuilder();
+        errorMsgBuilder.append(createTime());
+        errorMsgBuilder.append(", ERROR: ");
+        errorMsgBuilder.append(msg);
+
+        System.out.println(errorMsgBuilder);
+    }
+
+    private String createTime() {
+        LocalDateTime now = LocalDateTime.now();
+        return now.format(formatter);
     }
 }
