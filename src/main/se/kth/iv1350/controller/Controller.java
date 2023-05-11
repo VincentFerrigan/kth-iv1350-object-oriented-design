@@ -67,12 +67,10 @@ public class Controller {
      * @return Sale information as a Data Transfer Object.
      * @throws ItemNotFoundException when item ID does not exist in inventory
      * @throws OperationFailedException when there is a fail with inventory system
+     * @throws IllegalStateException if this method is called before initiating a new sale
      */
     //TODO ILLEGAL SMEAGAL
     public SaleDTO registerItem(int itemID, int quantity) throws ItemNotFoundException, OperationFailedException {
-        if(itemID < 0){
-            throw new IllegalArgumentException("ItemID has to be a positive int.");
-        }
         if (currentSale == null) {
             throw new IllegalStateException("Registering items before initiating a new sale");
         }
@@ -88,6 +86,7 @@ public class Controller {
     /**
      * Checkout. Displays the checked out shopping cart.
      * @return Sale information as a Data Transfer Object
+     * @throws IllegalStateException if this method is called before initiating a new sale
      */
     public SaleDTO endSale(){
         if (currentSale == null) {
@@ -100,11 +99,12 @@ public class Controller {
     /**
      * Fetches discount from the discount database and applies it to the sale.
      * @param customerID
+     * @throws IllegalStateException if this method is called before calling newSale and registerItem.
      */
     public void discountRequest (int customerID){
         if (currentSale == null || currentSale.getTotalAmount() == null) {
             throw new IllegalStateException(
-                    "Call to discountRequest before initiating a new sale and/or registering items.");
+                    "Call to discountRequest before initiating a new sale and registering items.");
         }
         DiscountDTO discountDTO = discountRegister.getDiscount(customerID);
         currentSale.applyDiscount(discountDTO);
@@ -116,11 +116,12 @@ public class Controller {
      * the payment was performed. Calculates change. Prints the receipt.
      * Loggs sale. Updates inventory and accounting system.
      * @param paidAmt The paid amount.
+     * @throws IllegalStateException if this method is called before calling newSale and registerItem.
      */
     public void pay(Amount paidAmt) {
         if (currentSale == null || currentSale.getTotalAmount() == null) {
             throw new IllegalStateException(
-                    "Call to pay before initiating a new sale and/or registering items.");
+                    "Call to pay before initiating a new sale and registering items.");
         }
         CashPayment payment = new CashPayment(paidAmt);
         currentSale.pay(payment);

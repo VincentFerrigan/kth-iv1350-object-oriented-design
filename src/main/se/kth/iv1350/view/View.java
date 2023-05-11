@@ -32,7 +32,6 @@ public class View {
      * with itemID 404 to trigger an exception from inventory system.
      * with itemID -2 to trigger an IllegalArgumentException.
      */
-    // TODO: discount failure (both database failure and discount not found), unable to update external systems, payment failure.....
     public void hardKodadeGrejerWithFailureAndErrors() {
         try {
             contr.startSale();
@@ -58,24 +57,11 @@ public class View {
             } catch (OperationFailedException ex) {
                 writeToLogAndUI("Correctly failed to register item when database call failed", ex);
             }
-            try {
-                System.out.println("Trying to enter an incorrect input, should generate an error");
-                contr.registerItem(-2);
-                errorMessageHandler.showErrorMessage("Managed to enter an incorrect input.");
-            } catch (ItemNotFoundException ex) {
-                writeToLogAndUI("Wrong exception was thrown.", ex);
-            } catch (IllegalArgumentException ex) {
-                // TODO Hur hanterar vi denna? Ska vi ens ha den med? "Fel argument" kan väl hanteras av ItemNotFound?
-                // TODO Troligtvis är det endast IllegalStateExceptions som gäller, så att payment inte sker före end of sale och liknande. (Se rent car exemplet)
-                writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
-            } catch (OperationFailedException exc) {
-                writeToLogAndUI("Wrong exception was thrown.", exc);
-            }
             contr.registerItem(1);
             contr.registerItem(1, 2);
-            //TODO lägg till end of sale, payment and/or external system update failures.
             contr.endSale();
             contr.pay(new Amount(500));
+
         } catch (ItemNotFoundException ex) {
             errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
