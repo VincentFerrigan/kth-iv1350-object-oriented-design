@@ -4,8 +4,7 @@ import se.kth.iv1350.integration.Display;
 import se.kth.iv1350.integration.RegisterCreator;
 import se.kth.iv1350.view.View;
 import se.kth.iv1350.integration.Printer;
-import se.kth.iv1350.util.LogHandler;
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
 
 /**
@@ -26,10 +25,10 @@ public class Main {
             Controller contr = new Controller(printer, display, registerCreator);
 
             View view = new View(contr);
-            view.hardKodadeGrejer1();
-            view.hardKodadeGrejer2();
-            view.hardKodadeGrejer3();
-            view.hardKodadeGrejer4();
+            view.hardKodadeGrejerWithFailureAndErrors();
+            view.HardKodadeGrejerWithStaffDiscount();
+            view.hardKodadeGrejerWithMemberDiscount();
+            view.hardKodadeGrejerWithoutDiscount();
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
             ex.printStackTrace();
