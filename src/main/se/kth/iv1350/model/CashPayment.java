@@ -22,7 +22,7 @@ public class CashPayment {
      * @param paidSale The sale that the customer is paying.
      */
     void calculateTotalCost(Sale paidSale) {
-        this.totalCost = paidSale.getRunningTotal();
+        this.totalCost = paidSale.getTotalAmount();
     }
 
     /**

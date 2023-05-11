@@ -5,9 +5,7 @@ import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.ItemNotFoundException;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.util.LogHandler;
-
 import java.io.IOException;
-
 
 /**
  * Represents the interface of the program. Since the program does not have
@@ -37,8 +35,6 @@ public class View {
     // TODO: discount failure (both database failure and discount not found), unable to update external systems, payment failure.....
     public void hardKodadeGrejerWithFailureAndErrors() {
         try {
-            // SecondSale: with itemID 150 not in inventory -  with member discount, not yet implemented
-            // and with itemID 404 for exception handling - with member discount, not yet implemented
             contr.startSale();
             contr.registerItem(5);
             contr.registerItem(5);
@@ -62,7 +58,6 @@ public class View {
             } catch (OperationFailedException ex) {
                 writeToLogAndUI("Correctly failed to register item when database call failed", ex);
             }
-
             try {
                 System.out.println("Trying to enter an incorrect input, should generate an error");
                 contr.registerItem(-2);
@@ -70,7 +65,8 @@ public class View {
             } catch (ItemNotFoundException ex) {
                 writeToLogAndUI("Wrong exception was thrown.", ex);
             } catch (IllegalArgumentException ex) {
-                // TODO Hur hanterar vi denna?
+                // TODO Hur hanterar vi denna? Ska vi ens ha den med? "Fel argument" kan väl hanteras av ItemNotFound?
+                // TODO Troligtvis är det endast IllegalStateExceptions som gäller, så att payment inte sker före end of sale och liknande. (Se rent car exemplet)
                 writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
             } catch (OperationFailedException exc) {
                 writeToLogAndUI("Wrong exception was thrown.", exc);
@@ -99,7 +95,6 @@ public class View {
      */
     public void HardKodadeGrejerWithStaffDiscount() {
         try {
-            // FirstSale - with staff discount, not yet implemented
             contr.startSale();
             contr.registerItem(5);
             contr.registerItem(5);
@@ -108,8 +103,8 @@ public class View {
             contr.registerItem(1);
             contr.registerItem(1, 2);
             contr.endSale();
-            // contr.discountRequest(880822);
-            // contr.endSale();
+            contr.discountRequest(880822);
+            contr.endSale();
             contr.pay(new Amount(500));
         } catch (ItemNotFoundException ex) {
             errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
@@ -130,7 +125,6 @@ public class View {
      */
     public void hardKodadeGrejerWithMemberDiscount() {
         try {
-            // ThirdSale: with itemID -2 - with member discount, not yet implemented
             contr.startSale();
             contr.registerItem(5);
             contr.registerItem(7, 2);
@@ -138,8 +132,8 @@ public class View {
             contr.registerItem(1);
             contr.registerItem(2);
             contr.endSale();
-            // contr.discountRequest(810222);
-            // contr.endSale();
+            contr.discountRequest(810222);
+            contr.endSale();
             contr.pay(new Amount(500));
         } catch (ItemNotFoundException ex) {
             errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
@@ -160,7 +154,6 @@ public class View {
      */
     public void hardKodadeGrejerWithoutDiscount() {
         try{
-            // FourthSale: all itemID correct - without discount
             contr.startSale();
             contr.registerItem(5);
             contr.registerItem(7, 2);

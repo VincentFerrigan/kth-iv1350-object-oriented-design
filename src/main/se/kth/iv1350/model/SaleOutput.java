@@ -73,10 +73,10 @@ public class SaleOutput {
         List<SaleItemDTO> saleItems = getSaleItemsInfo();
 
         // Totalbelopp
-        Amount runningTotal = sale.getRunningTotal();
+        Amount runningTotal = sale.calculateRunningTotal();
 
         // Momsberäkning
-        Amount totalVATAmount = sale.getTotalVATAmount();
+        Amount totalVATAmount = sale.calculateTotalVATAmount();
 
         this.saleInfo = new SaleDTO(
                 saleItems,            // list of saleItemInfo (DTO)

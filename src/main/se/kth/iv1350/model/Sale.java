@@ -15,6 +15,9 @@ public class Sale {
     private CashPayment payment;
     private DiscountDTO discount = new DiscountDTO();
     private ItemRegistry itemRegistry;
+    private Amount totalAmount;
+    private Amount totalVAT;
+    private Amount discountAmount;
 
     /**
      * Creates a new instance, representing a sale made by a customer.
@@ -30,7 +33,7 @@ public class Sale {
      * @param itemID The item identifier.
      * @param quantity The item quantity.
      * @throws ItemNotFoundException when item ID does not exist in inventory
-     * @throws InventorySystemException when there is an unknown fail with inventory system
+     * @throws ItemRegistryException when there is an unknown fail with inventory system
      */
     public void addItem(int itemID, int quantity) throws ItemNotFoundException {
         if (shoppingCart.containsKey(itemID)) {
@@ -52,10 +55,34 @@ public class Sale {
     }
 
     /**
+     * Gets the total amount for the current sale.
+     * @return The total amount of the current sale.
+     */
+    public Amount getTotalAmount() {
+        return totalAmount;
+    }
+
+    /**
+     * Gets the total VAT amount for the current sale.
+     * @return The total VAT amount of the current sale.
+     */
+    public Amount getTotalVAT() {
+        return totalVAT;
+    }
+
+    /**
+     * Gets the discount amount for the current sale.
+     * @return The discount amount of the current sale.
+     */
+    public Amount getDiscountAmount() {
+        return discountAmount;
+    }
+
+    /**
      * Calculates the total cost of the shopping cart, including possible discount.
      * @return The running total as a {@link Amount}.
      */
-    public Amount getRunningTotal() {
+    Amount calculateRunningTotal() {
         // Totalbelopp
         Amount runningTotal = new Amount(0);
         List<Amount> totalPrices = getCollectionOfItems()
@@ -63,7 +90,7 @@ public class Sale {
                 .map(Item::getTotalPrice)
                 .collect(toList());
         runningTotal = runningTotal.plus(totalPrices);
-        runningTotal = runningTotal.multiply(discount.getDiscountMultiplier());
+//        runningTotal = runningTotal.multiply(discount.getDiscountMultiplier());
 
         return runningTotal;
     }
@@ -72,12 +99,12 @@ public class Sale {
      * Calculates the total VAT of items in the shopping cart.
      * @return The total VAT amount as a {@link Amount}.
      */
-    public Amount getTotalVATAmount() {
+    Amount calculateTotalVATAmount() {
         // Momsberäkning
         Amount totalVATAmount = new Amount(0);
         List<Amount> vatAmounts = getCollectionOfItems().stream().map(Item::getVatAmount).collect(toList());
         totalVATAmount = totalVATAmount.plus(vatAmounts);
-        totalVATAmount = totalVATAmount.multiply(discount.getDiscountMultiplier());
+//        totalVATAmount = totalVATAmount.multiply(discount.getDiscountMultiplier());
 
         return totalVATAmount;
     }
@@ -154,5 +181,18 @@ public class Sale {
      */
     public void updateInventory() {
         itemRegistry.updateInventory(getCollectionOfItems());
+    }
+
+    public void endSale() {
+        Amount runningTotal = calculateRunningTotal();
+        Amount runningVAT = calculateTotalVATAmount();
+        if (discount.getDiscountRate() > 0) {
+            this.discountAmount = runningTotal.multiply(discount.getDiscountRate());
+            this.totalAmount = runningTotal.multiply(this.discount.getDiscountMultiplier());
+            this.totalVAT = runningVAT.multiply(this.discount.getDiscountMultiplier());
+        } else {
+            this.totalAmount = new Amount(runningTotal);
+            this.totalVAT = new Amount(runningVAT);
+        }
     }
 }

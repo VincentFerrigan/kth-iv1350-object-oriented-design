@@ -24,7 +24,7 @@ public class SaleLog {
     public List<Sale> findSalesByTotalAmount(Amount totalAmount) {
         List<Sale> salesWithSpecifiedTotalAmount = new ArrayList<>();
         for (Sale sale : sales) {
-            if (sale.getRunningTotal().equals(totalAmount)) {
+            if (sale.getTotalAmount().equals(totalAmount)) {
                 salesWithSpecifiedTotalAmount.add(sale);
             }
         }

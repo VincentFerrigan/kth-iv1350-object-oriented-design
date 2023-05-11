@@ -5,8 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * The receipt of a sale
  */
@@ -34,9 +32,6 @@ public class Receipt {
     public String toString() {
         List<Item> listOfItems = new ArrayList<>(sale.getCollectionOfItems());
 
-        // Momsberäkning
-        Amount totalVATAmount = sale.getTotalVATAmount();
-
         // Sorterar listan per namn
         Collections.sort(listOfItems, Comparator.comparing(Item::getName));
 
@@ -51,8 +46,11 @@ public class Receipt {
             builder.append("(%d * %s)\n".formatted(item.getQuantity(), item.getUnitPrice()));
         }
         builder.append("\n");
+        if (this.sale.getDiscountAmount() != null) {
+            builder.append("%-40s-%s%n".formatted("Total discount:", this.sale.getDiscountAmount()));
+        }
         builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));
-        builder.append("%-40s%s%n".formatted("Total VAT:", totalVATAmount));
+        builder.append("%-40s%s%n".formatted("Total VAT:", this.sale.getTotalVAT()));
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Paid Amount:", this.sale.getPayment().getPaidAmt()));
         builder.append("%-40s%s%n".formatted("Change:", this.sale.getPayment().getChange()));
