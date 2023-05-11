@@ -29,10 +29,8 @@ public class View {
     /**
      * Simulates a user input that generates calls to all system operations,
      * with itemID 404 to trigger an exception from inventory system.
-     * @throws ItemNotFoundException when item ID does not exist in inventory
-     * @throws OperationFailedException when there is a fail with inventory system
      */
-    public void hardKodadeGrejer1() throws OperationFailedException, ItemNotFoundException {
+    public void hardKodadeGrejer1() {
         try {
             // FirstSale: with itemID 404 for exception handling - with staff discount, not yet implemented
             contr.startSale();
@@ -47,12 +45,13 @@ public class View {
             //        contr.discountRequest(880822);
             contr.endSale();
             contr.pay(new Amount(500));
-        } catch (ItemNotFoundException ex) {
+        } catch (ItemNotFoundException ex) { //TODO Loggas?
             errorMessageHandler.showErrorMessage(ex.getMessage());
         } catch (OperationFailedException ex) {
+            logger.logException(ex);
             errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
         } catch (IllegalArgumentException ex) {
-            //logger.logException(ex); //TODO add this
+            logger.logException(ex); //TODO loggas, really?
             errorMessageHandler.showErrorMessage("The item ID has to be a positive number. Try again.");
         }
     }
@@ -60,10 +59,8 @@ public class View {
     /**
      * Simulates a user input that generates calls to all system operations,
      * with itemID 150 to trigger an exception since item is not in inventory system.
-     * @throws ItemNotFoundException when item ID does not exist in inventory
-     * @throws OperationFailedException when there is a fail with inventory system
      */
-    public void hardKodadeGrejer2() throws OperationFailedException, ItemNotFoundException {
+    public void hardKodadeGrejer2() {
         try {
             // SecondSale: with itemID 150 not in inventory -  with member discount, not yet implemented
             contr.startSale();
@@ -78,12 +75,13 @@ public class View {
             //        contr.discountRequest(810222);
             contr.endSale();
             contr.pay(new Amount(500));
-        } catch (ItemNotFoundException ex) {
+        } catch (ItemNotFoundException ex) { //TODO Loggas?
             errorMessageHandler.showErrorMessage(ex.getMessage());
         } catch (OperationFailedException ex) {
+            logger.logException(ex);
             errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
         } catch (IllegalArgumentException ex) {
-            //logger.logException(ex); //TODO add this
+            logger.logException(ex); //TODO loggas, really?
             errorMessageHandler.showErrorMessage("The item ID has to be a positive number. Try again.");
         }
     }
@@ -91,10 +89,8 @@ public class View {
     /**
      * Simulates a user input that generates calls to all system operations,
      * with itemID -2 to trigger an IllegalArgumentException.
-     * @throws ItemNotFoundException when item ID does not exist in inventory
-     * @throws OperationFailedException when there is a fail with inventory system
      */
-    public void hardKodadeGrejer3() throws OperationFailedException, ItemNotFoundException {
+    public void hardKodadeGrejer3() {
         try {
             // ThirdSale: with itemID -2 - without discount
             contr.startSale();
@@ -105,22 +101,21 @@ public class View {
             contr.registerItem(-2);
             contr.endSale();
             contr.pay(new Amount(500));
-        } catch (ItemNotFoundException ex) {
+        } catch (ItemNotFoundException ex) { //TODO Loggas?
             errorMessageHandler.showErrorMessage(ex.getMessage());
         } catch (OperationFailedException ex) {
+            logger.logException(ex);
             errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
         } catch (IllegalArgumentException ex) {
-            //logger.logException(ex); //TODO add this
+            logger.logException(ex); //TODO loggas, really?
             errorMessageHandler.showErrorMessage("The item ID has to be a positive number. Try again.");
         }
     }
 
     /**
      * Simulates a user input that generates calls to all system operations correctly.
-     * @throws ItemNotFoundException when item ID does not exist in inventory
-     * @throws OperationFailedException when there is a fail with inventory system
      */
-    public void hardKodadeGrejer4() throws OperationFailedException, ItemNotFoundException {
+    public void hardKodadeGrejer4() {
         try{
             // FourthSale: all itemID correct - without discount
             contr.startSale();
@@ -130,12 +125,13 @@ public class View {
             contr.registerItem(1);
             contr.endSale();
             contr.pay(new Amount(500));
-        } catch(ItemNotFoundException ex) {
+        } catch (ItemNotFoundException ex) { //TODO Loggas?
             errorMessageHandler.showErrorMessage(ex.getMessage());
-        } catch(OperationFailedException ex) {
+        } catch (OperationFailedException ex) {
+            logger.logException(ex);
             errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
-        } catch(IllegalArgumentException ex){
-            //logger.logException(ex); //TODO add this
+        } catch (IllegalArgumentException ex) {
+            logger.logException(ex); //TODO loggas, really?
             errorMessageHandler.showErrorMessage("The item ID has to be a positive number. Try again.");
         }
     }
