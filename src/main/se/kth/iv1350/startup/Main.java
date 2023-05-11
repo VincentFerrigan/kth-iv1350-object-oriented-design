@@ -27,9 +27,10 @@ public class Main {
             Controller contr = new Controller(printer, display, registerCreator);
 
             View view = new View(contr, logger);
-            // TODO remove after we've tested the hardKodadeGrejer
-            view.hardKodadeGrejer();
-            // view.testPrompt();
+            view.hardKodadeGrejer1();
+            view.hardKodadeGrejer2();
+            view.hardKodadeGrejer3();
+            view.hardKodadeGrejer4();
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
             ex.printStackTrace();
