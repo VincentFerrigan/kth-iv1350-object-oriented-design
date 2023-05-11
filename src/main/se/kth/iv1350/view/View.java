@@ -15,8 +15,8 @@ import java.io.IOException;
  */
 public class View {
     private Controller contr;
+    private ErrorMessageHandler errorMessageHandler = new ErrorMessageHandler();
     private LogHandler logger;
-    private ErrorMessageHandler errorMessageHandler;
 
     /**
      * Creates a new instance.
@@ -25,7 +25,6 @@ public class View {
     public View(Controller contr) throws IOException {
         this.contr = contr;
         this.logger = new LogHandler();
-        this.errorMessageHandler = new ErrorMessageHandler();
     }
 
 
