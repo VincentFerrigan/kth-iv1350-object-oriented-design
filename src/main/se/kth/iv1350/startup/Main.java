@@ -26,8 +26,8 @@ public class Main {
 
             View view = new View(contr);
             view.hardKodadeGrejerWithFailureAndErrors();
-            view.HardKodadeGrejerWithStaffDiscount();
-            view.hardKodadeGrejerWithMemberDiscount();
+            // view.HardKodadeGrejerWithStaffDiscount();
+            // view.hardKodadeGrejerWithMemberDiscount();
             view.hardKodadeGrejerWithoutDiscount();
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
