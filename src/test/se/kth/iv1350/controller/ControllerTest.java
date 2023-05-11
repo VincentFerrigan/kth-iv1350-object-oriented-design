@@ -38,7 +38,7 @@ class ControllerTest {
     @BeforeEach
     void setUp() {
         try {
-            registerCreator = new RegisterCreator(new LogHandler());
+            registerCreator = new RegisterCreator();
             itemRegistry = registerCreator.getInventorySystem();
             testSale = new Sale(itemRegistry);
             discountRegister = registerCreator.getDiscountRegister();
@@ -120,9 +120,9 @@ class ControllerTest {
     void testDiscountRequest() {
         discountDTO = discountRegister.getDiscount(CUSTOMER_ID);
         testSale.addItem(ITEM_ID);
-        Amount beforeD = testSale.getRunningTotal();
+        Amount beforeD = testSale.calculateRunningTotal();
         testSale.applyDiscount(discountDTO);
-        Amount afterD = testSale.getRunningTotal();
+        Amount afterD = testSale.calculateRunningTotal();
         assertNotEquals(beforeD, afterD,
                 "Discount not applied.");
     }

@@ -22,7 +22,7 @@ class SaleTest {
     void setUp() {
         //addItem
         try {
-            registries = new RegisterCreator(new LogHandler());
+            registries = new RegisterCreator();
             itemRegistry = registries.getInventorySystem();
             sale = new Sale(itemRegistry);
         } catch (IOException ex) {
