@@ -94,14 +94,14 @@ public class Amount {
      * Get the amount as floating point number.
      * @return the amount as a floating point number.
      */
-    public Double getAmount() {return amount;}
+    public Double getAmount() {
+        // TODO skall den returnera en Amount istället?
+        return amount;}
 
     @Override
     public String toString() {
         return String.format(locale, "%,.2f %s",this.amount, this.currency.getSymbol(locale));
     }
-    // TODO behövs en override på equal?
-
 
     @Override
     public boolean equals(Object o) {
