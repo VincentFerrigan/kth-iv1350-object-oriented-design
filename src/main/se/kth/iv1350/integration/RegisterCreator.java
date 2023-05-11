@@ -18,21 +18,13 @@ public class RegisterCreator {
     private static final String AS_FLAT_FILE_DB = "accounting.csv";
     private static final String IS_FLAT_FILE_DB = "inventory_items.csv";
     private static final String DR_FLAT_FILE_DB = "discounts.csv";
-    private LogHandler logger;
 
     /**
      * Creates an instance of {@link RegisterCreator}.
      */
     public RegisterCreator() throws IOException {
-
-        this.logger = new LogHandler();
         this.saleLog = new SaleLog();
-        try {
-            this.itemRegistry = new ItemRegistry(FILE_PATH, IS_FLAT_FILE_DB);
-        } catch (IOException e) {
-            // logga här kanske, att det är strul med ItemReg set up?
-            throw e;
-        }
+        this.itemRegistry = new ItemRegistry(FILE_PATH, IS_FLAT_FILE_DB);
         this.discountRegister = new DiscountRegister(FILE_PATH, DR_FLAT_FILE_DB);
         this.accountingSystem = new AccountingSystem(FILE_PATH, AS_FLAT_FILE_DB);
     }
