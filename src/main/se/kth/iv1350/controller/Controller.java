@@ -73,10 +73,13 @@ public class Controller {
         if(itemID < 0){
             throw new IllegalArgumentException("ItemID has to be a positive int.");
         }
+        if (currentSale == null) {
+            throw new IllegalStateException("Registering items before initiating a new sale");
+        }
         try {
             currentSale.addItem(itemID, quantity);
         } catch (ItemRegistryException itmRegExc) {
-            //logger.logException(itmRegExc); //TODO add this
+            logger.logException(itmRegExc);
             throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
         }
         return currentSale.displayOpenSale(display);
@@ -87,6 +90,7 @@ public class Controller {
      * @return Sale information as a Data Transfer Object
      */
     public SaleDTO endSale(){
+        currentSale.endSale();
         return currentSale.displayCheckout(display);
     }
 
@@ -106,7 +110,11 @@ public class Controller {
      * Loggs sale. Updates inventory and accounting system.
      * @param paidAmt The paid amount.
      */
-    public void pay(Amount paidAmt){
+    public void pay(Amount paidAmt) {
+        if (currentSale == null || currentSale.getTotalAmount() == null) {
+            throw new IllegalStateException(
+                    "Call to pay before initiating a new sale and/or registering items.");
+        }
         CashPayment payment = new CashPayment(paidAmt);
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
