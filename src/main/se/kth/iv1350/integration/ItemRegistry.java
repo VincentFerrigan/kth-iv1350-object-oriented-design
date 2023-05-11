@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class ItemRegistry {
     private static final String CSV_DELIMITER = ";";
+    private static final int DATABASE_NOT_FOUND = 404;
     private String recordHeader;
     private final String flatFileDb;
     private final String filePath;
