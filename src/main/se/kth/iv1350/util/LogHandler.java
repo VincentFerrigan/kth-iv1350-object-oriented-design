@@ -12,7 +12,7 @@ import java.time.format.FormatStyle;
  */
 public class LogHandler {
     private static final String FILE_PATH = "src/main/se/kth/iv1350/data/";
-    private static final String LOG_FILE_NAME = "rentcar-log.txt";
+    private static final String LOG_FILE_NAME = "pos-log.txt";
     private PrintWriter logFile;
 
     public LogHandler() throws IOException {
