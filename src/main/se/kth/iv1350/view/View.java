@@ -23,6 +23,7 @@ public class View {
     public View(Controller contr, LogHandler logger) {
         this.contr = contr;
         this.logger = logger;
+        this.errorMessageHandler = new ErrorMessageHandler();
     }
 
 
