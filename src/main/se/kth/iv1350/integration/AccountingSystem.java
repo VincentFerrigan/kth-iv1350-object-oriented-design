@@ -18,6 +18,7 @@ public class AccountingSystem {
 
     private Amount vat = new Amount(0);
     private Amount totalSale = new Amount(0);
+    private Amount discounts = new Amount(0);
 
     /**
      * Creates a new instance of an accounting system.
@@ -39,8 +40,9 @@ public class AccountingSystem {
             recordHeader = bufferedReader.readLine();
             if ((line = bufferedReader.readLine()) != null) {
                 String[] splitArray = line.split(CSV_DELIMITER);
-                totalSale = new Amount(Double.parseDouble(splitArray[1]));
+                totalSale = new Amount(Double.parseDouble(splitArray[0]));
                 vat = new Amount(Double.parseDouble(splitArray[1]));
+                discounts = new Amount(Double.parseDouble(splitArray[2]));
             }
         } catch(FileNotFoundException e){
             System.out.println("The file was not found");
@@ -57,8 +59,11 @@ public class AccountingSystem {
      * @param closedSale The sale to be added to the accounting system.
      */
     public void updateToAccountingSystem(Sale closedSale){
-        vat = vat.plus(closedSale.getTotalVATAmount());
-        totalSale = totalSale.plus(closedSale.getRunningTotal());
+        if (closedSale.getDiscountAmount() != null) {
+            discounts = discounts.plus(closedSale.getDiscountAmount());
+        }
+        vat = vat.plus(closedSale.getTotalVAT());
+        totalSale = totalSale.plus(closedSale.getTotalAmount());
         updateDatabase();
     }
 
@@ -75,6 +80,8 @@ public class AccountingSystem {
             bufferedWriter.write(String.valueOf(totalSale));
             bufferedWriter.write(CSV_DELIMITER);
             bufferedWriter.write(String.valueOf(vat));
+            bufferedWriter.write(CSV_DELIMITER);
+            bufferedWriter.write(String.valueOf(discounts));
             bufferedWriter.flush();
             bufferedWriter.close();
         } catch (FileNotFoundException e){
