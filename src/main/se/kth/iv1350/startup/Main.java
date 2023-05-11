@@ -20,13 +20,12 @@ public class Main {
     public static void main (String[] args) {
         //TODO look at these things: they are not in the UML CD
         try {
-            LogHandler logger = new LogHandler();
             Printer printer = new Printer();
             Display display = new Display();
-            RegisterCreator registerCreator = new RegisterCreator(logger);
+            RegisterCreator registerCreator = new RegisterCreator();
             Controller contr = new Controller(printer, display, registerCreator);
 
-            View view = new View(contr, logger);
+            View view = new View(contr);
             view.hardKodadeGrejer1();
             view.hardKodadeGrejer2();
             view.hardKodadeGrejer3();

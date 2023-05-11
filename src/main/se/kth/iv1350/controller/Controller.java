@@ -1,5 +1,4 @@
 package se.kth.iv1350.controller;
-
 import se.kth.iv1350.integration.DiscountDTO;
 import se.kth.iv1350.model.SaleDTO;
 import se.kth.iv1350.integration.*;
@@ -7,6 +6,9 @@ import se.kth.iv1350.model.CashPayment;
 import se.kth.iv1350.model.CashRegister;
 import se.kth.iv1350.model.Sale;
 import se.kth.iv1350.model.Amount;
+import se.kth.iv1350.util.LogHandler;
+
+import java.io.IOException;
 
 /**
  * This is the application's only controller class. All calls to the model pass
@@ -21,13 +23,14 @@ public class Controller {
     private AccountingSystem accountingSystem;
     private CashRegister cashRegister;
     private Sale currentSale;
+    private LogHandler logger;
 
     /**
      * Creates a new instance.
      * @param printer Interface to printer (prints receipts and display)
      * @param registerCreator Used to get all classes that handle database calls.
      */
-    public Controller (Printer printer, Display display, RegisterCreator registerCreator){
+    public Controller (Printer printer, Display display, RegisterCreator registerCreator) throws IOException {
         this.printer = printer;
         this.display = display;
         this.saleLog = registerCreator.getSaleLog();
@@ -35,6 +38,7 @@ public class Controller {
         this.discountRegister = registerCreator.getDiscountRegister();
         this.accountingSystem = registerCreator.getAccountingSystem();
         this.cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
+        this.logger = new LogHandler();
     }
 
     /**
@@ -71,7 +75,7 @@ public class Controller {
         }
         try {
             currentSale.addItem(itemID, quantity);
-        } catch (InventorySystemException itmRegExc) {
+        } catch (ItemRegistryException itmRegExc) {
             //logger.logException(itmRegExc); //TODO add this
             throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
         }

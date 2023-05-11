@@ -6,6 +6,8 @@ import se.kth.iv1350.integration.ItemNotFoundException;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.util.LogHandler;
 
+import java.io.IOException;
+
 
 /**
  * Represents the interface of the program. Since the program does not have
@@ -20,9 +22,9 @@ public class View {
      * Creates a new instance.
      * @param contr The Controller to use for all calls to other layers.
      */
-    public View(Controller contr, LogHandler logger) {
+    public View(Controller contr) throws IOException {
         this.contr = contr;
-        this.logger = logger;
+        this.logger = new LogHandler();
         this.errorMessageHandler = new ErrorMessageHandler();
     }
 

@@ -18,11 +18,14 @@ public class RegisterCreator {
     private static final String AS_FLAT_FILE_DB = "accounting.csv";
     private static final String IS_FLAT_FILE_DB = "inventory_items.csv";
     private static final String DR_FLAT_FILE_DB = "discounts.csv";
+    private LogHandler logger;
 
     /**
      * Creates an instance of {@link RegisterCreator}.
      */
-    public RegisterCreator(LogHandler logger) throws IOException {
+    public RegisterCreator() throws IOException {
+
+        this.logger = new LogHandler();
         this.saleLog = new SaleLog();
         try {
             this.itemRegistry = new ItemRegistry(FILE_PATH, IS_FLAT_FILE_DB);
