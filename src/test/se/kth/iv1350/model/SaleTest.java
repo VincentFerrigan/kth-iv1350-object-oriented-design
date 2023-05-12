@@ -4,10 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import se.kth.iv1350.integration.ItemRegistry;
-import se.kth.iv1350.integration.RegisterCreator;
-import se.kth.iv1350.integration.Display;
-import se.kth.iv1350.util.LogHandler;
+import se.kth.iv1350.integration.*;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -18,9 +16,12 @@ class SaleTest {
     private ItemRegistry itemRegistry;
     private RegisterCreator registries;
 
+    private final int VALID_ITEM_ID = 1;
+    private final int INVALID_ITEM_ID = -2;
+    private final int ERROR_ITEM_ID = 404;
+
     @BeforeEach
     void setUp() {
-        //addItem
         try {
             registries = new RegisterCreator();
             itemRegistry = registries.getInventorySystem();
@@ -29,11 +30,6 @@ class SaleTest {
             System.out.println("Unable to set up SaleTest");
             ex.printStackTrace();
         }
-
-        //applyDiscount
-//          RegisterCreator disReg = new RegisterCreator();
-//          DiscountRegister discountRegister = disReg.getDiscountRegister();
-//          DiscountDTO discount = new DiscountDTO();
     }
 
     @AfterEach
@@ -45,16 +41,43 @@ class SaleTest {
 
     @Test
     void testAddItem() {
-        int itemID = 1;
         int quantity = 2;
+        try {
+            sale.addItem(VALID_ITEM_ID, quantity);
+        } catch (ItemNotFoundException ex) {
+            fail("No exception of this type should be thrown: ItemID is valid.");
+        } catch (ItemRegistryException ex) {
+            fail("No connection exception should be thrown: connection is valid.");
+        }
+            int expResult = 2;
+            SaleDTO saleInfo = sale.displayCheckout(new Display());
+            List<SaleItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
+            int result = listOfSaleItems.get(0).getQuantity();
+            assertEquals(expResult, result, "Item quantity not equal");
+    }
 
-        sale.addItem(itemID, quantity);
+    @Test
+    void testAddItemInvalidID() {
+        int quantity = 2;
+        try {
+            sale.addItem(INVALID_ITEM_ID, quantity);
+        } catch (ItemNotFoundException ex) {
+            return;
+        }
+        fail("No exception was thrown when operating on an invalid item ID.");
+    }
 
-        int expResult = 2;
-        SaleDTO saleInfo = sale.displayCheckout(new Display());
-        List<SaleItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
-        int result = listOfSaleItems.get(0).getQuantity();
-        assertEquals(expResult,result,"Item quantity not equal");
+    @Test
+    void testAddItemConnectionError() {
+        int quantity = 2;
+        try {
+            sale.addItem(ERROR_ITEM_ID, quantity);
+        } catch (ItemNotFoundException ex){
+            //This exception is ok here.
+        } catch (ItemRegistryException ex) {
+            return;
+        }
+        fail("No exception was thrown when signaling no connection to server.");
     }
 
     @Disabled
@@ -70,17 +93,19 @@ class SaleTest {
     @Disabled
     @Test
     void testIncreaseItem() {
-        int itemID = 1;
         int quantity = 1;
+        try {
+            sale.addItem(VALID_ITEM_ID, quantity);
+            sale.addItem(VALID_ITEM_ID, quantity);
 
-        sale.addItem(itemID, quantity);
-        sale.addItem(itemID, quantity);
-
-        int expResult = 2;
-        SaleDTO saleInfo = sale.displayCheckout(new Display());
-        List<SaleItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
-        int result = listOfSaleItems.get(0).getQuantity();
-        assertEquals(expResult,result,"Item quantity not increased");
+            int expResult = 2;
+            SaleDTO saleInfo = sale.displayCheckout(new Display());
+            List<SaleItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
+            int result = listOfSaleItems.get(0).getQuantity();
+            assertEquals(expResult, result, "Item quantity not increased");
+        } catch (ItemNotFoundException ex) {
+            //This is not part of the test.
+        }
     }
 
     @Disabled
