@@ -34,44 +34,22 @@ public class SaleOutput {
     }
 
     /**
-     * Pretty printing for the output of current sale, sorted by the time when items are registered.
-     * @return Pretty printing of sale, with items sorted by time of registration.
+     * Update sale information for updateForCheckout, sort item alphabetically.
      */
-    public String createOpenSaleString() {
-        // Sorterar listan efter när den reggats.
-        sortShoppingCartListAfterDescendingTimeOrder();
-
-        // Pretty printing
-        StringBuilder builder = new StringBuilder();
+    public void updateForCheckout() {
+        // Sorterar listan per namn
+        sortShoppingCartListAfterAscendingNameOrder();
         updateSaleInfo();
-        builder.append(saleInfo);
-        builder.append("\n");
-        builder.append("%-40s%s%n".formatted("Running total:", saleInfo.getTotalPrice()));
-        builder.append("%-40s%s%n".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
-        return builder.toString();
     }
 
     /**
-     * Pretty printing for the output of current sale, with items sorted alphabetically.
-     * @return Pretty printing of sale, with items sorted alphabetically.
+     * Update sale information for running sale, sort by the time when items are registered.
      */
-    public String createCheckoutString() {
-        // Sorterar listan per namn
-        sortShoppingCartListAfterAscendingNameOrder();
-
-        // Pretty printing
-        StringBuilder builder = new StringBuilder();
+    public void updateRunningSale() {
+        // Sorterar listan efter när den reggats.
+        sortShoppingCartListAfterDescendingTimeOrder();
         updateSaleInfo();
-        builder.append(saleInfo);
-        builder.append("\n");
-        if (sale.getDiscountAmount() != null) {
-            builder.append("%-40s-%s%n".formatted("Total discount:", saleInfo.getTotalDiscounts()));
-        }
-        builder.append("%-40s%s%n".formatted("Total Price:", saleInfo.getTotalPrice()));
-        builder.append("%-40s%s%n".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
-        return builder.toString();
     }
-
     private void updateSaleInfo() {
         List<SaleItemDTO> saleItems = getSaleItemsInfo();
 
@@ -114,12 +92,4 @@ public class SaleOutput {
         Collections.sort(listOfItems, Comparator.comparing(Item::getItemID));
     }
 
-    /**
-     * Pretty printing of {@link SaleOutput} based on <code>this.createOpenSaleString()</code>
-     * @return Pretty printing of this instance.
-     */
-    @Override
-    public String toString() {
-        return createOpenSaleString();
-    }
 }

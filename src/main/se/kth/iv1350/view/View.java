@@ -4,6 +4,7 @@ import se.kth.iv1350.controller.Controller;
 import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.ItemNotFoundException;
 import se.kth.iv1350.model.Amount;
+import se.kth.iv1350.model.SaleDTO;
 import se.kth.iv1350.util.LogHandler;
 import java.io.IOException;
 
@@ -35,13 +36,13 @@ public class View {
     public void hardKodadeGrejerWithFailureAndErrors() {
         try {
             contr.startSale();
-            contr.registerItem(5);
-            contr.registerItem(5);
-            contr.registerItem(7, 2);
-            contr.registerItem(5);
+            writeRunningSaleToUI(contr.registerItem(5));
+            writeRunningSaleToUI(contr.registerItem(5));
+            writeRunningSaleToUI(contr.registerItem(7, 2));
+            writeRunningSaleToUI(contr.registerItem(5));
             try {
                 System.out.println("Trying to enter a non-existing item ID, should generate an error.");
-                contr.registerItem(150);
+                writeRunningSaleToUI(contr.registerItem(150));
                 errorMessageHandler.showErrorMessage("Managed to enter a non-existing item ID.");
             } catch (ItemNotFoundException ex) {
                 errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
@@ -50,18 +51,17 @@ public class View {
             }
             try {
                 System.out.println("Temporary lost connection with server, database call failed");
-                contr.registerItem(404);
+                writeRunningSaleToUI(contr.registerItem(404));
                 errorMessageHandler.showErrorMessage("Managed to register item even when database call failed.");
             } catch (ItemNotFoundException ex) {
                 writeToLogAndUI("Wrong exception was thrown.", ex);
             } catch (OperationFailedException ex) {
                 writeToLogAndUI("Correctly failed to register item when database call failed", ex);
             }
-            contr.registerItem(1);
-            contr.registerItem(1, 2);
-            contr.endSale();
-            contr.pay(new Amount(500));
-
+            writeRunningSaleToUI(contr.registerItem(1));
+            writeRunningSaleToUI(contr.registerItem(1, 2));
+            writeCheckoutToUI(contr.endSale());
+            payAndWriteCheckoutToUI(new Amount(500));
         } catch (ItemNotFoundException ex) {
             errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
@@ -82,16 +82,16 @@ public class View {
     public void HardKodadeGrejerWithStaffDiscount() {
         try {
             contr.startSale();
-            contr.registerItem(5);
-            contr.registerItem(5);
-            contr.registerItem(8, 2);
-            contr.registerItem(5);
-            contr.registerItem(1);
-            contr.registerItem(1, 2);
-            contr.endSale();
+            writeRunningSaleToUI(contr.registerItem(5));
+            writeRunningSaleToUI(contr.registerItem(5));
+            writeRunningSaleToUI(contr.registerItem(8, 2));
+            writeRunningSaleToUI(contr.registerItem(5));
+            writeRunningSaleToUI(contr.registerItem(1));
+            writeRunningSaleToUI(contr.registerItem(1, 2));
+            writeCheckoutToUI(contr.endSale());
             contr.discountRequest(880822);
-            contr.endSale();
-            contr.pay(new Amount(500));
+            writeCheckoutToUI(contr.endSale());
+            payAndWriteCheckoutToUI(new Amount(500));
         } catch (ItemNotFoundException ex) {
             errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
@@ -112,15 +112,15 @@ public class View {
     public void hardKodadeGrejerWithMemberDiscount() {
         try {
             contr.startSale();
-            contr.registerItem(5);
-            contr.registerItem(7, 2);
-            contr.registerItem(2);
-            contr.registerItem(1);
-            contr.registerItem(2);
-            contr.endSale();
+            writeRunningSaleToUI(contr.registerItem(5));
+            writeRunningSaleToUI(contr.registerItem(7, 2));
+            writeRunningSaleToUI(contr.registerItem(2));
+            writeRunningSaleToUI(contr.registerItem(1));
+            writeRunningSaleToUI(contr.registerItem(2));
+            writeCheckoutToUI(contr.endSale());
             contr.discountRequest(810222);
-            contr.endSale();
-            contr.pay(new Amount(500));
+            writeCheckoutToUI(contr.endSale());
+            payAndWriteCheckoutToUI(new Amount(500));
         } catch (ItemNotFoundException ex) {
             errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
@@ -141,12 +141,12 @@ public class View {
     public void hardKodadeGrejerWithoutDiscount() {
         try{
             contr.startSale();
-            contr.registerItem(5);
-            contr.registerItem(7, 2);
-            contr.registerItem(1);
-            contr.registerItem(1);
-            contr.endSale();
-            contr.pay(new Amount(500));
+            writeRunningSaleToUI(contr.registerItem(5));
+            writeRunningSaleToUI(contr.registerItem(7, 2));
+            writeRunningSaleToUI(contr.registerItem(1));
+            writeRunningSaleToUI(contr.registerItem(1));
+            writeCheckoutToUI(contr.endSale());
+            payAndWriteCheckoutToUI(new Amount(500));
         } catch (ItemNotFoundException ex) {
             errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
@@ -160,6 +160,28 @@ public class View {
         }
     }
 
+    private void writeRunningSaleToUI(SaleDTO saleInfo) {
+        System.out.println("----------------- Display follows ----------------");
+        System.out.println(saleInfo);
+        System.out.println("%-40s%s".formatted("Running total:", saleInfo.getTotalPrice()));
+        System.out.println("%-40s%s".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
+        System.out.println("------------------ End of Display ----------------");
+    }
+    private void writeCheckoutToUI(SaleDTO saleInfo) {
+        System.out.println("--------------- End of Sale follows --------------");
+        System.out.println(saleInfo);
+        if (!saleInfo.getTotalDiscounts().equals(new Amount(0))) {
+            System.out.println("%-40s-%s".formatted("Total discount:", saleInfo.getTotalDiscounts()));
+        }
+        System.out.println("%-40s%s".formatted("Total Price:", saleInfo.getTotalPrice()));
+        System.out.println("%-40s%s".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
+        System.out.println("---------------- End of End of Sale --------------");
+    }
+
+    private void payAndWriteCheckoutToUI(Amount paidAmount) {
+        System.out.println("Paying " + paidAmount);
+        contr.pay(paidAmount);
+    }
     private void writeToLogAndUI(String uiMsg, Exception exc) {
         errorMessageHandler.showErrorMessage(uiMsg);
         logger.logException(exc);

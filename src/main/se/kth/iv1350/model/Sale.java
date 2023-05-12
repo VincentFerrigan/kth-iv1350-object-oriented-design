@@ -154,24 +154,11 @@ public class Sale {
 
     /**
      * Displays the currently registered items.
-     * @param display The display where the output is displayed.
      * @return Sale information as a {@link SaleDTO}.
      */
-    public SaleDTO displayOpenSale(Display display) {
+    public SaleDTO updateRunningSaleInfo() {
         SaleOutput saleOutput = new SaleOutput(this);
-        display.displayOpenSale(saleOutput);
-        return saleOutput.getSaleInfo();
-    }
-
-    /**
-     * Displays the checkout shopping cart with total amount and vat,
-     * including all registered items.
-     * @param display The display where the output is displayed.
-     * @return
-     */
-    public SaleDTO displayCheckout(Display display) {
-        SaleOutput saleOutput = new SaleOutput(this);
-        display.displayCheckout(saleOutput);
+        saleOutput.updateRunningSale();
         return saleOutput.getSaleInfo();
     }
 
@@ -183,7 +170,11 @@ public class Sale {
         itemRegistry.updateInventory(getCollectionOfItems());
     }
 
-    public void endSale() {
+    /**
+     * Update sale information for checkout
+     * @return Sale information as a {@link SaleDTO}.
+     */
+    public SaleDTO endSale() {
         Amount runningTotal = calculateRunningTotal();
         Amount runningVAT = calculateTotalVATAmount();
         if (discount.getDiscountRate() > 0) {
@@ -194,5 +185,8 @@ public class Sale {
             this.totalAmount = new Amount(runningTotal);
             this.totalVAT = new Amount(runningVAT);
         }
+        SaleOutput saleOutput = new SaleOutput(this);
+        saleOutput.updateForCheckout();
+        return saleOutput.getSaleInfo();
     }
 }

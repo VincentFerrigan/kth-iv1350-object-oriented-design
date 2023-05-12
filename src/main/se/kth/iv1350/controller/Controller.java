@@ -16,7 +16,6 @@ import java.io.IOException;
  */
 public class Controller {
     private Printer printer;
-    private Display display;
     private SaleLog saleLog;
     private ItemRegistry itemRegistry;
     private DiscountRegister discountRegister;
@@ -30,9 +29,8 @@ public class Controller {
      * @param printer Interface to printer (prints receipts and display)
      * @param registerCreator Used to get all classes that handle database calls.
      */
-    public Controller (Printer printer, Display display, RegisterCreator registerCreator) throws IOException {
+    public Controller (Printer printer, RegisterCreator registerCreator) throws IOException {
         this.printer = printer;
-        this.display = display;
         this.saleLog = registerCreator.getSaleLog();
         this.itemRegistry = registerCreator.getInventorySystem();
         this.discountRegister = registerCreator.getDiscountRegister();
@@ -55,7 +53,6 @@ public class Controller {
      * @throws ItemNotFoundException when item ID does not exist in inventory
      * @throws OperationFailedException when there is a fail with inventory system
      */
-    //TODO ILLEGAL SMEAGAL
     public SaleDTO registerItem(int itemID) throws OperationFailedException, ItemNotFoundException {
         return registerItem(itemID, 1);
     }
@@ -64,12 +61,11 @@ public class Controller {
      * Registers an item for sale by entering its item identifier and quantity.
      * @param itemID The item identifier.
      * @param quantity The item quantity.
-     * @return Sale information as a Data Transfer Object.
+     * @return SaleDTO Sale information as a Data Transfer Object.
      * @throws ItemNotFoundException when item ID does not exist in inventory
      * @throws OperationFailedException when there is a fail with inventory system
      * @throws IllegalStateException if this method is called before initiating a new sale
      */
-    //TODO ILLEGAL SMEAGAL
     public SaleDTO registerItem(int itemID, int quantity) throws ItemNotFoundException, OperationFailedException {
         if (currentSale == null) {
             throw new IllegalStateException("Registering items before initiating a new sale");
@@ -80,20 +76,19 @@ public class Controller {
             logger.logException(itmRegExc);
             throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
         }
-        return currentSale.displayOpenSale(display);
+        return currentSale.updateRunningSaleInfo();
     }
 
     /**
      * Checkout. Displays the checked out shopping cart.
-     * @return Sale information as a Data Transfer Object
+     * @return SaleDTO Sale information as a Data Transfer Object
      * @throws IllegalStateException if this method is called before initiating a new sale
      */
     public SaleDTO endSale(){
         if (currentSale == null) {
             throw new IllegalStateException("Call to endSale before initiating a new sale");
         }
-        currentSale.endSale();
-        return currentSale.displayCheckout(display);
+        return currentSale.endSale();
     }
 
     /**
