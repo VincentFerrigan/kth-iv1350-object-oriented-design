@@ -3,12 +3,9 @@ package se.kth.iv1350.controller;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import se.kth.iv1350.integration.DiscountDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.util.LogHandler;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
@@ -16,68 +13,43 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerTest {
-    private Controller controller;
-    private Printer printer;
+    private static final int ITEM_ID = 3;
+    private static final int QUANTITY = 5;
+    private static final int CUSTOMER_ID = 880822;
+    private Controller instance;
     private RegisterCreator registerCreator;
-    private final int ITEM_ID = 3;
-    private final int QUANTITY = 5;
-
-    private SaleDTO testRegID;
-    private SaleDTO testRegIDQ;
-    private Sale testSale;
-    private SaleDTO currentSale;
-    private DiscountDTO discountDTO;
-    private final int CUSTOMER_ID = 880822;
-    private ItemRegistry itemRegistry;
-    private DiscountRegister discountRegister;
-    private Amount paidAmount;
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
-
 
     @BeforeEach
     void setUp() {
         try {
-            registerCreator = new RegisterCreator();
-            itemRegistry = registerCreator.getInventorySystem();
-            testSale = new Sale(itemRegistry);
-            discountRegister = registerCreator.getDiscountRegister();
-            printer = new Printer();
-            controller = new Controller(printer, registerCreator);
-            testRegID = null;
-            testRegIDQ = null;
-            currentSale = null;
             originalSysOut = System.out;
             outContent = new ByteArrayOutputStream();
             System.setOut(new PrintStream(outContent));
-            paidAmount = new Amount(1000);
+            Printer printer = new Printer();
+            registerCreator = new RegisterCreator();
+            instance = new Controller(printer, registerCreator);
+
         } catch (IOException ex)  {
+            // Not part of the test
             System.out.println("Unable to set up the ControllerTest");
             ex.printStackTrace();
         }
     }
     @AfterEach
     void tearDown() {
-        registerCreator = null;
-        itemRegistry = null;
-        testSale = null;
-        discountRegister = null;
-        printer = null;
-        display = null;
-        controller = null;
-        testRegID = null;
-        testRegIDQ = null;
-        currentSale = null;
-        paidAmount = null;
         outContent = null;
         System.setOut(originalSysOut);
+        instance = null;
+        registerCreator = null;
     }
 
     @Test
     void testStartSale() {
-        controller.startSale();
+        instance.startSale();
         try {
-            controller.registerItem(ITEM_ID);
+            instance.registerItem(ITEM_ID);
         } catch (NullPointerException ex) {
             fail("No instance of Sale was created in startSale");
         } catch (ItemNotFoundException | OperationFailedException ex) {
@@ -87,15 +59,15 @@ class ControllerTest {
 
     @Test
     void testRegisterItem() {
-        controller.startSale();
+        instance.startSale();
 
         try {
-            testRegID = controller.registerItem(ITEM_ID);
+            SaleDTO testRegID = instance.registerItem(ITEM_ID);
             assertNotNull(testRegID, "Item registration did not work");
             assertEquals(1, testRegID.getSaleItemsInfo().get(0).getQuantity(),
                     "Item did not have quantity 1 when added without quantity.");
 
-            testRegIDQ = controller.registerItem(4, QUANTITY);
+            SaleDTO testRegIDQ = instance.registerItem(4, QUANTITY);
             assertNotNull(testRegIDQ, "Item registration did not work");
             assertEquals(QUANTITY, testRegIDQ.getSaleItemsInfo().get(0).getQuantity(),
                     "Item did not have the right quantity when added with quantity.");
@@ -106,12 +78,12 @@ class ControllerTest {
 
     @Test
     void testRegisterItemNEW() {
-        controller.startSale();
+        instance.startSale();
         int expectedSingularQuantity = 1;
 
         try {
             SaleItemDTO expResult = new SaleItemDTO(new ItemDTO(0, "", "", new Amount(1.0), new VAT(1)), expectedSingularQuantity, new Amount(1.0 * expectedSingularQuantity));
-            SaleItemDTO result = controller.registerItem(0).getSaleItemsInfo().get(0);
+            SaleItemDTO result = instance.registerItem(0).getSaleItemsInfo().get(0);
             assertEquals(expResult, result, "Wrong quantity, expected %d".formatted(expectedSingularQuantity));
         } catch (ItemNotFoundException | OperationFailedException ex) {
             // Not part of the test
@@ -120,35 +92,24 @@ class ControllerTest {
 
     @Test
     void testEndSale() {
-        controller.startSale();
-        currentSale = controller.endSale();
-        assertNotNull(currentSale, "End sale did not work");
+        instance.startSale();
+        SaleDTO saleInfo = instance.endSale();
+        assertNotNull(saleInfo, "End sale did not work");
     }
 
-//    @Test
-//    void testDiscountRequest() {
-//        try {
-//            discountDTO = discountRegister.getDiscount(CUSTOMER_ID);
-//            testSale.addItem(ITEM_ID);
-//            Amount beforeD = testSale.calculateRunningTotal();
-//            testSale.applyDiscount(discountDTO);
-//            Amount afterD = testSale.calculateRunningTotal();
-//            assertNotEquals(beforeD, afterD,
-//                    "Discount not applied.");
-//        } catch (ItemNotFoundException | OperationFailedException ex) {
-//            // Not a part of the test
-//        }
-//    }
+    @Test
+    void testDiscountRequest() {
+    }
 
     @Test
     void testPay() {
-        controller.startSale();
+        instance.startSale();
         try {
-            controller.registerItem(ITEM_ID);
-            SaleDTO paySaleInfo = controller.endSale();
-            paidAmount = new Amount(100);
+            instance.registerItem(ITEM_ID);
+            SaleDTO paySaleInfo = instance.endSale();
+            Amount paidAmount = new Amount(100);
             LocalDateTime saleTime = LocalDateTime.now();
-            controller.pay(paidAmount);
+            instance.pay(paidAmount);
             StringBuilder expOut = new StringBuilder();
             expOut.append("%-40s%s%n".formatted("Total Cost:", paySaleInfo.getTotalPrice()));
             expOut.append("%-40s%s%n".formatted("Total VAT:", paySaleInfo.getTotalVATAmount()));

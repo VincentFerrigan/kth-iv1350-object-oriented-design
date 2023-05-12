@@ -9,18 +9,18 @@ import se.kth.iv1350.integration.ItemDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ItemTest {
-    private Item testItem;
+    private Item instance;
     private final ItemDTO ITEM_INFO = new ItemDTO(3, "Jordgubbe", "", new Amount(15), new VAT(1));
     private final int QUANTITY = 5;
 
     @BeforeEach
     void setUp() {
-        testItem = new Item(this.ITEM_INFO, QUANTITY);
+        instance = new Item(this.ITEM_INFO, QUANTITY);
     }
 
     @AfterEach
     void tearDown() {
-        testItem = null;
+        instance = null;
     }
     @Disabled
     @Test
@@ -30,16 +30,16 @@ class ItemTest {
     @Test
     void testSetQuantity() {
         int newQuantity = 7;
-        testItem.setQuantity(newQuantity);
-        assertEquals(newQuantity, testItem.getQuantity(),
+        instance.setQuantity(newQuantity);
+        assertEquals(newQuantity, instance.getQuantity(),
                 "Item did not have correct quantity when set.");
     }
 
     @Test
     void testAddToQuantity() {
         int addedQuantity = 4;
-        testItem.addToQuantity(addedQuantity);
-        assertEquals(QUANTITY +addedQuantity, testItem.getQuantity(),
+        instance.addToQuantity(addedQuantity);
+        assertEquals(QUANTITY +addedQuantity, instance.getQuantity(),
                 "Item did not have correct quantity when quantity was added to an existing Item.");
     }
 
@@ -57,8 +57,8 @@ class ItemTest {
     @Test
     void testIncrement() {
         int incrementedAmount = QUANTITY + 1;
-        testItem.increment();
-        assertEquals(incrementedAmount, testItem.getQuantity(),
+        instance.increment();
+        assertEquals(incrementedAmount, instance.getQuantity(),
                 "Item did not have correct quantity when incremented.");
     }
 
@@ -66,8 +66,8 @@ class ItemTest {
     @Test
     void testDecrement() {
         int decrementedAmount = QUANTITY - 1;
-        testItem.increment();
-        assertEquals(decrementedAmount, testItem.getQuantity(),
+        instance.increment();
+        assertEquals(decrementedAmount, instance.getQuantity(),
                 "Item did not have correct quantity when decremented.");
     }
 }
