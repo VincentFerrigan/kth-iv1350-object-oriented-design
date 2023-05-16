@@ -1,6 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.model.SaleOutput;
 import se.kth.iv1350.model.Receipt;
 
 /**
@@ -12,7 +11,6 @@ public class Printer {
      * Creates an instance of {@link Printer}
      */
     public Printer(){
-        //TODO construct
     }
 
     /**

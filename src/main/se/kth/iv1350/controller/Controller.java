@@ -1,20 +1,21 @@
 package se.kth.iv1350.controller;
 import se.kth.iv1350.integration.DiscountDTO;
-import se.kth.iv1350.model.SaleDTO;
+import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.model.CashPayment;
-import se.kth.iv1350.model.CashRegister;
-import se.kth.iv1350.model.Sale;
-import se.kth.iv1350.model.Amount;
+import se.kth.iv1350.util.Event;
 import se.kth.iv1350.util.LogHandler;
 
 import java.io.IOException;
+import java.util.*;
+
+import static se.kth.iv1350.util.Event.NEW_ITEM;
 
 /**
  * This is the application's only controller class. All calls to the model pass
  * through here.
  */
 public class Controller {
+    private Map<Event, List<SaleObserver>> saleObservers;
     private Printer printer;
     private SaleLog saleLog;
     private ItemRegistry itemRegistry;
@@ -31,24 +32,38 @@ public class Controller {
      */
     public Controller (Printer printer, RegisterCreator registerCreator) throws IOException {
         this.printer = printer;
-        this.saleLog = registerCreator.getSaleLog();
-        this.itemRegistry = registerCreator.getInventorySystem();
-        this.discountRegister = registerCreator.getDiscountRegister();
-        this.accountingSystem = registerCreator.getAccountingSystem();
-        this.cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
-        this.logger = new LogHandler();
+        saleLog = registerCreator.getSaleLog();
+        itemRegistry = registerCreator.getInventorySystem();
+        discountRegister = registerCreator.getDiscountRegister();
+        accountingSystem = registerCreator.getAccountingSystem();
+        cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
+        logger = new LogHandler();
+        saleObservers = new HashMap<>();
+        Arrays.stream(Event.values()).forEach(event -> saleObservers.put(event, new ArrayList<>()));
     }
 
+    /**
+     * The specified observer will be notified when this sale has been updated
+     * i.e. an event has occurred.
+     *
+     * @param eventType The event as {@Link Event}
+     * @param obs The observer to notify.
+     */
+    //TODO: Gäller denna alla observers oavsett syfte, Typ tänk om man vill ha observers som blir notifierade när sale ha been paid etc.
+    public void addSaleObserver(Event eventType, SaleObserver obs) {
+        saleObservers.get(eventType).add(obs);
+    }
     /**
      * Start a new sale. This method must be called before doing anything else during a sale.
      */
     public void startSale(){
         this.currentSale = new Sale(itemRegistry);
+        currentSale.addSaleObservers(saleObservers);
     }
 
     /**
      * Registers an item for sale with its item identifier and adds quantity 1.
-     * @param itemID Item identifier.
+     * @param itemID ShoppingCartItem identifier.
      * @return Sale information as a Data Transfer Object.
      * @throws ItemNotFoundException when item ID does not exist in inventory
      * @throws OperationFailedException when there is a fail with inventory system
@@ -76,7 +91,8 @@ public class Controller {
             logger.logException(itmRegExc);
             throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
         }
-        return currentSale.updateRunningSaleInfo();
+        // Vill egentligen ta bort
+        return currentSale.getSaleInfo();
     }
 
     /**

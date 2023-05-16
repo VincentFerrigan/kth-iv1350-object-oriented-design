@@ -45,10 +45,10 @@ class SaleTest {
         }
 
         int expResult = 2;
-        SaleDTO saleInfo = instance.updateRunningSaleInfo();
-        List<SaleItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
+        SaleDTO saleInfo = instance.getSaleInfo();
+        List<ShoppingCartItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
         int result = listOfSaleItems.get(0).getQuantity();
-        assertEquals(expResult,result,"Item quantity not equal");
+        assertEquals(expResult,result,"ShoppingCartItem quantity not equal");
     }
 
     @Disabled
@@ -75,10 +75,10 @@ class SaleTest {
         }
 
         int expResult = 2;
-        SaleDTO saleInfo = instance.updateRunningSaleInfo();
-        List<SaleItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
+        SaleDTO saleInfo = instance.getSaleInfo();
+        List<ShoppingCartItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
         int result = listOfSaleItems.get(0).getQuantity();
-        assertEquals(expResult,result,"Item quantity not increased");
+        assertEquals(expResult,result,"ShoppingCartItem quantity not increased");
     }
 
     @Disabled

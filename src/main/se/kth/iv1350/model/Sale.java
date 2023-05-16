@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import se.kth.iv1350.integration.*;
+import se.kth.iv1350.util.Event;
 
 import static java.util.stream.Collectors.toList;
 
@@ -11,13 +12,14 @@ import static java.util.stream.Collectors.toList;
  */
 public class Sale {
     private LocalDateTime timeOfSale;
-    private Map<Integer, Item> shoppingCart = new HashMap<>();
+    private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
     private CashPayment payment;
     private DiscountDTO discount = new DiscountDTO();
     private ItemRegistry itemRegistry;
     private Amount totalAmount;
     private Amount totalVAT;
     private Amount discountAmount;
+    private Map<Event, List<SaleObserver>> saleObservers = new HashMap<>();
 
     /**
      * Creates a new instance, representing a sale made by a customer.
@@ -41,9 +43,10 @@ public class Sale {
         }
         else {
             ItemDTO itemInfo = itemRegistry.getItemInfo(itemID);
-            Item item = new Item(itemInfo, quantity);
-            shoppingCart.put(itemID, item);
+            ShoppingCartItem shoppingCartItem = new ShoppingCartItem(itemInfo, quantity);
+            shoppingCart.put(itemID, shoppingCartItem);
         }
+        notifyObservers(Event.NEW_ITEM);
     }
 
     /**
@@ -87,7 +90,7 @@ public class Sale {
         Amount runningTotal = new Amount(0);
         List<Amount> totalPrices = getCollectionOfItems()
                 .stream()
-                .map(Item::getTotalPrice)
+                .map(ShoppingCartItem::getTotalPrice)
                 .collect(toList());
         runningTotal = runningTotal.plus(totalPrices);
 //        runningTotal = runningTotal.multiply(discount.getDiscountMultiplier());
@@ -102,7 +105,7 @@ public class Sale {
     Amount calculateTotalVATAmount() {
         // Momsberäkning
         Amount totalVATAmount = new Amount(0);
-        List<Amount> vatAmounts = getCollectionOfItems().stream().map(Item::getVatAmount).collect(toList());
+        List<Amount> vatAmounts = getCollectionOfItems().stream().map(ShoppingCartItem::getVatAmount).collect(toList());
         totalVATAmount = totalVATAmount.plus(vatAmounts);
 //        totalVATAmount = totalVATAmount.multiply(discount.getDiscountMultiplier());
 
@@ -121,7 +124,7 @@ public class Sale {
      * Gets a collection of the items in the shopping cart.
      * @return A {@link Collection} of the items in the shopping cart.
      */
-    Collection<Item> getCollectionOfItems() {
+    Collection<ShoppingCartItem> getCollectionOfItems() {
         return shoppingCart.values();
     }
 
@@ -141,6 +144,7 @@ public class Sale {
     public void pay(CashPayment payment) {
         payment.calculateTotalCost(this);
         this.payment = payment;
+        notifyObservers(Event.PAID);
     }
 
     /**
@@ -150,16 +154,6 @@ public class Sale {
     public void printReceipt(Printer printer) {
         Receipt receipt = new Receipt(this);
         printer.printReceipt(receipt);
-    }
-
-    /**
-     * Displays the currently registered items.
-     * @return Sale information as a {@link SaleDTO}.
-     */
-    public SaleDTO updateRunningSaleInfo() {
-        SaleOutput saleOutput = new SaleOutput(this);
-        saleOutput.updateRunningSale();
-        return saleOutput.getSaleInfo();
     }
 
     /**
@@ -185,8 +179,67 @@ public class Sale {
             this.totalAmount = new Amount(runningTotal);
             this.totalVAT = new Amount(runningVAT);
         }
-        SaleOutput saleOutput = new SaleOutput(this);
-        saleOutput.updateForCheckout();
-        return saleOutput.getSaleInfo();
+        notifyObservers(Event.CHECKED_OUT);
+        return getSaleInfo();
+    }
+
+    /**
+     * Get information about the sale.
+     * @return Information about the sale as a {@link SaleDTO}
+     */
+    public SaleDTO getSaleInfo() {
+        List<ShoppingCartItemDTO> shoppingCart = getShoppingCartInfo();
+
+        Amount runningTotal = calculateRunningTotal();
+        Amount runningVAT = calculateTotalVATAmount();
+        if (discount.getDiscountRate() > 0) {
+            discountAmount = runningTotal.multiply(discount.getDiscountRate());
+            totalAmount = runningTotal.multiply(this.discount.getDiscountMultiplier());
+            totalVAT = runningVAT.multiply(this.discount.getDiscountMultiplier());
+        } else {
+            totalAmount = new Amount(runningTotal);
+            totalVAT = new Amount(runningVAT);
+            discountAmount = new Amount(0);
+        }
+        return new SaleDTO(
+                shoppingCart,
+                totalAmount,
+                totalVAT,
+                discountAmount);
+    }
+
+    private List<ShoppingCartItemDTO> getShoppingCartInfo() {
+        List<ShoppingCartItemDTO> shoppingCartInfo = new ArrayList<>();
+        List<ShoppingCartItem> listOfShoppingCartItems = new ArrayList<>(getCollectionOfItems());
+
+        for (ShoppingCartItem shoppingCartItem : listOfShoppingCartItems) {
+            shoppingCartInfo.add(shoppingCartItem.getShoppingCartItemInfo());
+        }
+        return shoppingCartInfo;
+    }
+
+
+    private void notifyObservers(Event eventType) {
+        SaleDTO saleInfo = getSaleInfo();
+        saleObservers.get(eventType).forEach(observer -> observer.updateSale(saleInfo));
+    }
+    /**
+     * The specified observer will be notified when this sale has been updated
+     * i.e. an event has occurred.
+     *
+     * @param eventType The event as {@Link Event}
+     * @param obs The observer to notify.
+     */
+    public void addSaleObserver(Event eventType, SaleObserver obs) {
+        saleObservers.get(eventType).add(obs);
+    }
+
+    /**
+     * All the specified observers will be notified when this sale has been updated.
+     *
+     * @param observers The observers to notify.
+     */
+    public void addSaleObservers(Map<Event, List<SaleObserver>> observers) {
+        saleObservers.putAll(observers);
     }
 }

@@ -63,14 +63,14 @@ class ControllerTest {
 
         try {
             SaleDTO testRegID = instance.registerItem(ITEM_ID);
-            assertNotNull(testRegID, "Item registration did not work");
+            assertNotNull(testRegID, "ShoppingCartItem registration did not work");
             assertEquals(1, testRegID.getSaleItemsInfo().get(0).getQuantity(),
-                    "Item did not have quantity 1 when added without quantity.");
+                    "ShoppingCartItem did not have quantity 1 when added without quantity.");
 
             SaleDTO testRegIDQ = instance.registerItem(4, QUANTITY);
-            assertNotNull(testRegIDQ, "Item registration did not work");
+            assertNotNull(testRegIDQ, "ShoppingCartItem registration did not work");
             assertEquals(QUANTITY, testRegIDQ.getSaleItemsInfo().get(0).getQuantity(),
-                    "Item did not have the right quantity when added with quantity.");
+                    "ShoppingCartItem did not have the right quantity when added with quantity.");
         } catch (ItemNotFoundException | OperationFailedException ex) {
             // Not part of the test
         }
@@ -82,8 +82,11 @@ class ControllerTest {
         int expectedSingularQuantity = 1;
 
         try {
-            SaleItemDTO expResult = new SaleItemDTO(new ItemDTO(0, "", "", new Amount(1.0), new VAT(1)), expectedSingularQuantity, new Amount(1.0 * expectedSingularQuantity));
-            SaleItemDTO result = instance.registerItem(0).getSaleItemsInfo().get(0);
+            ShoppingCartItemDTO expResult = new ShoppingCartItemDTO(new ItemDTO(0, "", "", new Amount(1.0), new VAT(1)),
+                    LocalDateTime.now(),
+                    expectedSingularQuantity,
+                    new Amount(1.0 * expectedSingularQuantity));
+            ShoppingCartItemDTO result = instance.registerItem(0).getSaleItemsInfo().get(0);
             assertEquals(expResult, result, "Wrong quantity, expected %d".formatted(expectedSingularQuantity));
         } catch (ItemNotFoundException | OperationFailedException ex) {
             // Not part of the test

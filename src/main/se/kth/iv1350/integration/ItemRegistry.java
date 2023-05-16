@@ -1,7 +1,7 @@
 package se.kth.iv1350.integration;
 
 import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.model.Item;
+import se.kth.iv1350.model.ShoppingCartItem;
 import se.kth.iv1350.model.VAT;
 import se.kth.iv1350.util.LogHandler;
 
@@ -70,7 +70,7 @@ public class ItemRegistry {
     /**
      * Searches for item in the inventory system with specified ID.
      * @param  itemID The items unique article number a.k.a item identifier.
-     * @return Item information as a {@link ItemDTO}.
+     * @return ShoppingCartItem information as a {@link ItemDTO}.
      * @throws ItemNotFoundException when item ID does not exist in inventory.
      * @throws ItemRegistryException when database call failed.
      */
@@ -88,14 +88,14 @@ public class ItemRegistry {
     }
 
     /**
-     * Updates the inventory system by adding the bag of items sold as a collection of {@Item}
-     * @param items The bag (collection) of items sold
+     * Updates the inventory system by adding the bag of shoppingCartItems sold as a collection of {@Item}
+     * @param shoppingCartItems The bag (collection) of shoppingCartItems sold
      */
-    public void updateInventory(Collection<Item> items){
-        for (Item item : items) {
-            int key = item.getItemID();
-            inventoryTable.get(key).sold = (item.getQuantity());
-            inventoryTable.get(key).inStore -= (item.getQuantity());
+    public void updateInventory(Collection<ShoppingCartItem> shoppingCartItems){
+        for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
+            int key = shoppingCartItem.getItemID();
+            inventoryTable.get(key).sold = (shoppingCartItem.getQuantity());
+            inventoryTable.get(key).inStore -= (shoppingCartItem.getQuantity());
         }
         updateDatabase();
     }

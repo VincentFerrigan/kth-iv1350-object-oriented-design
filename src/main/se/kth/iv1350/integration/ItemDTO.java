@@ -22,8 +22,8 @@ public class ItemDTO {
      * Creates a new instance representing a particular item.
      *
      * @param itemID            Unique itemID
-     * @param name              Item's name
-     * @param description       Item description
+     * @param name              ShoppingCartItem's name
+     * @param description       ShoppingCartItem description
      * @param price             Price incl. VAT in {@link Amount}
      * @param vat               {@link VAT} (with rate based on VAT Rate Group)
      */

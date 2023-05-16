@@ -30,10 +30,10 @@ public class Receipt {
      */
     @Override
     public String toString() {
-        List<Item> listOfItems = new ArrayList<>(sale.getCollectionOfItems());
+        List<ShoppingCartItem> listOfShoppingCartItems = new ArrayList<>(sale.getCollectionOfItems());
 
         // Sorterar listan per namn
-        Collections.sort(listOfItems, Comparator.comparing(Item::getName));
+        Collections.sort(listOfShoppingCartItems, Comparator.comparing(ShoppingCartItem::getName));
 
         // Pretty printing
         StringBuilder builder = new StringBuilder();
@@ -41,12 +41,12 @@ public class Receipt {
         builder.append("%-19s%s%n".formatted("", "Grocery store"));
         builder.append("%-16s%s%n".formatted("", this.timeOfSale.format(formatter)));
         builder.append("\n");
-        for (Item item: listOfItems) {
-            builder.append("%-40s%s%n".formatted(item.getName(), item.getTotalPrice()));
-            builder.append("(%d * %s)\n".formatted(item.getQuantity(), item.getUnitPrice()));
+        for (ShoppingCartItem shoppingCartItem : listOfShoppingCartItems) {
+            builder.append("%-40s%s%n".formatted(shoppingCartItem.getName(), shoppingCartItem.getTotalPrice()));
+            builder.append("(%d * %s)\n".formatted(shoppingCartItem.getQuantity(), shoppingCartItem.getUnitPrice()));
         }
         builder.append("\n");
-        if (this.sale.getDiscountAmount() != null) {
+        if (!this.sale.getDiscountAmount().equals(new Amount(0))) {
             builder.append("%-40s-%s%n".formatted("Total discount:", this.sale.getDiscountAmount()));
         }
         builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));

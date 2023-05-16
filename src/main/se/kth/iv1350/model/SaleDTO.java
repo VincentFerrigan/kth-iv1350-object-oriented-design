@@ -1,27 +1,27 @@
 package se.kth.iv1350.model;
 import java.util.List;
-import java.util.Objects;
 
 
-// TODO ska discountDTO finnas med i SaleDTO och/eller SaleItemDTO?
+// TODO ska discountDTO finnas med i SaleDTO och/eller ShoppingCartItemDTO?
 
 /**
  * Contains information about on particular Sale as a Data Transfer Object.
  */
 public class SaleDTO {
-    private final List<SaleItemDTO> saleItemsInfo;
+    private final List<ShoppingCartItemDTO> saleItemsInfo;
     private final Amount totalPrice;
     private final Amount totalVATAmount;
     private final Amount totalDiscounts;
 
     /**
      * Creates a new instance representing a particular sale.
-     * @param saleItemsInfo The shopping cart as a list of Sale Item Data Transfer Objects
+     * @param saleItemsInfo The shopping cart as a list of Sale ShoppingCartItem Data Transfer Objects
      * @param totalPrice The total price
      * @param totalVATAmount The total VAT amount
      * @param totalDiscounts The total discount amount if any.
      */
-    public SaleDTO(List<SaleItemDTO> saleItemsInfo, Amount totalPrice, Amount totalVATAmount, Amount totalDiscounts) {
+    public SaleDTO(List<ShoppingCartItemDTO> saleItemsInfo,
+                   Amount totalPrice, Amount totalVATAmount, Amount totalDiscounts) {
         this.saleItemsInfo = saleItemsInfo;
         this.totalPrice = totalPrice;
         this.totalVATAmount = totalVATAmount;
@@ -30,7 +30,7 @@ public class SaleDTO {
 
     /**
      * Creates a copy of an instance representing a particular sale.
-     * @param other
+     * @param other Sale information as Data Transfer Object
      */
     public SaleDTO(SaleDTO other) {
         this.saleItemsInfo = other.saleItemsInfo;
@@ -43,7 +43,7 @@ public class SaleDTO {
      * Gets the shopping cart as a list of sale item data transfer objects
      * @return the shopping cart as a list of sale item data transfer objets
      */
-    public List<SaleItemDTO> getSaleItemsInfo() {
+    public List<ShoppingCartItemDTO> getSaleItemsInfo() {
         return saleItemsInfo;
     }
 
@@ -75,7 +75,7 @@ public class SaleDTO {
     public String toString() {
         // Pretty printing
         StringBuilder builder = new StringBuilder();
-        for (SaleItemDTO itemInfo: saleItemsInfo) {
+        for (ShoppingCartItemDTO itemInfo: saleItemsInfo) {
             builder.append("%-40s%s%n".formatted(itemInfo.getName(), itemInfo.getTotalPrice()));
             builder.append("(%d * %s)\n".formatted(itemInfo.getQuantity(), itemInfo.getUnitPrice()));
         }
@@ -87,10 +87,10 @@ public class SaleDTO {
         if (this == o) return true;
         if (o == null || !(o instanceof SaleDTO)) return false;
 
-        SaleDTO saleDTO = (SaleDTO) o;
+        SaleDTO that = (SaleDTO) o;
 
-        if (!(saleItemsInfo.equals(saleDTO.saleItemsInfo))) return false;
-        if (!(totalPrice.equals(saleDTO.totalPrice))) return false;
-        return totalVATAmount.equals(saleDTO.totalVATAmount);
+        if (!(saleItemsInfo.equals(that.saleItemsInfo))) return false;
+        if (!(totalPrice.equals(that.totalPrice))) return false;
+        return totalVATAmount.equals(that.totalVATAmount);
     }
 }

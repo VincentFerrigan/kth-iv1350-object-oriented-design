@@ -2,28 +2,39 @@ package se.kth.iv1350.model;
 
 import se.kth.iv1350.integration.ItemDTO;
 
-import java.util.Objects;
+import java.time.LocalDateTime;
 
-// TODO ska discountDTO finnas med i SaleDTO och/eller SaleItemDTO?
+// TODO ska discountDTO finnas med i SaleDTO och/eller ShoppingCartItemDTO?
 
 /**
  * Contains information about a registered item (item info, quantity and total price) as a Data Transfer Object.
  */
-public class SaleItemDTO {
+public class ShoppingCartItemDTO {
     private final ItemDTO itemInfo;
+    private LocalDateTime timeOfUpdate;
     private final int quantity;
     private final Amount totalPrice;
 
     /**
      * Creates a new instance representing a registered item.
-     * @param itemInfo Item information data transfer object from item registry.
-     * @param quantity The quantity registered
+     * @param itemInfo ShoppingCartItem information data transfer object from item registry.
+     * @param timeOfUpdate The time that the item was registered.
+     * @param quantity The quantity registered.
      * @param totalPrice The total price i.e. unit price x quantity.
      */
-    public SaleItemDTO(ItemDTO itemInfo, int quantity, Amount totalPrice) {
+    public ShoppingCartItemDTO(ItemDTO itemInfo, LocalDateTime timeOfUpdate, int quantity, Amount totalPrice) {
         this.itemInfo = itemInfo;
+        this.timeOfUpdate = timeOfUpdate;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+    }
+
+    /**
+     * Get the time of update
+     * @return the time that the item was last registered
+     */
+    public LocalDateTime getTimeOfUpdate() {
+        return timeOfUpdate;
     }
 
     /**
@@ -85,9 +96,9 @@ public class SaleItemDTO {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof SaleItemDTO)) return false;
+        if (o == null || !(o instanceof ShoppingCartItemDTO)) return false;
 
-        SaleItemDTO that = (SaleItemDTO) o;
+        ShoppingCartItemDTO that = (ShoppingCartItemDTO) o;
 
         if (quantity != that.quantity) return false;
         if (!(itemInfo.equals(that.itemInfo))) return false;
