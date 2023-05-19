@@ -1,10 +1,10 @@
 package se.kth.iv1350.view;
 
 import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.util.LogHandler;
 
+// TODO UML:a och skriva JavaDocs
 public class TotalRevenueView extends TotalRevenue {
-    private LogHandler logger;
+
     /**
      * Shows the total revenue.
      * @param totalRevenue the new total revenue
@@ -18,7 +18,6 @@ public class TotalRevenueView extends TotalRevenue {
 
     @Override
     protected void handleErrors(Exception e) {
-        logger.logException(e);
 
     }
 

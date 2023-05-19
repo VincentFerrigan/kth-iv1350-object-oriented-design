@@ -2,13 +2,13 @@ package se.kth.iv1350.view;
 
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.SaleDTO;
-import se.kth.iv1350.model.SaleObserver;
 import se.kth.iv1350.model.ShoppingCartItemDTO;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+// TODO UML:a och skriva JavaDocs
 public class EndOfSaleView extends SaleView {
     @Override
     protected void sortShoppingCart(List<ShoppingCartItemDTO> listOfShoppingCartItemsInfo) {
@@ -22,7 +22,7 @@ public class EndOfSaleView extends SaleView {
             System.out.println("%-40s-%s".formatted("Total discount:", saleInfo.getTotalDiscounts()));
         }
         System.out.println("%-40s%s".formatted("Total Price:", saleInfo.getTotalPrice()));
-        System.out.println("%-40s%s".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
+        System.out.println("%-40s%s".formatted("Including VAT:", saleInfo.getTotalVATCost()));
         System.out.println("---------------- End of End of Sale --------------");
     }
 }

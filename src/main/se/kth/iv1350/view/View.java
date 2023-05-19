@@ -2,11 +2,11 @@ package se.kth.iv1350.view;
 
 import se.kth.iv1350.controller.Controller;
 import se.kth.iv1350.controller.OperationFailedException;
-import se.kth.iv1350.integration.ItemNotFoundException;
+import se.kth.iv1350.integration.ItemNotFoundInItemRegistryException;
 import se.kth.iv1350.integration.TotalRevenueFileOutput;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.util.Event;
-import se.kth.iv1350.util.LogHandler;
+import se.kth.iv1350.util.ErrorFileLogHandler;
 import java.io.IOException;
 
 /**
@@ -15,8 +15,8 @@ import java.io.IOException;
  */
 public class View {
     private Controller contr;
-    private ErrorMessageHandler errorMessageHandler = new ErrorMessageHandler();
-    private LogHandler logger;
+    private ErrorMessageHandler errorMessageHandler;
+    private ErrorFileLogHandler logger;
 
     /**
      * Creates a new instance.
@@ -28,7 +28,8 @@ public class View {
         contr.addSaleObserver(Event.CHECKED_OUT, new EndOfSaleView());
         contr.addSaleObserver(Event.PAID, new TotalRevenueView());
         contr.addSaleObserver(Event.PAID, new TotalRevenueFileOutput());
-        this.logger = new LogHandler();
+        logger = ErrorFileLogHandler.getInstance();
+        errorMessageHandler = ErrorMessageHandler.getInstance();
     }
 
     /**
@@ -48,17 +49,17 @@ public class View {
             try {
                 System.out.println("Trying to enter a non-existing item ID, should generate an error.");
                 contr.registerItem(150);
-                errorMessageHandler.showErrorMessage("Managed to enter a non-existing item ID.");
-            } catch (ItemNotFoundException ex) {
-                errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
+                errorMessageHandler.log("Managed to enter a non-existing item ID.");
+            } catch (ItemNotFoundInItemRegistryException ex) {
+                errorMessageHandler.log("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
             } catch (OperationFailedException exc) {
                 writeToLogAndUI("Wrong exception was thrown.", exc);
             }
             try {
                 System.out.println("Temporary lost connection with server, database call failed");
                 contr.registerItem(404);
-                errorMessageHandler.showErrorMessage("Managed to register item even when database call failed.");
-            } catch (ItemNotFoundException ex) {
+                errorMessageHandler.log("Managed to register item even when database call failed.");
+            } catch (ItemNotFoundInItemRegistryException ex) {
                 writeToLogAndUI("Wrong exception was thrown.", ex);
             } catch (OperationFailedException ex) {
                 writeToLogAndUI("Correctly failed to register item when database call failed", ex);
@@ -67,11 +68,11 @@ public class View {
             contr.registerItem(1, 2);
             contr.endSale();
             payAndWriteCheckoutToUI(new Amount(500));
-        } catch (ItemNotFoundException ex) {
-            errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.logException(ex);
-            errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
+            logger.log(ex);
+            errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (IllegalArgumentException ex) {
             // TODO Hur hanterar vi denna?
             writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
@@ -97,11 +98,11 @@ public class View {
             contr.discountRequest(880822);
             contr.endSale();
             payAndWriteCheckoutToUI(new Amount(500));
-        } catch (ItemNotFoundException ex) {
-            errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.logException(ex);
-            errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
+            logger.log(ex);
+            errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (IllegalArgumentException ex) {
             // TODO Hur hanterar vi denna?
             writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
@@ -126,11 +127,11 @@ public class View {
             contr.discountRequest(810222);
             contr.endSale();
             payAndWriteCheckoutToUI(new Amount(500));
-        } catch (ItemNotFoundException ex) {
-            errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.logException(ex);
-            errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
+            logger.log(ex);
+            errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (IllegalArgumentException ex) {
             // TODO Hur hanterar vi denna?
             writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
@@ -152,11 +153,11 @@ public class View {
             contr.registerItem(1);
             contr.endSale();
             payAndWriteCheckoutToUI(new Amount(500));
-        } catch (ItemNotFoundException ex) {
-            errorMessageHandler.showErrorMessage("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.logException(ex);
-            errorMessageHandler.showErrorMessage("No connection to inventory system. Try again.");
+            logger.log(ex);
+            errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (IllegalArgumentException ex) {
             // TODO Hur hanterar vi denna?
             writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
@@ -170,7 +171,7 @@ public class View {
         contr.pay(paidAmount);
     }
     private void writeToLogAndUI(String uiMsg, Exception exc) {
-        errorMessageHandler.showErrorMessage(uiMsg);
-        logger.logException(exc);
+        errorMessageHandler.log(uiMsg);
+        logger.log(exc);
     }
 }

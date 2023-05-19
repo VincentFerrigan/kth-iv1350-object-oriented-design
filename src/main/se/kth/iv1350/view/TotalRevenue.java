@@ -4,6 +4,7 @@ import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.SaleDTO;
 import se.kth.iv1350.model.SaleObserver;
 
+// TODO UML:a och skriva JavaDocs
 /**
  * A template for a sale observer that displays the total revenue when it has changed.
  */

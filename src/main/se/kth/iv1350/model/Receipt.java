@@ -42,15 +42,16 @@ public class Receipt {
         builder.append("%-16s%s%n".formatted("", this.timeOfSale.format(formatter)));
         builder.append("\n");
         for (ShoppingCartItem shoppingCartItem : listOfShoppingCartItems) {
-            builder.append("%-40s%s%n".formatted(shoppingCartItem.getName(), shoppingCartItem.getTotalPrice()));
+            builder.append("%-40s%s%n".formatted(shoppingCartItem.getName(), shoppingCartItem.getTotalSubPrice()));
             builder.append("(%d * %s)\n".formatted(shoppingCartItem.getQuantity(), shoppingCartItem.getUnitPrice()));
         }
         builder.append("\n");
-        if (!this.sale.getDiscountAmount().equals(new Amount(0))) {
-            builder.append("%-40s-%s%n".formatted("Total discount:", this.sale.getDiscountAmount()));
-        }
+        // TODO: Discount strategy skall bytas ut.
+//        if (!this.sale.getDiscountAmount().equals(new Amount(0))) {
+//            builder.append("%-40s-%s%n".formatted("Total discount:", this.sale.getDiscountAmount()));
+//        }
         builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));
-        builder.append("%-40s%s%n".formatted("Total VAT:", this.sale.getTotalVAT()));
+        builder.append("%-40s%s%n".formatted("Total VAT:", this.sale.getTotalVATCosts()));
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Paid Amount:", this.sale.getPayment().getPaidAmt()));
         builder.append("%-40s%s%n".formatted("Change:", this.sale.getPayment().getChange()));

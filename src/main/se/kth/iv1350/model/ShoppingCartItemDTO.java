@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  */
 public class ShoppingCartItemDTO {
     private final ItemDTO itemInfo;
-    private LocalDateTime timeOfUpdate;
+    private final LocalDateTime timeOfUpdate;
     private final int quantity;
     private final Amount totalPrice;
 

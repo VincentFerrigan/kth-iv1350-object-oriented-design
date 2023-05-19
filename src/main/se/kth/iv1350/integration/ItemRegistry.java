@@ -1,46 +1,61 @@
 package se.kth.iv1350.integration;
 
 import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.model.ShoppingCartItem;
+import se.kth.iv1350.model.SaleDTO;
+import se.kth.iv1350.model.ShoppingCartItemDTO;
 import se.kth.iv1350.model.VAT;
-import se.kth.iv1350.util.LogHandler;
+import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+
 /**
- * Represents an external inventory system. Contains all the item data that are stored in the store.
- * This class is a placeholder for a future external inventory system.
+ * A Singleton that creates an instance representing an external inventory system.
+ * Contains all the item data that are stored in the store.
+ * This Singleton is a placeholder for a future external inventory system.
  */
 public class ItemRegistry {
+    private static volatile ItemRegistry instance;
+    private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
+    private static final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);
+    private static final String FLAT_FILE_DB = "inventory_items.csv";
     private static final String CSV_DELIMITER = ";";
     private static final int DATABASE_NOT_FOUND = 404;
     private String recordHeader;
-    private final String flatFileDb;
-    private final String filePath;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
-    private LogHandler logger;
+    private ErrorFileLogHandler logger;
 
-    /**
-     * Creates a new instance of an inventory system as {@link ItemRegistry}.
-     * @param filePath relative file path to the flat file database (csv)
-     * @param fileName filename of the flat file database (csv)
-     */
-    ItemRegistry(String filePath, String fileName) throws IOException {
+    private ItemRegistry() throws IOException {
         // TODO ska vi flytta ut hela inläsningsprocessen till en separat metod????
-        this.filePath = filePath;
-        this.flatFileDb = fileName;
-        this.logger = new LogHandler();
+        this.logger = ErrorFileLogHandler.getInstance();
         addItemData();
     }
+    /**
+     * @return The only instance of this singleton.
+     * @throws IOException
+     */
+    public static ItemRegistry getInstance() throws IOException {
+        ItemRegistry result = instance;
+        if (result == null) {
+            synchronized (ItemRegistry.class) {
+                result = instance;
+                if (result == null) {
+                    instance = result = new ItemRegistry();
+                }
+            }
+        }
+        return result;
+    }
+
     /**
      * Adds items to the hashmap from the flat file database.
      */
     private void addItemData () throws IOException {
-        try (FileReader reader = new FileReader(this.filePath + this.flatFileDb);
+        try (FileReader reader = new FileReader(FILE_PATH + FILE_SEPARATOR + FLAT_FILE_DB);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
             recordHeader = bufferedReader.readLine();
@@ -50,19 +65,19 @@ public class ItemRegistry {
                         Integer.parseInt(splitArray[0]),    //itemID
                         splitArray[1],                      //name
                         splitArray[2],                      //description
-                        Double.parseDouble(splitArray[3]),    //price
-                        Integer.parseInt(splitArray[4]),   //vatRateGroupCode
-                        Integer.parseInt(splitArray[5]),   //quantity
+                        Double.parseDouble(splitArray[3]),  //price
+                        Integer.parseInt(splitArray[4]),    //vatRateGroupCode
+                        Integer.parseInt(splitArray[5]),    //quantity
                         Integer.parseInt(splitArray[6]));   //quantity
                 this.inventoryTable.put(item.articleNo, item);
             }
         } catch (FileNotFoundException ex){
             // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
-            logger.logException(ex);
+            logger.log(ex);
             throw ex;
         } catch (IOException ex){
             // TODO ska addItemData loggas här?
-            logger.logException(ex);
+            logger.log(ex);
             throw ex;
         }
     }
@@ -71,11 +86,11 @@ public class ItemRegistry {
      * Searches for item in the inventory system with specified ID.
      * @param  itemID The items unique article number a.k.a item identifier.
      * @return ShoppingCartItem information as a {@link ItemDTO}.
-     * @throws ItemNotFoundException when item ID does not exist in inventory.
+     * @throws ItemNotFoundInItemRegistryException when item ID does not exist in inventory.
      * @throws ItemRegistryException when database call failed.
      */
     //TODO Are we supposed to throw ItemRegistryException as well with method?
-    public ItemDTO getItemInfo(int itemID) throws ItemNotFoundException {
+    public ItemDTO getItemInfo(int itemID) throws ItemNotFoundInItemRegistryException {
         if (itemID == DATABASE_NOT_FOUND) {
             throw new ItemRegistryException("Detailed message about database fail");
         } else if (inventoryTable.containsKey(itemID)) {
@@ -83,19 +98,20 @@ public class ItemRegistry {
             return new ItemDTO(
                     item.articleNo, item.name, item.description, item.price, item.vat);
         } else {
-            throw new ItemNotFoundException(itemID);
+            throw new ItemNotFoundInItemRegistryException(itemID);
         }
     }
 
     /**
-     * Updates the inventory system by adding the bag of shoppingCartItems sold as a collection of {@Item}
-     * @param shoppingCartItems The bag (collection) of shoppingCartItems sold
+     * Updates the inventory system.
+     * @param saleInfo contains the sale details
      */
-    public void updateInventory(Collection<ShoppingCartItem> shoppingCartItems){
-        for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
-            int key = shoppingCartItem.getItemID();
-            inventoryTable.get(key).sold = (shoppingCartItem.getQuantity());
-            inventoryTable.get(key).inStore -= (shoppingCartItem.getQuantity());
+    public void updateInventory(SaleDTO saleInfo){
+        List<ShoppingCartItemDTO> shoppingCartInfo = saleInfo.getSaleItemsInfo();
+        for (ShoppingCartItemDTO shoppingCartItemInfo : shoppingCartInfo) {
+            int key = shoppingCartItemInfo.getItemID();
+            inventoryTable.get(key).sold = (shoppingCartItemInfo.getQuantity());
+            inventoryTable.get(key).inStore -= (shoppingCartItemInfo.getQuantity());
         }
         updateDatabase();
     }
@@ -104,7 +120,7 @@ public class ItemRegistry {
      * Update database by writing to the flat file database
      */
     private void updateDatabase() {
-        try (FileWriter fileWriter = new FileWriter(this.filePath + "inventory_" + LocalDate.now() + ".csv");
+        try (FileWriter fileWriter = new FileWriter(FILE_PATH + FILE_SEPARATOR + "inventory_" + LocalDate.now() + ".csv");
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
@@ -114,10 +130,10 @@ public class ItemRegistry {
             }
             bufferedWriter.flush();
         } catch (FileNotFoundException ex){
-            logger.logException(ex);
+            logger.log(ex);
             throw new ItemRegistryException("Detailed message about database fail");
         } catch (IOException ex){
-            logger.logException(ex);
+            logger.log(ex);
             throw new ItemRegistryException("Detailed message about database fail");
         }
     }

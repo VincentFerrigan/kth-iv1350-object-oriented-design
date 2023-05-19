@@ -30,22 +30,22 @@ public class ShoppingCartItem {
     public ShoppingCartItem(ItemDTO item){
         this(item, 1);
     }
-    @Deprecated
-    public void addItem(ShoppingCartItem anotherShoppingCartItem){
-        //TODO denna är bättre i sale
-        this.timeOfUpdate = LocalDateTime.now();
-        if (this.equals(anotherShoppingCartItem)) {
-            addToQuantity(anotherShoppingCartItem.getQuantity());
-        }
-    }
-    /**
-     * Set the quantity.
-     * @param  quantity nbr of items.
-     */
-    public void setQuantity(int quantity){
-        this.timeOfUpdate = LocalDateTime.now();
-        this.quantity = quantity;
-    }
+//    @Deprecated
+//    public void addItem(ShoppingCartItem anotherShoppingCartItem){
+//        //TODO denna är bättre i sale
+//        this.timeOfUpdate = LocalDateTime.now();
+//        if (this.equals(anotherShoppingCartItem)) {
+//            addToQuantity(anotherShoppingCartItem.getQuantity());
+//        }
+//    }
+//    /**
+//     * Set the quantity.
+//     * @param  quantity nbr of items.
+//     */
+//    public void setQuantity(int quantity){
+//        this.timeOfUpdate = LocalDateTime.now();
+//        this.quantity = quantity;
+//    }
 
     /**
      * Add quantity to item.
@@ -57,10 +57,28 @@ public class ShoppingCartItem {
     }
 
     /**
+     * Get the total price as {@link Amount} i.e. quantity x unit price
+     * @return the total price for all the same items.
+     */
+    public Amount getTotalSubPrice() {
+        return getUnitPrice().multiply(quantity);
+    }
+
+    /**
+     * Get the total VAT as {@link Amount}.
+     * @return the total VAT
+     */
+    public Amount getVATCosts() {
+        double vatRate = itemInfo.getVATRate();
+        return getTotalSubPrice().multiply(vatRate);
+    }
+
+    /**
      * Get time of update
      * @return time of update
      */
     public LocalDateTime getTimeOfUpdate() {
+        // TODO: Används ej. Detta då vi inte skickar runt Sale utan snarare SaleDTO
         return timeOfUpdate;
     }
 
@@ -69,6 +87,7 @@ public class ShoppingCartItem {
      * @return The item data information as {@link ItemDTO}
      */
     public ItemDTO getItemDTO() {
+        // TODO: Används ej. Detta då vi inte skickar runt Sale utan snarare SaleDTO
         return itemInfo;
     }
 
@@ -88,22 +107,6 @@ public class ShoppingCartItem {
         return quantity;
     }
 
-     /**
-     * Get the total price as {@link Amount} i.e. quantity x unit price
-     * @return the total price for all the same items.
-     */
-    public Amount getTotalPrice() {
-        return getUnitPrice().multiply(quantity);
-    }
-
-    /**
-     * Get the total VAT as {@link Amount}.
-     * @return the total VAT
-     */
-    public Amount getVatAmount() {
-        double vatRate = itemInfo.getVATRate();
-        return getTotalPrice().multiply(vatRate);
-    }
     /**
      * Get the unit price
      * @return the unit price
@@ -118,6 +121,9 @@ public class ShoppingCartItem {
         return itemInfo.getName();
     }
 
+    ShoppingCartItemDTO getShoppingCartItemInfo() {
+        return new ShoppingCartItemDTO(itemInfo, timeOfUpdate, quantity, getTotalSubPrice());
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -127,9 +133,5 @@ public class ShoppingCartItem {
 
         if (quantity != that.quantity) return false;
         return itemInfo.equals(that.itemInfo);
-    }
-
-    ShoppingCartItemDTO getShoppingCartItemInfo() {
-        return new ShoppingCartItemDTO(itemInfo, timeOfUpdate, quantity, getTotalPrice());
     }
 }

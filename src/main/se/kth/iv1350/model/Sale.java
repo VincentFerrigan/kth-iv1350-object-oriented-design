@@ -7,110 +7,133 @@ import se.kth.iv1350.util.Event;
 
 import static java.util.stream.Collectors.toList;
 
+/* TODO: Keep the following for the report.
+*  For lower coupling, move the item registry out of sale.
+*  For additional high grade task 2. Adapt the Map (library) to a class that inherits from Map. It can become a ShoppingCart class.
+*  With contains methods, adds methods and so on. Should it contain the ShoppingCartItem class or does Sale create them? This could increase cohesion.
+*
+* Is the event a state? Could it be used if payment be moved to sale instead of control.
+ */
+
 /**
  * Represents a particular sale.
  */
 public class Sale {
-    private LocalDateTime timeOfSale;
+    private Map<Event, List<SaleObserver>> saleObservers = new HashMap<>();
+    private LocalDateTime timeOfSale; // TODO ska den vara kvar? Syfte?
     private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
     private CashPayment payment;
-    private DiscountDTO discount = new DiscountDTO();
-    private ItemRegistry itemRegistry;
-    private Amount totalAmount;
-    private Amount totalVAT;
-    private Amount discountAmount;
-    private Map<Event, List<SaleObserver>> saleObservers = new HashMap<>();
+    private DiscountDTO discount = new DiscountDTO(); // TODO: BÖR bytas ut mot discount strategy/composite grejen
+    private boolean isComplete;
+
+//    private Amount discountAmount;
 
     /**
      * Creates a new instance, representing a sale made by a customer.
-     * @param itemRegistry The data stores information about all items (item catalog linked to external inventory system).
      */
-    public Sale(ItemRegistry itemRegistry){
+    public Sale(){
         this.timeOfSale = LocalDateTime.now();
-        this.itemRegistry = itemRegistry;
+        isComplete = false;
     }
 
     /**
      * Adds an item to the shopping cart.
      * @param itemID The item identifier.
      * @param quantity The item quantity.
-     * @throws ItemNotFoundException when item ID does not exist in inventory
-     * @throws ItemRegistryException when there is an unknown fail with inventory system
+     * @throws ItemNotFoundInShoppingCartException when item does not exist in Shopping Cart
      */
-    public void addItem(int itemID, int quantity) throws ItemNotFoundException {
-        if (shoppingCart.containsKey(itemID)) {
-            this.shoppingCart.get(itemID).addToQuantity(quantity);
+    public void addItem(int itemID, int quantity) throws ItemNotFoundInShoppingCartException {
+        ShoppingCartItem existingShoppingCartItem = this.shoppingCart.get(itemID);
+        if (existingShoppingCartItem != null) {
+            existingShoppingCartItem.addToQuantity(quantity);
+            isComplete = false;
+            notifyObservers(Event.NEW_ITEM);
+        } else {
+            throw new ItemNotFoundInShoppingCartException(itemID);
         }
-        else {
-            ItemDTO itemInfo = itemRegistry.getItemInfo(itemID);
-            ShoppingCartItem shoppingCartItem = new ShoppingCartItem(itemInfo, quantity);
-            shoppingCart.put(itemID, shoppingCartItem);
-        }
-        notifyObservers(Event.NEW_ITEM);
     }
 
     /**
      * Adds an item to the shopping cart.
-     * @param itemID The item identifier.
+     * @param itemInfo item information as {@link ItemDTO}
      */
-    public void addItem(int itemID) throws ItemNotFoundException {
-        addItem(itemID, 1);
+    public void addItem(ItemDTO itemInfo, int quantity) {
+        ShoppingCartItem newShoppingCartItem = new ShoppingCartItem(itemInfo, quantity);
+        ShoppingCartItem alreadyExistedShoppingCartItem = shoppingCart.put(
+                itemInfo.getItemID(),
+                newShoppingCartItem);
+
+        if (alreadyExistedShoppingCartItem != null) {
+            this.shoppingCart
+                .get(alreadyExistedShoppingCartItem.getItemID())
+                .addToQuantity(alreadyExistedShoppingCartItem.getQuantity());
+        }
+        isComplete = false;
+        notifyObservers(Event.NEW_ITEM);
     }
 
     /**
      * Gets the total amount for the current sale.
      * @return The total amount of the current sale.
      */
-    public Amount getTotalAmount() {
-        return totalAmount;
-    }
-
-    /**
-     * Gets the total VAT amount for the current sale.
-     * @return The total VAT amount of the current sale.
-     */
-    public Amount getTotalVAT() {
-        return totalVAT;
-    }
-
-    /**
-     * Gets the discount amount for the current sale.
-     * @return The discount amount of the current sale.
-     */
-    public Amount getDiscountAmount() {
-        return discountAmount;
+    public Amount getTotalPrice() {
+        // TODO: bör begränsas eller slås ihop med calculate. Alternativt endast hämtas från DTO
+        return calculateRunningTotal();
     }
 
     /**
      * Calculates the total cost of the shopping cart, including possible discount.
      * @return The running total as a {@link Amount}.
      */
-    Amount calculateRunningTotal() {
+    private Amount calculateRunningTotal() {
         // Totalbelopp
         Amount runningTotal = new Amount(0);
         List<Amount> totalPrices = getCollectionOfItems()
                 .stream()
-                .map(ShoppingCartItem::getTotalPrice)
+                .map(ShoppingCartItem::getTotalSubPrice)
                 .collect(toList());
         runningTotal = runningTotal.plus(totalPrices);
-//        runningTotal = runningTotal.multiply(discount.getDiscountMultiplier());
 
         return runningTotal;
+    }
+
+    /**
+     * Gets the total VAT amount for the current sale.
+     * @return The total VAT amount of the current sale.
+     */
+    public Amount getTotalVATCosts() {
+        // TODO: bör begränsas eller slås ihop med calculate. Alternativt endast hämtas från DTO
+        return calculateTotalVATAmount();
     }
 
     /**
      * Calculates the total VAT of items in the shopping cart.
      * @return The total VAT amount as a {@link Amount}.
      */
-    Amount calculateTotalVATAmount() {
+    private Amount calculateTotalVATAmount() {
         // Momsberäkning
         Amount totalVATAmount = new Amount(0);
-        List<Amount> vatAmounts = getCollectionOfItems().stream().map(ShoppingCartItem::getVatAmount).collect(toList());
+        List<Amount> vatAmounts = getCollectionOfItems().stream().map(ShoppingCartItem::getVATCosts).collect(toList());
         totalVATAmount = totalVATAmount.plus(vatAmounts);
-//        totalVATAmount = totalVATAmount.multiply(discount.getDiscountMultiplier());
 
         return totalVATAmount;
     }
+
+    /**
+     * Gets complete status, i.e. has the sale ended
+     * @return complete status
+     */
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    //    /**
+//     * Gets the discount amount for the current sale.
+//     * @return The discount amount of the current sale.
+//     */
+//    public Amount getDiscountAmount() {
+//        return discountAmount;
+//    }
 
     /**
      * Gets payment for the current sale.
@@ -129,10 +152,20 @@ public class Sale {
     }
 
     /**
+     * Update sale information for checkout
+     */
+    public void endSale() {
+        // what else apart from notification?
+        isComplete = true;
+        notifyObservers(Event.CHECKED_OUT);
+    }
+
+    /**
      * Applies discount to the shopping cart.
      * @param discount The discount information as a {@link DiscountDTO}.
      */
-    public void applyDiscount(DiscountDTO discount){
+    public void applyDiscount(DiscountDTO discount) {
+        // TODO: change strategy to strategy design pattern with compoisition.
         this.discount = discount;
     }
 
@@ -157,55 +190,27 @@ public class Sale {
     }
 
     /**
-     * Updates the external inventory system with a {@link Collection}
-     * of the sold items.
-     */
-    public void updateInventory() {
-        itemRegistry.updateInventory(getCollectionOfItems());
-    }
-
-    /**
-     * Update sale information for checkout
-     * @return Sale information as a {@link SaleDTO}.
-     */
-    public SaleDTO endSale() {
-        Amount runningTotal = calculateRunningTotal();
-        Amount runningVAT = calculateTotalVATAmount();
-        if (discount.getDiscountRate() > 0) {
-            this.discountAmount = runningTotal.multiply(discount.getDiscountRate());
-            this.totalAmount = runningTotal.multiply(this.discount.getDiscountMultiplier());
-            this.totalVAT = runningVAT.multiply(this.discount.getDiscountMultiplier());
-        } else {
-            this.totalAmount = new Amount(runningTotal);
-            this.totalVAT = new Amount(runningVAT);
-        }
-        notifyObservers(Event.CHECKED_OUT);
-        return getSaleInfo();
-    }
-
-    /**
      * Get information about the sale.
      * @return Information about the sale as a {@link SaleDTO}
      */
     public SaleDTO getSaleInfo() {
+        // Processen bör bytas ut mot någon form av strategy composite pattern
         List<ShoppingCartItemDTO> shoppingCart = getShoppingCartInfo();
 
-        Amount runningTotal = calculateRunningTotal();
-        Amount runningVAT = calculateTotalVATAmount();
-        if (discount.getDiscountRate() > 0) {
-            discountAmount = runningTotal.multiply(discount.getDiscountRate());
-            totalAmount = runningTotal.multiply(this.discount.getDiscountMultiplier());
-            totalVAT = runningVAT.multiply(this.discount.getDiscountMultiplier());
-        } else {
-            totalAmount = new Amount(runningTotal);
-            totalVAT = new Amount(runningVAT);
-            discountAmount = new Amount(0);
-        }
+        Amount runningTotalAmount = calculateRunningTotal();
+        Amount runningVATAmount = calculateTotalVATAmount();
+        Amount runningDiscountAmount = new Amount(0);
+        // Ersätt discount strategy
+//        if (discount.getDiscountRate() > 0) {
+//            runningDiscountAmount = runningTotalAmount.multiply(discount.getDiscountRate());
+//            runningTotalAmount = runningTotalAmount.multiply(this.discount.getDiscountMultiplier());
+//            runningVATAmount = runningVATAmount.multiply(this.discount.getDiscountMultiplier());
+//        }
         return new SaleDTO(
                 shoppingCart,
-                totalAmount,
-                totalVAT,
-                discountAmount);
+                runningTotalAmount,
+                runningVATAmount,
+                runningDiscountAmount);
     }
 
     private List<ShoppingCartItemDTO> getShoppingCartInfo() {
@@ -228,10 +233,11 @@ public class Sale {
      * i.e. an event has occurred.
      *
      * @param eventType The event as {@Link Event}
-     * @param obs The observer to notify.
+     * @param observer The observer to notify.
      */
-    public void addSaleObserver(Event eventType, SaleObserver obs) {
-        saleObservers.get(eventType).add(obs);
+    public void addSaleObserver(Event eventType, SaleObserver observer) {
+        // TODO: Används denna? Kommer den att användas? Är den nödvändig?
+        saleObservers.get(eventType).add(observer);
     }
 
     /**

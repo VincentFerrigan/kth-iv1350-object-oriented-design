@@ -10,21 +10,21 @@ import java.util.List;
 public class SaleDTO {
     private final List<ShoppingCartItemDTO> saleItemsInfo;
     private final Amount totalPrice;
-    private final Amount totalVATAmount;
+    private final Amount totalVATCost;
     private final Amount totalDiscounts;
 
     /**
      * Creates a new instance representing a particular sale.
      * @param saleItemsInfo The shopping cart as a list of Sale ShoppingCartItem Data Transfer Objects
      * @param totalPrice The total price
-     * @param totalVATAmount The total VAT amount
+     * @param totalVATCost The total VAT amount
      * @param totalDiscounts The total discount amount if any.
      */
     public SaleDTO(List<ShoppingCartItemDTO> saleItemsInfo,
-                   Amount totalPrice, Amount totalVATAmount, Amount totalDiscounts) {
+                   Amount totalPrice, Amount totalVATCost, Amount totalDiscounts) {
         this.saleItemsInfo = saleItemsInfo;
         this.totalPrice = totalPrice;
-        this.totalVATAmount = totalVATAmount;
+        this.totalVATCost = totalVATCost;
         this.totalDiscounts = totalDiscounts;
     }
 
@@ -35,7 +35,7 @@ public class SaleDTO {
     public SaleDTO(SaleDTO other) {
         this.saleItemsInfo = other.saleItemsInfo;
         this.totalPrice = other.totalPrice;
-        this.totalVATAmount = other.totalVATAmount;
+        this.totalVATCost = other.totalVATCost;
         this.totalDiscounts = other.totalDiscounts;
     }
 
@@ -59,8 +59,8 @@ public class SaleDTO {
      * Get the total VAT of a sale
      * @return the total VAT of a sale
      */
-    public Amount getTotalVATAmount() {
-        return totalVATAmount;
+    public Amount getTotalVATCost() {
+        return totalVATCost;
     }
 
     /**
@@ -91,6 +91,6 @@ public class SaleDTO {
 
         if (!(saleItemsInfo.equals(that.saleItemsInfo))) return false;
         if (!(totalPrice.equals(that.totalPrice))) return false;
-        return totalVATAmount.equals(that.totalVATAmount);
+        return totalVATCost.equals(that.totalVATCost);
     }
 }

@@ -6,13 +6,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+// TODO UML:a och skriva JavaDocs
 public class RunningSaleView extends SaleView {
     @Override
     protected void printCurrentState(SaleDTO saleInfo) {
         System.out.println("----------------- Display follows ----------------");
         System.out.println(createSaleItemsInfoString());
         System.out.println("%-40s%s".formatted("Running total:", saleInfo.getTotalPrice()));
-        System.out.println("%-40s%s".formatted("Including VAT:", saleInfo.getTotalVATAmount()));
+        System.out.println("%-40s%s".formatted("Including VAT:", saleInfo.getTotalVATCost()));
         System.out.println("------------------ End of Display ----------------");
     }
 

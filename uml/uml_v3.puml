@@ -12,75 +12,87 @@ skinparam ClassAttributeIconSize 0
 together {
 package startup {
     class Main{
-        +main(args : String[]) : void
+        + <<static>> main(args : String[]) : void
     }
 }
     package view {
-    class View {
-        + <<create>> View(contr : Controller) : View
-    }
+        class View {
+            - contr: Controller
+            + <<create>> View(contr : Controller) : View
+        }
+        class EndOfSaleView {}
+        class RunningSaleView {}
+        abstract class SaleView {}
+        abstract class TotalRevenue {}
+        class TotalRevenueView {}
     }
     package controller {
         class Controller{
+            - saleObserver : HashMap<Event, List<SaleObserver>
             - printer : Printer
-            - display : Display
             - saleLog : SaleLog
-            - inventorySystem : ItemRegistry
+            - itemRegistry : ItemRegistry
             - discountRegister : DiscountRegister
             - accountingSystem : AccountingSystem
             - cashRegister : CashRegister
             - currentSale : Sale
-            +<<create>> Controller(printer : Printer, display : Display, registerCreator:RegisterCreator) : Controller
-            +startSale() : void
-            +registerItem(itemID : int) : SaleDTO
-            +registerItem(itemID : int, quantity:int) : SaleDTO
-            +endSale() : SaleDTO
-            +discountRequest(customerID : int) void
-            +pay(paidAmt : Amount) : void
+            + <<create>> Controller(printer : Printer, registerCreator:RegisterCreator) : Controller
+            + addSaleObserver(eventType : Event, observer : SaleObserver) : void
+            + startSale() : void
+            + registerItem(itemID : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+            + registerItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+            + endSale() : void {exception IllegalStateException}
+            + discountRequest(customerID : int) void {exception IllegalStateException}
+            + pay(paidAmt : Amount) : void {exception IllegalStateException}
         }
     }
     package model {
         class Sale{
+            - saleObserver : HashMap<Event, List<SaleObserver>
             - timeOfSale : LocalDateTime
             - shoppingCart : HashMap<Integer, Item>
             - payment : CashPayment
             - discount : DiscountDTO
-            - itemRegistry : ItemRegistry
-            + <<create>> Sale(itemRegistry : ItemRegistry) : Sale
-            + addItem(itemID : int, quantity : int) : void
-            + addItem(itemID : int) : void
+            - isComplete : boolean
+            + <<create>> Sale() : Sale
+            + addItem(itemID : int, quantity : int) : void {exception ItemNotFoundInShoppingCartException}
             + addItem(itemInfo : ItemDTO, quantity : int) : void
-            + addItem(itemInfo : ItemDTO) : void
-            + getRunningTotal() : Amount
-            + getTotalVATAmount() : Amount
+            + getTotalPrice() : Amount
+            - calculateRunningTotal() : Amount
+            + getTotalVATCosts() : Amount
+            - calculateTotalVATAmount() : Amount
+            + isComplete() : boolean
             ~ getPayment() : CashPayment
             ~ getCollectionOfItems() : Collection<Item>
             + endSale() : void
             + applyDiscount(discount : DiscountDTO) : void
             + pay(payment : CashPayment) : void
             + printReceipt(printer : Printer) : void
-            + displayCurrentSale(printer : Printer) : SaleDTO
-            + displayEndOfSale(printer : Printer) : SaleDTO
-            + updateInventory : void
+            + getSaleInfo() : SaleDTO
+            - getShoppingCartInfo() : List<ShoppingCartItemDTO>
+            - notifyObservers(eventType : Event) : void
+            + addSaleObserver(eventType : Event, observer : SaleObserver) : void
+            + addSaleObservers(eventType : observers : Map<Event, List<SaleObserver>>) : void
         }
-        class Item{
+        class ShoppingCartItem{
             - itemInfo : ItemDTO
             - timeOfUpdate : LocalDateTime
             - quantity : int
-            - totalPrice : Amount
             + <<create>> Item(itemInfo:ItemDTO) : Item
             + <<create>> Item(itemInfo:ItemDTO, quantity : int): Item
-            + addItem(anotherItem : Item) : void
+'            + addItem(anotherItem : Item) : void
             + addToQuantity(additionalQuantity : int) : void
-            + setQuantity(quantity : int) : void
-            + getTotalPrice() : Amount
-            + getVatAmount() : Amount
+'            + setQuantity(quantity : int) : void
+            + getTotalSubPrice() : Amount
+            + getVatCosts() : Amount
             + getTimeOfUpdate() : LocalDateTime
-            + getItemDTO : ItemDTO
-            + getQuantity : int
-            + getUnitPrice : Amount
-'            + increment():void
-'            + decrement():void
+            + getItemDTO() : ItemDTO
+            + getItemID() : int
+            + getQuantity() : int
+            + getUnitPrice() : Amount
+            + getName() : String
+            ~ getShoppingCartItemInfo() : ShoppingCartItemDTO
+            + equals(o Object) : boolean
             }
         class CashPayment{
             - paidAmt : Amount
@@ -92,6 +104,7 @@ package startup {
             ~ getChange() : Amount
             }
         class CashRegister{
+            + <<static>> INITIAL_AMOUNT : double
             - balance : Amount
             + <<create>> CashRegister(initialAmount : Amount) : CashRegister
             + <<create>> CashRegister(initialAmount : double) : CashRegister
@@ -104,6 +117,7 @@ package startup {
             - locale : Locale
             - formatter : DateTimeFormatter
             ~ <<create>> Receipt(saleInfo: SaleDTO, printer : Printer) : Receipt
+            + toString() : String
 
         }
         class Amount{
@@ -117,6 +131,9 @@ package startup {
             + plus(other : Amount) : Amount
             + plus(amounts : List<Amount>) : Amount
             + multiply(multiplier : double) : Amount
+            + getAmount() : Double
+            + toString() : String
+            + equals(o : Object) : boolean
         }
         class VAT{
             - vatRateGroupCode : int
@@ -124,48 +141,40 @@ package startup {
             + <<create>> VAT(vatRateGroupCode : int) : VAT
             + getVATRateGroupCode() : Int
             + getVATRate() : double
+            + equals(Object o)
         }
-        class SaleOutput {
-            - sale : Sale
-            - listOfItems : List<Item>
-            - saleInfo : SaleDTO
-            ~ <<create>> SaleOutput(sale : Sale) : SaleOutput
-            + getSaleInfo() : SaleDTO
-            + createOpenSaleString() : String
-            + createCheckoutString() : String
-            - updateSaleInfo() : void
-            - getSaleItemsInfo() : List<SleItemDTO>
-            - sortShoppingCartListAfterDescendingTimeOrder() : void
-            - sortShoppingCartListAfterAscendingNameOrder() : void
-            - sortShoppingCartListAfterAscendingItemID() : void
-'           Ska getSaleInfo vara private eller packageprivate? Hur ska den användas externt?
-        }
+        class SaleObserver <<interface>> {}
     }
 }
     package integration {
         class RegisterCreator{
+            - saleLog : SaleLog
+            - itemRegistry:ItemRegistry
+            - discountRegister : DiscountRegister
+            - accountingSystem : AccountingSystem
             + getSaleLog() : SaleLog
             + getInventorySystem() : ItemRegistry
             + getDiscountRegister() : DiscountRegister
             + getAccountingSystem() : AccountingSystem
+            + <<create>> RegisterCreator() : RegisterCreator
+
         }
-        class DiscountRegister{
-            +discountRequest(customerID : int) : DiscountDTO
-            ~<<create>> DiscountRegister() : DiscountRegister
+        class DiscountRegister <<singleton>> {
+            +getDiscountInfo(customerID : int) : DiscountDTO
         }
-        class ItemRegistry{
-            - flatFileDb : String
-            - inventoryTable : HashMap<Integer, ItemData>
-            - addItemData() : void
-            + getItemInfo(itemID : int) : ItemDTO
+        class ItemRegistry <<singleton>> {
+'            - flatFileDb : String
+'            - inventoryTable : HashMap<Integer, ItemData>
+'            - addItemData() : void
+            + getItemInfo(itemID : int) : ItemDTO {exception=(ItemNotFoundInItemRegistryException, ItemRegistryException)}
             + updateInventory(saleInfo : SaleDTO) : void
-            ~ <<create>> ItemRegistry() : ItemRegistry
         }
             note bottom : ItemData is a nested class
         class SaleLog{
             + sales : List<Sale>
             ~<<create>>SaleLog() : SaleLog
             + logSale(sale : Sale) : void
+            + findSaleByTotalAmount(totalAmount : Amount) : List<Sale>
         }
         class AccountingSystem{
             + updateAccounting(saleInfo : SaleDTO) : void
@@ -174,13 +183,12 @@ package startup {
         class Printer{
             + <<create>>Printer() : Printer
             + printReceipt(receipt : Receipt) : void
-            + printSaleLog(saleLog : SaleLog) : void
+'            + printSaleLog(saleLog : SaleLog) : void
         }
-        class Display{
-            + <<create>> Display() :  Display
-            + displayOpenSale(saleOutput : SaleOutput) : void
-            + displayCheckout(saleOutput : SaleOutput) : void
-        }
+    }
+    package util{
+        enum Event {}
+        class Logger <<interface>> {}
     }
 Main --> View
 Main -left-> Controller
@@ -200,10 +208,10 @@ View -right-> Controller
 Controller --> Sale
 Controller --> CashPayment
 Sale --> CashPayment
-Controller --> SaleLog
 Receipt <-- Sale
 Sale --> Printer
-Sale --> Item
+Sale --> ShoppingCartItem
+Sale --> Amount
 @enduml
 
 @startuml
@@ -218,10 +226,13 @@ skinparam package {
     package dto {
         class SaleDTO{
             - timeOfSale : LocalDateTime
-            - saleItemsInfo : List<SaleItemDTO>
+            - saleItemsInfo : List<ShoppingCartItemDTO>
             - totalPrice : Amount
-            - totalVATAmount : Amount
+            - totalVATCost : Amount
             + <<create>> SaleDTO() : SaleDTO
+            + <<create>> SaleDTO(other : SaleDTO) : SaleDTO
+            + toString() : String
+            + equals(o : Object)
         }
         class ItemDTO{
             - itemId : int
@@ -230,13 +241,16 @@ skinparam package {
             - price : Amount
             - vat : VAT
             +<<create>> ItemDTO() : ItemDTO
+            + equals(o : Object)
         }
-        class SaleItemDTO{
+        class ShoppingCartItemDTO{
             - itemInfo : ItemDTO
+            - timeOfUpdate : LocalDateTime
             - quantity : Int
             - totalPrice : Amount
-            + <<create>> SaleItemDTO() : SaleItemDTO
+            + <<create>> ShoppingCartItemDTO() : ShoppingCartItemDTO
         }
+
         class DiscountDTO{
 '            // TODO ska discount finnas med i SaleDTO?
 '            -customerID : int
@@ -246,6 +260,7 @@ skinparam package {
             +<<create>>DiscountDTO(discountRate : Double) : DiscountDTO
             + getDiscountRate() : double
             + getDiscountMultiplier() : double
+            + equals(o : Object) : boolean
 '        note bottom : Attributes TBD based on Discount Rules.
         }
     }
