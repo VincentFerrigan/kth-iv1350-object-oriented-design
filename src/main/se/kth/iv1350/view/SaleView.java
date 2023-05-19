@@ -5,6 +5,7 @@ import se.kth.iv1350.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO UML:a och skriva JavaDocs
 /**
  * A template for a sale observer that shows sale details including the shopping cart.
  */
