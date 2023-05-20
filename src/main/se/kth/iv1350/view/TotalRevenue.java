@@ -3,7 +3,6 @@ package se.kth.iv1350.view;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.CashRegisterObserver;
 
-// TODO UML:a och skriva JavaDocs
 /**
  * A template for a sale observer that displays the total revenue when it has changed.
  */
