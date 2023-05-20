@@ -17,7 +17,7 @@ import se.kth.iv1350.util.Event;
 public interface SaleObserver {
     /**
      * Invoked when a rental has been paid.
-     * @param saleInfo The sale that was updated.
+     * @param sale The limited view of a sale that was updated.
      */
-    void updateSale(SaleDTO saleInfo);
+    void updateSale(LimitedSaleView sale);
 }

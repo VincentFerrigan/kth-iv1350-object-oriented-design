@@ -4,6 +4,7 @@ import se.kth.iv1350.integration.ItemRegistry;
 
 import java.io.*;
 
+// TODO use the System.getProperty?
 public class DBParameters {
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
     private static final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);

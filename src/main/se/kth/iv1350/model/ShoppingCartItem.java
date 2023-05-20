@@ -49,7 +49,7 @@ public class ShoppingCartItem {
 
     /**
      * Add quantity to item.
-     * @param additionalQuantity
+     * @param additionalQuantity the added quantity
      */
     public void addToQuantity(int additionalQuantity){
         this.timeOfUpdate = LocalDateTime.now();
@@ -121,13 +121,10 @@ public class ShoppingCartItem {
         return itemInfo.getName();
     }
 
-    ShoppingCartItemDTO getShoppingCartItemInfo() {
-        return new ShoppingCartItemDTO(itemInfo, timeOfUpdate, quantity, getTotalSubPrice());
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof SaleDTO)) return false;
+        if (o == null || !(o instanceof ShoppingCartItem)) return false;
 
         ShoppingCartItem that = (ShoppingCartItem) o;
 

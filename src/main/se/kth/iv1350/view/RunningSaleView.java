@@ -7,18 +7,30 @@ import java.util.Comparator;
 import java.util.List;
 
 // TODO UML:a och skriva JavaDocs
+
+/**
+ * Shows the running sale details including the shopping cart, total price and total VAT costs.
+ */
 public class RunningSaleView extends SaleView {
+
+    /**
+     * Prints the running sale details that includes shopping cart,
+     * total price and total VAT costs.
+     * It's a dummy implementation that prints to
+     * <code>System.out</code>
+     * @param sale a limited view of {@link Sale}
+     */
     @Override
-    protected void printCurrentState(SaleDTO saleInfo) {
+    protected void printCurrentState(LimitedSaleView sale) {
         System.out.println("----------------- Display follows ----------------");
         System.out.println(createSaleItemsInfoString());
-        System.out.println("%-40s%s".formatted("Running total:", saleInfo.getTotalPrice()));
-        System.out.println("%-40s%s".formatted("Including VAT:", saleInfo.getTotalVATCost()));
+        System.out.println("%-40s%s".formatted("Running total:", sale.getTotalPrice()));
+        System.out.println("%-40s%s".formatted("Including VAT:", sale.getTotalVATCosts()));
         System.out.println("------------------ End of Display ----------------");
     }
 
     @Override
-    protected void sortShoppingCart(List<ShoppingCartItemDTO> listOfShoppingCartItemsInfo) {
-        Collections.sort(listOfShoppingCartItemsInfo, Comparator.comparing(ShoppingCartItemDTO::getTimeOfUpdate).reversed());
+    protected void sortShoppingCart(List<ShoppingCartItem> listOfShoppingCartItems) {
+        Collections.sort(listOfShoppingCartItems, Comparator.comparing(ShoppingCartItem::getTimeOfUpdate).reversed());
     }
 }

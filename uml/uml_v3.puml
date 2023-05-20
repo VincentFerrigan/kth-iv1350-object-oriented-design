@@ -68,8 +68,6 @@ package startup {
             + applyDiscount(discount : DiscountDTO) : void
             + pay(payment : CashPayment) : void
             + printReceipt(printer : Printer) : void
-            + getSaleInfo() : SaleDTO
-            - getShoppingCartInfo() : List<ShoppingCartItemDTO>
             - notifyObservers(eventType : Event) : void
             + addSaleObserver(eventType : Event, observer : SaleObserver) : void
             + addSaleObservers(eventType : observers : Map<Event, List<SaleObserver>>) : void
@@ -91,7 +89,6 @@ package startup {
             + getQuantity() : int
             + getUnitPrice() : Amount
             + getName() : String
-            ~ getShoppingCartItemInfo() : ShoppingCartItemDTO
             + equals(o Object) : boolean
             }
         class CashPayment{
@@ -116,7 +113,7 @@ package startup {
             - timeOfSale : LocalDateTime
             - locale : Locale
             - formatter : DateTimeFormatter
-            ~ <<create>> Receipt(saleInfo: SaleDTO, printer : Printer) : Receipt
+            ~ <<create>> Receipt(sale: Sale) : Receipt
             + toString() : String
 
         }
@@ -167,7 +164,7 @@ package startup {
 '            - inventoryTable : HashMap<Integer, ItemData>
 '            - addItemData() : void
             + getItemInfo(itemID : int) : ItemDTO {exception=(ItemNotFoundInItemRegistryException, ItemRegistryException)}
-            + updateInventory(saleInfo : SaleDTO) : void
+            + updateInventory(closedSale : Sale) : void
         }
             note bottom : ItemData is a nested class
         class SaleLog{
@@ -177,7 +174,7 @@ package startup {
             + findSaleByTotalAmount(totalAmount : Amount) : List<Sale>
         }
         class AccountingSystem{
-            + updateAccounting(saleInfo : SaleDTO) : void
+            + updateAccounting(closedSale : Sale) : void
             ~ <<create>> Accounting() : Accounting
         }
         class Printer{
@@ -217,6 +214,7 @@ Sale --> Amount
 @startuml
 'title DTO
 ' //TODO Ska vi ha en customerDTO och customerDb?
+' //TODO Ska DTO:erna flyttas till CD?
 hide circle
 skinparam ClassAttributeIconSize 0
 skinparam linetype ortho
@@ -224,16 +222,6 @@ skinparam package {
     BackgroundColor LightYellow
 }
     package dto {
-        class SaleDTO{
-            - timeOfSale : LocalDateTime
-            - saleItemsInfo : List<ShoppingCartItemDTO>
-            - totalPrice : Amount
-            - totalVATCost : Amount
-            + <<create>> SaleDTO() : SaleDTO
-            + <<create>> SaleDTO(other : SaleDTO) : SaleDTO
-            + toString() : String
-            + equals(o : Object)
-        }
         class ItemDTO{
             - itemId : int
             - name : String
@@ -242,13 +230,6 @@ skinparam package {
             - vat : VAT
             +<<create>> ItemDTO() : ItemDTO
             + equals(o : Object)
-        }
-        class ShoppingCartItemDTO{
-            - itemInfo : ItemDTO
-            - timeOfUpdate : LocalDateTime
-            - quantity : Int
-            - totalPrice : Amount
-            + <<create>> ShoppingCartItemDTO() : ShoppingCartItemDTO
         }
 
         class DiscountDTO{

@@ -145,7 +145,7 @@ public class Controller {
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
         saleLog.logSale(currentSale);
-        itemRegistry.updateInventory(currentSale.getSaleInfo());
+        itemRegistry.updateInventory(currentSale);
         accountingSystem.updateToAccountingSystem(currentSale);
         currentSale.printReceipt(printer);
         currentSale = null;

@@ -1,7 +1,7 @@
 package se.kth.iv1350.view;
 
 import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.model.SaleDTO;
+import se.kth.iv1350.model.LimitedSaleView;
 import se.kth.iv1350.model.SaleObserver;
 
 // TODO UML:a och skriva JavaDocs
@@ -20,11 +20,11 @@ public abstract class TotalRevenue implements SaleObserver {
 
     /**
      * Call when the total revenue has changed
-     * @param saleInfo The sale that was update.
+     * @param sale The sale that was update.
      */
     @Override
-    public void updateSale(SaleDTO saleInfo) {
-        Amount newRevenue = saleInfo.getTotalPrice();
+    public void updateSale(LimitedSaleView sale) {
+        Amount newRevenue = sale.getTotalPrice();
         totalRevenue = totalRevenue.plus(newRevenue);
         showTotalRevenue(totalRevenue);
     }

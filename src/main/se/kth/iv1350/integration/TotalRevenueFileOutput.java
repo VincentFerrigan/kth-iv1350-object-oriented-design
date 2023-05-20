@@ -14,6 +14,7 @@ import java.time.format.FormatStyle;
 import java.util.Locale;
 
 // TODO UML:a
+// TODO use the System.getProperty?
 public class TotalRevenueFileOutput extends TotalRevenue {
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
     private static final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);

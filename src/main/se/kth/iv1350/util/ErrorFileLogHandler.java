@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
+// TODO use the System.getProperty?
 // TODO UML:a och skriva JavaDocs
 /**
  * A Singleton that creates an instance responsible for

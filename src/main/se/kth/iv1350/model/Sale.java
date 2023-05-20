@@ -156,7 +156,7 @@ public class Sale {
      * Gets a collection of the items in the shopping cart.
      * @return A {@link Collection} of the items in the shopping cart.
      */
-    Collection<ShoppingCartItem> getCollectionOfItems() {
+    public Collection<ShoppingCartItem> getCollectionOfItems() {
         return shoppingCart.values();
     }
 
@@ -198,44 +198,9 @@ public class Sale {
         printer.printReceipt(receipt);
     }
 
-    /**
-     * Get information about the sale.
-     * @return Information about the sale as a {@link SaleDTO}
-     */
-    public SaleDTO getSaleInfo() {
-        // Processen bör bytas ut mot någon form av strategy composite pattern
-        List<ShoppingCartItemDTO> shoppingCart = getShoppingCartInfo();
-
-        Amount runningTotalAmount = calculateRunningTotal();
-        Amount runningVATAmount = calculateTotalVATAmount();
-        Amount runningDiscountAmount = new Amount(0);
-        // Ersätt discount strategy
-//        if (discount.getDiscountRate() > 0) {
-//            runningDiscountAmount = runningTotalAmount.multiply(discount.getDiscountRate());
-//            runningTotalAmount = runningTotalAmount.multiply(this.discount.getDiscountMultiplier());
-//            runningVATAmount = runningVATAmount.multiply(this.discount.getDiscountMultiplier());
-//        }
-        return new SaleDTO(
-                shoppingCart,
-                runningTotalAmount,
-                runningVATAmount,
-                runningDiscountAmount);
-    }
-
-    private List<ShoppingCartItemDTO> getShoppingCartInfo() {
-        List<ShoppingCartItemDTO> shoppingCartInfo = new ArrayList<>();
-        List<ShoppingCartItem> listOfShoppingCartItems = new ArrayList<>(getCollectionOfItems());
-
-        for (ShoppingCartItem shoppingCartItem : listOfShoppingCartItems) {
-            shoppingCartInfo.add(shoppingCartItem.getShoppingCartItemInfo());
-        }
-        return shoppingCartInfo;
-    }
-
-
     private void notifyObservers(Event eventType) {
-        SaleDTO saleInfo = getSaleInfo();
-        saleObservers.get(eventType).forEach(observer -> observer.updateSale(saleInfo));
+        LimitedSaleView limitedSaleView = new LimitedSaleViewWrapper(this);
+        saleObservers.get(eventType).forEach(observer -> observer.updateSale(limitedSaleView));
     }
 
     /**

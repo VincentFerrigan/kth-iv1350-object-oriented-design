@@ -1,14 +1,12 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.model.SaleDTO;
-import se.kth.iv1350.model.ShoppingCartItemDTO;
-import se.kth.iv1350.model.VAT;
+import se.kth.iv1350.model.*;
 import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,14 +103,14 @@ public class ItemRegistry {
 
     /**
      * Updates the inventory system.
-     * @param saleInfo contains the sale details
+     * @param closedSale contains the sale details
      */
-    public void updateInventory(SaleDTO saleInfo){
-        List<ShoppingCartItemDTO> shoppingCartInfo = saleInfo.getSaleItemsInfo();
-        for (ShoppingCartItemDTO shoppingCartItemInfo : shoppingCartInfo) {
-            int key = shoppingCartItemInfo.getItemID();
-            inventoryTable.get(key).sold = (shoppingCartItemInfo.getQuantity());
-            inventoryTable.get(key).inStore -= (shoppingCartItemInfo.getQuantity());
+    public void updateInventory(Sale closedSale){
+        List<ShoppingCartItem> listOfShoppingCartItems = new ArrayList<>(closedSale.getCollectionOfItems());
+        for (ShoppingCartItem shoppingCartItem : listOfShoppingCartItems) {
+            int key = shoppingCartItem.getItemID();
+            inventoryTable.get(key).sold = (shoppingCartItem.getQuantity());
+            inventoryTable.get(key).inStore -= (shoppingCartItem.getQuantity());
         }
         updateDatabase();
     }

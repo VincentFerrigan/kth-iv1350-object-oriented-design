@@ -54,34 +54,45 @@ class SaleTest {
 
     @Test
     void testAddItem() {
+        // First addItem with item id
         try {
             instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
             fail("Exception should have been thrown, the item was the first to be added to the shopping cart");
         } catch (ItemNotFoundInShoppingCartException e) {
             assertEquals(TEST_ITEM_ID,e.getItemIDNotFound());
         }
+
+        // First addItem with item dto
         instance.addItem(TEST_ITEM_INFO, TEST_QUANTITY);
-        assertNotEquals(instance.isComplete(), true);
+        assertEquals(instance.isComplete(), false);
+
         int expResult = TEST_QUANTITY;
-        SaleDTO saleInfo = instance.getSaleInfo();
-        List<ShoppingCartItemDTO> listOfSaleItems = saleInfo.getSaleItemsInfo();
+        String outputResult = outContent.toString();
+        List<ShoppingCartItem> listOfSaleItems = new ArrayList<>(instance.getCollectionOfItems());
         int result = listOfSaleItems.get(0).getQuantity();
+
         assertEquals(expResult, result,"ShoppingCartItem quantity not equal");
-        assertTrue(outContent.toString().contains("Display"),
-                "No display output");
+        assertTrue(outputResult.contains("Display"), "No display output");
+
+        // second addItem with item id
         try {
             instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
         } catch (ItemNotFoundInShoppingCartException ex) {
             fail("No exception should be thrown: item ID is valid." +
                     "%s".formatted(ex.getMessage()));
         }
-        expResult += TEST_QUANTITY;
-        saleInfo = instance.getSaleInfo();
-        listOfSaleItems = saleInfo.getSaleItemsInfo();
+        int expResultOfAddedQuantity = expResult + TEST_QUANTITY;
+        StringBuilder expOutMultipleItems = new StringBuilder();
+        expOutMultipleItems.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE.multiply(expResult)));
+        expOutMultipleItems.append("(%d * %s)\n".formatted(expResult, TEST_UNIT_PRICE));
+
+        String outputResultOfAddedQuantity = outContent.toString();
         result = listOfSaleItems.get(0).getQuantity();
-        assertEquals(expResult, result,"ShoppingCartItem quantity not equal");
-        assertTrue(outContent.toString().contains("Display"),
-                "No display output");
+
+        assertEquals(expResultOfAddedQuantity, result,"ShoppingCartItem quantity not equal");
+        assertTrue(outputResultOfAddedQuantity.contains("Display"), "No display output");
+        assertTrue(outContent.toString().contains(expOutMultipleItems.toString()),
+                "ShoppingCartItem did not have the right quantity when added with quantity.");
     }
     @Test
     void testItemNotFoundInShoppingCartException() {
