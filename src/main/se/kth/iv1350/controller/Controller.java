@@ -1,5 +1,4 @@
 package se.kth.iv1350.controller;
-import se.kth.iv1350.integration.DiscountDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.util.Event;
@@ -11,9 +10,8 @@ import java.util.*;
 /* TODO: To do and keep the following for the report.
 * The current pay method makes the controller bloated and tend towards low cohesion.
 * Solution: Move payment creation to sale. Sale has to anyway "keep" payment details.
-* Open issue: What to do with the cash register.
+* Open issue: What to do with the cash register?
 *
-* Should we "keep" the item registry? Why move it to sale?
 */
 
 /**
@@ -25,7 +23,7 @@ public class Controller {
     private Printer printer;
     private SaleLog saleLog;
     private ItemRegistry itemRegistry;
-    private DiscountRegister discountRegister;
+    private CustomerRegistry customerRegistry;
     private AccountingSystem accountingSystem;
     private CashRegister cashRegister;
     private Sale currentSale;
@@ -40,7 +38,7 @@ public class Controller {
         this.printer = printer;
         saleLog = registerCreator.getSaleLog();
         itemRegistry = registerCreator.getInventorySystem();
-        discountRegister = registerCreator.getDiscountRegister();
+        customerRegistry = registerCreator.getDiscountRegister();
         accountingSystem = registerCreator.getAccountingSystem();
         cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
         logger = ErrorFileLogHandler.getInstance();
@@ -49,16 +47,22 @@ public class Controller {
     }
 
     /**
-     * The specified observer will be notified when this sale has been updated
-     * i.e. an event has occurred.
-     *
+     * The specified observer will be notified when this sale has been updated.
      * @param eventType The event as {@Link Event}
      * @param observer The observer to notify.
      */
-    //TODO: Gäller denna alla observers oavsett syfte, Typ tänk om man vill ha observers som blir notifierade när sale ha been paid etc.
     public void addSaleObserver(Event eventType, SaleObserver observer) {
         saleObservers.get(eventType).add(observer);
     }
+
+    /**
+     * The specified observer will be notified when the revenue has been changed.
+     * @param observer The observer to notify.
+     */
+    public void addCashRegisterObserver(CashRegisterObserver observer) {
+        cashRegister.addCashRegisterObserver(observer);
+    }
+
     /**
      * Start a new sale. This method must be called before doing anything else during a sale.
      */
@@ -114,18 +118,26 @@ public class Controller {
     }
 
     /**
-     * Fetches discount from the discount database and applies it to the sale.
-     * @param customerID
+     * Add customer to Sale. Discount applied if discount or promotion exists
+     * for customer with specified customer id.
+     * @param customerID the customer identifier
+     * @throws CustomerNotFoundInCustomerRegistryException when customer ID does not exist in registry
+     * @throws OperationFailedException when there is a fail with customer database
      * @throws IllegalStateException if this method is called before calling newSale and registerItem.
      */
-    //TODO: How to add customer to sale? How will the discount display?
-    public void discountRequest (int customerID){
+    public void discountRequest (int customerID)
+            throws CustomerNotFoundInCustomerRegistryException, OperationFailedException {
         if (currentSale == null || currentSale.isComplete() == false) {
             throw new IllegalStateException(
                     "Call to discountRequest before initiating a new sale and registering items.");
         }
-//        DiscountDTO discountDTO = discountRegister.getDiscountInfo(customerID);
-//        currentSale.applyDiscount(discountDTO);
+        try {
+            CustomerDTO customerInfo = customerRegistry.getCustomerInfo(customerID);
+            currentSale.applyDiscount(customerInfo);
+        } catch (CustomerRegistryException custRegExc) {
+            logger.log(custRegExc);
+            throw new OperationFailedException("No connection to inventory system. Try again.", custRegExc);
+        }
     }
 
     /**
@@ -147,6 +159,7 @@ public class Controller {
         saleLog.logSale(currentSale);
         itemRegistry.updateInventory(currentSale);
         accountingSystem.updateToAccountingSystem(currentSale);
+        customerRegistry.updateCustomerDatabase(currentSale);
         currentSale.printReceipt(printer);
         currentSale = null;
     }

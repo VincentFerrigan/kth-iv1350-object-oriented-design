@@ -22,8 +22,18 @@ public class LimitedSaleViewWrapper implements LimitedSaleView {
     }
 
     @Override
+    public Amount getTotalPricePaid() {
+        return sale.getTotalPricePaid();
+    }
+
+    @Override
     public Amount getTotalPrice() {
         return sale.getTotalPrice();
+    }
+
+    @Override
+    public Amount calculateRunningTotal() {
+        return sale.calculateRunningTotal();
     }
 
     @Override

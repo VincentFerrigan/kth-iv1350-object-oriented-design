@@ -11,7 +11,7 @@ import java.io.IOException;
 public class RegisterCreator {
     private SaleLog saleLog;
     private ItemRegistry itemRegistry;
-    private DiscountRegister discountRegister;
+    private CustomerRegistry customerRegistry;
     private AccountingSystem accountingSystem;
 
     /**
@@ -20,7 +20,7 @@ public class RegisterCreator {
     public RegisterCreator() throws IOException {
         this.saleLog = new SaleLog();
         this.itemRegistry = ItemRegistry.getInstance();
-        this.discountRegister = DiscountRegister.getInstance();
+        this.customerRegistry = CustomerRegistry.getInstance();
         this.accountingSystem = AccountingSystem.getInstance();
     }
 
@@ -41,11 +41,11 @@ public class RegisterCreator {
     }
 
     /**
-     * Get the cash register as {@link DiscountRegister}
+     * Get the cash register as {@link CustomerRegistry}
      * @return the discount register
      */
-    public DiscountRegister getDiscountRegister() {
-        return discountRegister;
+    public CustomerRegistry getDiscountRegister() {
+        return customerRegistry;
     }
 
     /**

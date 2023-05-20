@@ -288,7 +288,7 @@ registerCreator -> AccountingSystem : <<create>>\n AccountingSystem():Accounting
 activate AccountingSystem
 deactivate AccountingSystem
 
-' create DiscountRegister
+' create CustomerRegistry
 autonumber 3.3
 registerCreator -> DiscountRegister : <<create>>\n DiscountRegister():DiscountRegister
 activate DiscountRegister
@@ -502,7 +502,7 @@ View -> contr : discountRequest(customerID:int): void
 activate contr
 note right : gets new SaleDTO after discount
 autonumber 1.1
-'create DiscountRegister
+'create CustomerRegistry
 contr -> DiscountRegister : discount = DiscountRequest(customerID:int) : DiscountDTO
 activate DiscountRegister
 deactivate DiscountRegister

@@ -7,7 +7,7 @@ public class ItemNotFoundInItemRegistryException extends Exception {
     private int itemIDNotFound;
 
     /**
-     * Creates a new instance including a message and what item ID
+     * Creates a new instance including a message and the ID that
      * could not be found.
      * @param itemID the item ID of the item to be found
      */

@@ -12,6 +12,9 @@ import java.util.List;
  * discounts, promotions and total VAT costs.
  */
 public class EndOfSaleView extends SaleView {
+    private Amount totalPricePreDiscount;
+    private Amount totalPriceAfterDiscount;
+
     @Override
     protected void sortShoppingCart(List<ShoppingCartItem> listOfShoppingCartItems) {
         Collections.sort(listOfShoppingCartItems, Comparator.comparing(ShoppingCartItem::getName));
@@ -27,12 +30,15 @@ public class EndOfSaleView extends SaleView {
      */
     @Override
     protected void printCurrentState(LimitedSaleView sale) {
+        totalPricePreDiscount = sale.calculateRunningTotal();
+        totalPriceAfterDiscount = sale.getTotalPrice();
+
         System.out.println("--------------- End of Sale follows --------------");
         System.out.println(createSaleItemsInfoString());
-//        if (!sale.getTotalDiscounts().equals(new Amount(0))) {
-//            System.out.println("%-40s-%s".formatted("Total discount:", saleInfo.getTotalDiscounts()));
-//        }
-        System.out.println("%-40s%s".formatted("Total Price:", sale.getTotalPrice()));
+        if (!totalPriceAfterDiscount.equals(totalPricePreDiscount)) {
+            System.out.println("%-40s-%s".formatted("Total discount:", totalPricePreDiscount.minus(totalPriceAfterDiscount)));
+        }
+        System.out.println("%-40s%s".formatted("Total Price:", totalPriceAfterDiscount));
         System.out.println("%-40s%s".formatted("Including VAT:", sale.getTotalVATCosts()));
         System.out.println("---------------- End of End of Sale --------------");
     }

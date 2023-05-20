@@ -13,6 +13,8 @@ public class Receipt {
     private final LocalDateTime timeOfSale;
     private Locale locale = new Locale("sv", "SE");
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
+    private Amount totalPricePreDiscount;
+    private Amount totalPricePaid;
 
     /**
      * Creates a new instance of {@link Receipt}.
@@ -21,6 +23,8 @@ public class Receipt {
     Receipt(Sale sale) {
         this.sale = sale;
         this.timeOfSale = LocalDateTime.now();
+        totalPricePreDiscount = sale.calculateRunningTotal();
+        totalPricePaid = sale.getTotalPricePaid();
     }
 
     /**
@@ -46,11 +50,10 @@ public class Receipt {
             builder.append("(%d * %s)\n".formatted(shoppingCartItem.getQuantity(), shoppingCartItem.getUnitPrice()));
         }
         builder.append("\n");
-        // TODO: Discount strategy skall bytas ut.
-//        if (!this.sale.getDiscountAmount().equals(new Amount(0))) {
-//            builder.append("%-40s-%s%n".formatted("Total discount:", this.sale.getDiscountAmount()));
-//        }
-        builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));
+        if (!totalPricePaid.equals(totalPricePreDiscount)) {
+            builder.append("%-40s-%s%n".formatted("Total discount:", totalPricePreDiscount.minus(totalPricePaid)));
+        }
+        builder.append("%-40s%s%n".formatted("Total Cost:", totalPricePaid));
         builder.append("%-40s%s%n".formatted("Total VAT:", this.sale.getTotalVATCosts()));
         builder.append("\n");
         builder.append("%-40s%s%n".formatted("Paid Amount:", this.sale.getPayment().getPaidAmt()));

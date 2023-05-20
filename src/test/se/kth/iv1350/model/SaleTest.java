@@ -16,6 +16,12 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/* TODO: To do and keep the following for the report.
+ * The current pay method makes the controller bloated and tend towards low cohesion.
+ * Solution: Move payment creation to sale. Sale has to anyway "keep" payment details.
+ * Open issue: What to do with the cash register?
+ *
+ */
 class SaleTest {
     private Sale instance;
     private static final int TEST_ITEM_ID = 0;
@@ -27,7 +33,6 @@ class SaleTest {
     private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
             TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE, TEST_VAT);
     private static final Amount TEST_PAID_AMOUNT = new Amount(5);
-    private RegisterCreator registerCreator;
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
     @BeforeEach
@@ -41,8 +46,10 @@ class SaleTest {
         Arrays.stream(Event.values()).forEach(event -> saleObservers.put(event, new ArrayList<>()));
         saleObservers.get(Event.NEW_ITEM).add(new RunningSaleView());
         saleObservers.get(Event.CHECKED_OUT).add(new EndOfSaleView());
-        saleObservers.get(Event.PAID).add(new TotalRevenueView());
         instance.addSaleObservers(saleObservers);
+//        // TODO Nedan korrekt? Funkar enbart om cash reg skulle köras från sale. Vilket den inte gör§v
+//        CashRegister cashRegister = new CashRegister();
+//        cashRegister.addCashRegisterObserver(new TotalRevenueView());
     }
 
     @AfterEach
@@ -112,8 +119,8 @@ class SaleTest {
     @Test
     void testPay() {
         instance.pay(new CashPayment(TEST_PAID_AMOUNT));
-        assertTrue(outContent.toString().contains("Revenue update"),
-                "Observer not notified");
+//        assertTrue(outContent.toString().contains("Revenue update"),
+//                "Observer not notified");
         assertEquals(TEST_PAID_AMOUNT, instance.getPayment().getPaidAmt(),
                 "Paid amount not correctly registered");
     }

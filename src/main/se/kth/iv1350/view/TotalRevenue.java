@@ -1,31 +1,24 @@
 package se.kth.iv1350.view;
 
 import se.kth.iv1350.model.Amount;
-import se.kth.iv1350.model.LimitedSaleView;
-import se.kth.iv1350.model.SaleObserver;
+import se.kth.iv1350.model.CashRegisterObserver;
 
-// TODO UML:a och skriva JavaDocs
 /**
  * A template for a sale observer that displays the total revenue when it has changed.
  */
-public abstract class TotalRevenue implements SaleObserver {
-    private static Amount totalRevenue;
+public abstract class TotalRevenue implements CashRegisterObserver {
 
     /**
      * Creates a new instance
      */
-    protected TotalRevenue() {
-        totalRevenue = new Amount(0);
-    }
+    protected TotalRevenue() {}
 
     /**
      * Call when the total revenue has changed
-     * @param sale The sale that was update.
+     * @param totalRevenue the new total revenue
      */
     @Override
-    public void updateSale(LimitedSaleView sale) {
-        Amount newRevenue = sale.getTotalPrice();
-        totalRevenue = totalRevenue.plus(newRevenue);
+    public void updateRevenue(Amount totalRevenue) {
         showTotalRevenue(totalRevenue);
     }
 

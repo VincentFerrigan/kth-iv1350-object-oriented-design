@@ -26,8 +26,8 @@ public class View {
         this.contr = contr;
         contr.addSaleObserver(Event.NEW_ITEM, new RunningSaleView());
         contr.addSaleObserver(Event.CHECKED_OUT, new EndOfSaleView());
-        contr.addSaleObserver(Event.PAID, new TotalRevenueView());
-        contr.addSaleObserver(Event.PAID, new TotalRevenueFileOutput());
+        contr.addCashRegisterObserver(new TotalRevenueView());
+        contr.addCashRegisterObserver(new TotalRevenueFileOutput());
         logger = ErrorFileLogHandler.getInstance();
         errorMessageHandler = ErrorMessageHandler.getInstance();
     }
@@ -73,9 +73,6 @@ public class View {
         } catch (OperationFailedException ex) {
             logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
-        } catch (IllegalArgumentException ex) {
-            // TODO Hur hanterar vi denna?
-            writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
@@ -103,9 +100,6 @@ public class View {
         } catch (OperationFailedException ex) {
             logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
-        } catch (IllegalArgumentException ex) {
-            // TODO Hur hanterar vi denna?
-            writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
@@ -132,9 +126,6 @@ public class View {
         } catch (OperationFailedException ex) {
             logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
-        } catch (IllegalArgumentException ex) {
-            // TODO Hur hanterar vi denna?
-            writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
@@ -158,14 +149,38 @@ public class View {
         } catch (OperationFailedException ex) {
             logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
-        } catch (IllegalArgumentException ex) {
-            // TODO Hur hanterar vi denna?
-            writeToLogAndUI("The item ID has to be a positive number. Try again.", ex);
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
     }
 
+    /**
+     * Simulates a user input that generates calls to all system operations correctly.
+     * With promotion
+     */
+    public void hardKodadeGrejerWithPromotion() {
+        try{
+            contr.startSale();
+            contr.registerItem(5);
+            contr.registerItem(7, 3);
+            contr.registerItem(1);
+            contr.registerItem(1);
+            contr.registerItem(3, 10);
+            contr.registerItem(5, 9);
+            contr.registerItem(10, 4);
+            contr.endSale();
+            contr.discountRequest(810222);
+            contr.endSale();
+            payAndWriteCheckoutToUI(new Amount(2000));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, please try again".formatted(ex.getItemIDNotFound()));
+        } catch (OperationFailedException ex) {
+            logger.log(ex);
+            errorMessageHandler.log("No connection to inventory system. Try again.");
+        } catch (Exception exc) {
+            writeToLogAndUI("Failed to register sale, please try again.", exc);
+        }
+    }
     private void payAndWriteCheckoutToUI(Amount paidAmount) {
         System.out.println("Paying " + paidAmount);
         contr.pay(paidAmount);

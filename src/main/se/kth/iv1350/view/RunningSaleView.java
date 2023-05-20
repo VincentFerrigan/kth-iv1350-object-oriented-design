@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-// TODO UML:a och skriva JavaDocs
-
 /**
  * Shows the running sale details including the shopping cart, total price and total VAT costs.
  */
@@ -24,7 +22,7 @@ public class RunningSaleView extends SaleView {
     protected void printCurrentState(LimitedSaleView sale) {
         System.out.println("----------------- Display follows ----------------");
         System.out.println(createSaleItemsInfoString());
-        System.out.println("%-40s%s".formatted("Running total:", sale.getTotalPrice()));
+        System.out.println("%-40s%s".formatted("Running total:", sale.calculateRunningTotal()));
         System.out.println("%-40s%s".formatted("Including VAT:", sale.getTotalVATCosts()));
         System.out.println("------------------ End of Display ----------------");
     }

@@ -1,2 +1,2 @@
 accounting; customer; inventory
-accounting.csv; discounts.csv; inventory_items.csv
+accounting.csv; customers.csv; inventory_items.csv

@@ -14,11 +14,23 @@ public interface LimitedSaleView {
     boolean isComplete();
 
     /**
+     * Gets the total price that was paid by the customer
+     * return The total amount paid by the customer.
+     */
+    Amount getTotalPricePaid();
+
+    /**
      * Gets the total amount for the current sale.
      * @return The total amount of the current sale.
      */
-
     Amount getTotalPrice();
+
+    /**
+     * Calculates the total cost of the shopping cart, including possible discount.
+     * @return The running total as a {@link Amount}.
+     */
+    Amount calculateRunningTotal();
+
     /**
      * Gets the total VAT amount for the current sale.
      * @return The total VAT amount of the current sale.

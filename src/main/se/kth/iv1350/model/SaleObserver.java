@@ -1,7 +1,5 @@
 package se.kth.iv1350.model;
 
-// TODO lägg till RunningSaleView, ShoppingCartCheckoutDisplay (eller EndOfSaleDisplay), salelog/accounting?/additional highergrade task 1 + de krav som ställts i sem4 etc. Låt view inte printa något själv.
-
 import se.kth.iv1350.util.Event;
 
 /**
@@ -16,7 +14,8 @@ import se.kth.iv1350.util.Event;
  */
 public interface SaleObserver {
     /**
-     * Invoked when a rental has been paid.
+     * Invoked when a sale has been updated.
+     * E.g. Item added to shopping cart, check out etc.
      * @param sale The limited view of a sale that was updated.
      */
     void updateSale(LimitedSaleView sale);

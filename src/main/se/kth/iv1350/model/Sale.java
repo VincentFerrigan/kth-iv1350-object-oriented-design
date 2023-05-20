@@ -27,6 +27,7 @@ public class Sale {
     private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
     private CashPayment payment;
     private DiscountStrategy pricing;
+    private Customer customer;
     private boolean isComplete;
 
 //    private Amount discountAmount;
@@ -95,23 +96,21 @@ public class Sale {
      */
     public Amount getTotalPrice() {
         // TODO: bör begränsas eller slås ihop med calculate. Alternativt endast hämtas från DTO
-        return calculateRunningTotal();
+        return pricing.getTotal(this);
     }
 
     /**
      * Calculates the total cost of the shopping cart, including possible discount.
      * @return The running total as a {@link Amount}.
      */
-    private Amount calculateRunningTotal() {
+    public Amount calculateRunningTotal() {
         // Totalbelopp
         Amount runningTotal = new Amount(0);
         List<Amount> totalPrices = getCollectionOfItems()
                 .stream()
                 .map(ShoppingCartItem::getTotalSubPrice)
                 .collect(toList());
-        runningTotal = runningTotal.plus(totalPrices);
-
-        return runningTotal;
+        return runningTotal.plus(totalPrices);
     }
 
     /**
@@ -131,9 +130,8 @@ public class Sale {
         // Momsberäkning
         Amount totalVATAmount = new Amount(0);
         List<Amount> vatAmounts = getCollectionOfItems().stream().map(ShoppingCartItem::getVATCosts).collect(toList());
-        totalVATAmount = totalVATAmount.plus(vatAmounts);
+        return totalVATAmount.plus(vatAmounts);
 
-        return totalVATAmount;
     }
 
     /**
@@ -150,6 +148,14 @@ public class Sale {
      */
     CashPayment getPayment(){
         return payment;
+    }
+
+    public Amount getTotalPricePaid() {
+        if (payment == null){
+            return new Amount(0);
+        } else {
+            return new Amount(payment.getTotalCostPaid());
+        }
     }
 
     /**
@@ -169,14 +175,21 @@ public class Sale {
         notifyObservers(Event.CHECKED_OUT);
     }
 
-//    /**
-//     * Applies discount to the shopping cart.
-//     * @param discount The discount information as a {@link DiscountDTO}.
-//     */
-//    public void applyDiscount(DiscountDTO discount) {
-//        // TODO: change strategy to strategy design pattern with compoisition.
-//        this.discount = discount;
-//    }
+    /**
+     * Add customer to Sale. Discount applied discount or promotion exists.
+     * @param customerInfo customer information as a {@link CustomerDTO}.
+     */
+    public void applyDiscount(CustomerDTO customerInfo) {
+        this.customer = new Customer(customerInfo);
+    }
+
+    /**
+     * Get customer details
+     * @return customer details as {@link Customer}
+     */
+    public Customer getCustomer() {
+        return customer;
+    }
 
     /**
      * The sale is paid by the specified payment
