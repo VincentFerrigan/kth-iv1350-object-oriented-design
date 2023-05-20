@@ -1,11 +1,9 @@
 package se.kth.iv1350.integration;
 
+import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,9 +13,7 @@ import java.util.Map;
  */
 public class DiscountRegister {
     private static volatile DiscountRegister instance;
-    private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private static final String FILE_PATH = "src/main/se/kth/iv1350/data/";
-    private static final String FLAT_FILE_DB = "discounts.csv";
+    private File flatFileDb;
     private final String CSV_DELIMITER = ";" ;
     private String recordHeader;
     private Map<Integer, Discount> discountTable = new HashMap<>(); // TODO bör nog ändras till CustomerDTO där en DiscountDTO ingår
@@ -27,7 +23,10 @@ public class DiscountRegister {
     private ErrorFileLogHandler logger;
 
     private DiscountRegister() throws IOException {
-        logger = ErrorFileLogHandler.getInstance();
+        this.logger = ErrorFileLogHandler.getInstance();
+        DBParameters dBParams = DBParameters.getInstance();
+        flatFileDb = dBParams.getCustomerFlatFileDb();
+
         addDiscount();
     }
 
@@ -52,7 +51,7 @@ public class DiscountRegister {
      * Adds discounts to the hashmap from the flat file database.
      */
     private void addDiscount() throws IOException {
-        try (FileReader reader = new FileReader(FILE_PATH + FILE_SEPARATOR + FLAT_FILE_DB);
+        try (FileReader reader = new FileReader(flatFileDb);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
             recordHeader = bufferedReader.readLine();

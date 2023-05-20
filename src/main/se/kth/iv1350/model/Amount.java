@@ -1,5 +1,6 @@
 package se.kth.iv1350.model;
 
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
@@ -7,7 +8,7 @@ import java.util.Locale;
 /**
  * Represents an amount of money
  */
-public class Amount {
+public class Amount implements Comparable {
     private final Currency currency;
     private Locale locale;
     private final double amount;
@@ -113,5 +114,10 @@ public class Amount {
         if (Double.compare(amount1.amount, amount) != 0) return false;
         if (!currency.equals(amount1.currency)) return false;
         return locale.equals(amount1.locale);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+       return Double.compare(amount, ((Amount) o).amount);
     }
 }

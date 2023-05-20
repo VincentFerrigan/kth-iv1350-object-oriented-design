@@ -4,6 +4,7 @@ import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.SaleDTO;
 import se.kth.iv1350.model.ShoppingCartItemDTO;
 import se.kth.iv1350.model.VAT;
+import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
@@ -20,18 +21,18 @@ import java.util.Map;
  */
 public class ItemRegistry {
     private static volatile ItemRegistry instance;
-    private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private static final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);
-    private static final String FLAT_FILE_DB = "inventory_items.csv";
     private static final String CSV_DELIMITER = ";";
     private static final int DATABASE_NOT_FOUND = 404;
+    private File flatFileDb;
     private String recordHeader;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
     private ErrorFileLogHandler logger;
 
     private ItemRegistry() throws IOException {
-        // TODO ska vi flytta ut hela inläsningsprocessen till en separat metod????
         this.logger = ErrorFileLogHandler.getInstance();
+        DBParameters dBParams = DBParameters.getInstance();
+        flatFileDb = dBParams.getInventoryFlatFileDb();
+
         addItemData();
     }
     /**
@@ -55,7 +56,7 @@ public class ItemRegistry {
      * Adds items to the hashmap from the flat file database.
      */
     private void addItemData () throws IOException {
-        try (FileReader reader = new FileReader(FILE_PATH + FILE_SEPARATOR + FLAT_FILE_DB);
+        try (FileReader reader = new FileReader(flatFileDb);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
             recordHeader = bufferedReader.readLine();
@@ -120,7 +121,7 @@ public class ItemRegistry {
      * Update database by writing to the flat file database
      */
     private void updateDatabase() {
-        try (FileWriter fileWriter = new FileWriter(FILE_PATH + FILE_SEPARATOR + "inventory_" + LocalDate.now() + ".csv");
+        try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();

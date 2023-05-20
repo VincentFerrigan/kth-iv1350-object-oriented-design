@@ -118,13 +118,14 @@ public class Controller {
      * @param customerID
      * @throws IllegalStateException if this method is called before calling newSale and registerItem.
      */
+    //TODO: How to add customer to sale? How will the discount display?
     public void discountRequest (int customerID){
-        if (currentSale == null || currentSale.getTotalPrice() == null) {
+        if (currentSale == null || currentSale.isComplete() == false) {
             throw new IllegalStateException(
                     "Call to discountRequest before initiating a new sale and registering items.");
         }
-        DiscountDTO discountDTO = discountRegister.getDiscountInfo(customerID);
-        currentSale.applyDiscount(discountDTO);
+//        DiscountDTO discountDTO = discountRegister.getDiscountInfo(customerID);
+//        currentSale.applyDiscount(discountDTO);
     }
 
     /**

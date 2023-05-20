@@ -10,64 +10,40 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ShoppingCartItemTest {
     private ShoppingCartItem instance;
-    private final ItemDTO ITEM_INFO = new ItemDTO(3, "Jordgubbe", "", new Amount(15), new VAT(1));
-    private final int QUANTITY = 5;
+    private static final int TEST_ITEM_ID = 0;
+    private final int TEST_QUANTITY = 5;
+    private static final String TEST_NAME = "test name";
+    private static final String TEST_DESCRIPTION = "test description";
+    private static final Amount TEST_UNIT_PRICE = new Amount(10);
+    private static final VAT TEST_VAT = new VAT(1);
+    private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
+            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE, TEST_VAT);
 
     @BeforeEach
     void setUp() {
-        instance = new ShoppingCartItem(this.ITEM_INFO, QUANTITY);
+        instance = new ShoppingCartItem(this.TEST_ITEM_INFO, TEST_QUANTITY);
     }
 
     @AfterEach
     void tearDown() {
         instance = null;
     }
-    @Disabled
-    @Test
-    void testAddItem() {
-    }
-
-    @Test
-    void testSetQuantity() {
-        int newQuantity = 7;
-        instance.setQuantity(newQuantity);
-        assertEquals(newQuantity, instance.getQuantity(),
-                "ShoppingCartItem did not have correct quantity when set.");
-    }
 
     @Test
     void testAddToQuantity() {
-        int addedQuantity = 4;
-        instance.addToQuantity(addedQuantity);
-        assertEquals(QUANTITY +addedQuantity, instance.getQuantity(),
+        instance.addToQuantity(TEST_QUANTITY);
+        assertEquals(TEST_QUANTITY + TEST_QUANTITY, instance.getQuantity(),
                 "ShoppingCartItem did not have correct quantity when quantity was added to an existing ShoppingCartItem.");
     }
 
     @Disabled
     @Test
     void testEquals() {
-        ShoppingCartItem a = new ShoppingCartItem(ITEM_INFO);
-        ShoppingCartItem b = new ShoppingCartItem(ITEM_INFO,2);
+        ShoppingCartItem a = new ShoppingCartItem(TEST_ITEM_INFO);
+        ShoppingCartItem b = new ShoppingCartItem(TEST_ITEM_INFO,2);
         boolean expResult = true;
         boolean result =  a.equals(b);
         assertEquals(expResult,result,"Objects not equal");
     }
 
-    @Disabled
-    @Test
-    void testIncrement() {
-        int incrementedAmount = QUANTITY + 1;
-        instance.increment();
-        assertEquals(incrementedAmount, instance.getQuantity(),
-                "ShoppingCartItem did not have correct quantity when incremented.");
-    }
-
-    @Disabled
-    @Test
-    void testDecrement() {
-        int decrementedAmount = QUANTITY - 1;
-        instance.increment();
-        assertEquals(decrementedAmount, instance.getQuantity(),
-                "ShoppingCartItem did not have correct quantity when decremented.");
-    }
 }

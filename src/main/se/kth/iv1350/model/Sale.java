@@ -1,8 +1,11 @@
 package se.kth.iv1350.model;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 import se.kth.iv1350.integration.*;
+import se.kth.iv1350.integration.pricing.DiscountFactory;
+import se.kth.iv1350.integration.pricing.DiscountStrategy;
 import se.kth.iv1350.util.Event;
 
 import static java.util.stream.Collectors.toList;
@@ -19,11 +22,11 @@ import static java.util.stream.Collectors.toList;
  * Represents a particular sale.
  */
 public class Sale {
-    private Map<Event, List<SaleObserver>> saleObservers = new HashMap<>();
+    private Map<Event, List<SaleObserver>> saleObservers;
     private LocalDateTime timeOfSale; // TODO ska den vara kvar? Syfte?
     private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
     private CashPayment payment;
-    private DiscountDTO discount = new DiscountDTO(); // TODO: BÖR bytas ut mot discount strategy/composite grejen
+    private DiscountStrategy pricing;
     private boolean isComplete;
 
 //    private Amount discountAmount;
@@ -33,7 +36,21 @@ public class Sale {
      */
     public Sale(){
         this.timeOfSale = LocalDateTime.now();
+        saleObservers = new HashMap<>();
         isComplete = false;
+        try {
+            pricing = DiscountFactory.getInstance().getDiscountStrategy();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -127,14 +144,6 @@ public class Sale {
         return isComplete;
     }
 
-    //    /**
-//     * Gets the discount amount for the current sale.
-//     * @return The discount amount of the current sale.
-//     */
-//    public Amount getDiscountAmount() {
-//        return discountAmount;
-//    }
-
     /**
      * Gets payment for the current sale.
      * @return The payment of the current sale.
@@ -160,14 +169,14 @@ public class Sale {
         notifyObservers(Event.CHECKED_OUT);
     }
 
-    /**
-     * Applies discount to the shopping cart.
-     * @param discount The discount information as a {@link DiscountDTO}.
-     */
-    public void applyDiscount(DiscountDTO discount) {
-        // TODO: change strategy to strategy design pattern with compoisition.
-        this.discount = discount;
-    }
+//    /**
+//     * Applies discount to the shopping cart.
+//     * @param discount The discount information as a {@link DiscountDTO}.
+//     */
+//    public void applyDiscount(DiscountDTO discount) {
+//        // TODO: change strategy to strategy design pattern with compoisition.
+//        this.discount = discount;
+//    }
 
     /**
      * The sale is paid by the specified payment
@@ -227,17 +236,6 @@ public class Sale {
     private void notifyObservers(Event eventType) {
         SaleDTO saleInfo = getSaleInfo();
         saleObservers.get(eventType).forEach(observer -> observer.updateSale(saleInfo));
-    }
-    /**
-     * The specified observer will be notified when this sale has been updated
-     * i.e. an event has occurred.
-     *
-     * @param eventType The event as {@Link Event}
-     * @param observer The observer to notify.
-     */
-    public void addSaleObserver(Event eventType, SaleObserver observer) {
-        // TODO: Används denna? Kommer den att användas? Är den nödvändig?
-        saleObservers.get(eventType).add(observer);
     }
 
     /**

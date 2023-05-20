@@ -8,5 +8,5 @@ ITEM ID;NAME;DESCRIPTION;PRICE;VAT RATE GROUP CODE;IN STORE;SOLD
 7;Chips;OLW, salted;30;2;50;0
 8;Fanta;Softdrink 1 l;25;2;30;0
 9;Snickers;Candybar;12;2;15;0
-10;Salomon;Norwegian fishdeli;100;2;3;0
-0;;;1;1;1;0
+10;Salomon;Norwegian fish deli;100;2;3;0
+0;test name;test description;10;1;10;0

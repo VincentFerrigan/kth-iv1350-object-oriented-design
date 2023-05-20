@@ -2,6 +2,7 @@ package se.kth.iv1350.integration;
 
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Sale;
+import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
@@ -20,9 +21,7 @@ import java.util.Map;
  */
 public class AccountingSystem {
     private static volatile AccountingSystem instance;
-    private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private static final String FILE_PATH = "src/main/se/kth/iv1350/data".replace(",", FILE_SEPARATOR);
-    private static final String FLAT_FILE_DB = "accounting.csv";
+    private File flatFileDb;
     private final String CSV_DELIMITER = ";";
     private String recordHeader;
     private ErrorFileLogHandler logger;
@@ -37,6 +36,9 @@ public class AccountingSystem {
 
     private AccountingSystem() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
+        DBParameters dBParams = DBParameters.getInstance();
+        flatFileDb = dBParams.getAccountingFlatFileDb();
+
         addRecord();
     }
 
@@ -60,7 +62,7 @@ public class AccountingSystem {
     // TODO: EVENTUELL. Beror på vilken lösning jag väljer.
     public Map getData(String FILE_TO_LOAD) throws IOException {
         Map<LocalDate, Account> accountingTable = new HashMap<>();
-        try (FileReader reader = new FileReader(FILE_PATH + FILE_SEPARATOR + FLAT_FILE_DB);
+        try (FileReader reader = new FileReader(flatFileDb);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
             recordHeader = bufferedReader.readLine();
@@ -101,7 +103,7 @@ public class AccountingSystem {
     }
 
     private void addRecord() throws IOException {
-        try (FileReader reader = new FileReader(FILE_PATH + FILE_SEPARATOR + FLAT_FILE_DB);
+        try (FileReader reader = new FileReader(flatFileDb);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
             recordHeader = bufferedReader.readLine();
@@ -139,7 +141,7 @@ public class AccountingSystem {
      * Accounting by creating (and writing to) a flat file database
      */
     private void updateDatabase() {
-        try (FileWriter fileWriter = new FileWriter(FILE_PATH + FILE_SEPARATOR + "accounting_" + LocalDate.now() + ".csv");
+        try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
