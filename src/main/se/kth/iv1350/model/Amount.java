@@ -25,6 +25,9 @@ public class Amount implements Comparable {
         this.locale = locale;
         this.amount = amount;
     }
+    public Amount() {
+        this(0);
+    }
 
     /**
      * Creates a new instance,
