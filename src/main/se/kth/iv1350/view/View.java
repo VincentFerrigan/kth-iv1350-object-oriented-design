@@ -107,9 +107,7 @@ public class View {
             printStep("description, price, and running total.",2);
             printStep( "3.c","Cashier enters item identifier and quantity.");
             contr.registerItem(7, 2);
-            printStep( "3.c","Cashier enters item identifier and quantity.");
             contr.registerItem(8, 4);
-            printStep( "3.c","Cashier enters item identifier and quantity.");
             contr.registerItem(10, 4);
             Thread.sleep(1000);
             try {
@@ -135,8 +133,8 @@ public class View {
             printStep("7.", "Customer answers ’no’",0);
             printStep("a ’yes’ answer will be considered later).");
             printStep("8.", "Cashier ends the sale.");
-            printStep("9.", "Program presents total price, including VAT.");
             contr.endSale();
+            printStep("9.", "Program presents total price, including VAT.");
             printStep("10.", "Cashier tells customer the total,", 0);
             printStep("and asks for payment.\n");
 
@@ -157,15 +155,15 @@ public class View {
             printStep("11a.", "Customer pays cash.");
             printStep("Paying " + paidAmount);
             printStep("12.", "Cashier enters amount paid");
-            printStep("13.", "Program logs completed sale.");
+            printStep("13.", "Program logs completed sale.",0);
             printStep("14.", "Program sends sale information to ", 0);
             printStep("external accounting system (for accounting)", 0);
             printStep("and external inventory system (to update", 0);
-            printStep("inventory).");
+            printStep("inventory).",0);
             printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid.");
+            printStep("register with the amount paid.",0);
             printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer.");
+            printStep("change to give customer.",2);
             contr.pay(paidAmount);
             Thread.sleep(1000);
             printStep("17.", "Customer leaves with receipt and goods.",0);
