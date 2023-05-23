@@ -18,5 +18,5 @@ One shall be able to
 * develop an object-oriented programme by applying established guidelines for object-oriented architecture, design and programming
 * discuss the quality of a programme and then refer to established guidelines for object-oriented architecture, design and programming
 * interpret and clarify a given specification by applying established guidelines for analysis. 
-## Output
+## Basic Flow
 ![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/Peek.gif)
