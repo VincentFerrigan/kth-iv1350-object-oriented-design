@@ -56,24 +56,24 @@ public class View {
             printStep("1.", "Customer arrives at POS with goods to purchase.");
             printStep("2.", "Cashier starts a new sale");
             contr.startSale();
-            printStep( "Cashier enters item identifier.");
+            printStep( "3.","Cashier enters item identifier.");
+            contr.registerItem(5);
             printStep("4.", "Program retrieves price, VAT (tax) rate,", 0);
             printStep("and item description from the external",0);
             printStep("inventory system. Program records the sold item.", 0);
             printStep("Program also presents item description,", 0);
             printStep("price, and running total (including VAT).");
-            contr.registerItem(5);
-            Thread.sleep(1000);
             printStep("5.", "Steps three and four are repeated until the", 0);
             printStep("cashier has registered all items.\n");
+            Thread.sleep(1000);
             printStep( "3.", "Cashier enters item identifier.");
             contr.registerItem(1);
             Thread.sleep(1000);
             printStep( "3","Cashier enters item identifier.");
             contr.registerItem(3);
             Thread.sleep(1000);
-            System.out.println("*ALTERNATIVE FLOW*");
-            printStep("3-4a.", "No item with the specified identifier is found.");
+            System.out.println("ALTERNATIVE FLOW 3-4A");
+            printStep("3-4a.", "No item with the specified identifier is found.\n");
 
             try {
                 printStep( "3a.","Cashier tries to enter a non-existing item ID, ",0);
@@ -85,7 +85,7 @@ public class View {
             } catch (OperationFailedException exc) {
                 writeToLogAndUI("Wrong exception was thrown.", exc);
             }
-            System.out.println("*ALTERNATIVE FLOW*");
+            System.out.println("ALTERNATIVE FLOW 3-4B");
             printStep("3-4b.", "An item with the specified identifier has", 0);
             printStep("already been entered in the current sale.",0);
             printStep("I.", "Program increases the sold quantity of the item,",0);
@@ -96,7 +96,7 @@ public class View {
             printStep( "3b.","Cashier enters item identifier.");
             contr.registerItem(5);
             Thread.sleep(1000);
-            System.out.println("*ALTERNATIVE FLOW*");
+            System.out.println("*ALTERNATIVE FLOW 3-4C*");
             printStep("3-4c.", "Customer purchases multiple items of the same", 0);
             printStep("goods (with the same identifier),",0);
             printStep("and cashier registers them together",0);
@@ -104,8 +104,8 @@ public class View {
             printStep("II.", "Cashier enters quantity",0);
             printStep("III.", "Program calculates price, records the sold item", 0);
             printStep("and quantity, and presents item",0);
-            printStep("description, price, and running total.",2);
-            printStep( "3.c","Cashier enters item identifier and quantity.");
+            printStep("description, price, and running total.\n",2);
+            printStep( "3.c","Cashier enters item identifiers with quantities.");
             contr.registerItem(7, 2);
             contr.registerItem(8, 4);
             contr.registerItem(10, 4);
@@ -123,13 +123,14 @@ public class View {
             } catch (OperationFailedException ex) {
                 writeToLogAndUI("Correctly failed to register item when database call \nfailed", ex);
             }
+            Thread.sleep(1000);
             printStep("II.","Server connection resumed\n");
             printStep( "3", "Cashier enters item identifier.");
             contr.registerItem(9);
             printStep( "3c","Cashier enters item identifier and quantity.");
             contr.registerItem(3, 3);
             printStep("6.", "Cashier asks customer if they want to buy", 0);
-            printStep("anything more.",0);
+            printStep("anything more.");
             printStep("7.", "Customer answers ’no’",0);
             printStep("a ’yes’ answer will be considered later).");
             printStep("8.", "Cashier ends the sale.");
@@ -138,23 +139,23 @@ public class View {
             printStep("10.", "Cashier tells customer the total,", 0);
             printStep("and asks for payment.\n");
 
-            System.out.println("*ALTERNATIVE FLOW*");
+            System.out.println("*ALTERNATIVE FLOW 9A*");
             printStep("9a", "(may also be 10a or 11a) ",0);
             printStep("Customer says they are eligible for a discount.",0);
             printStep("I.", "Cashier signals discount request.",0);
             printStep("II.", "Cashier enters customer identification.",0);
             printStep("III.", "Program fetches discount from the discount",0);
-            printStep("database",0);
-            printStep("IV.", "Program presents price after discount,",0);
-            printStep("based on discount rules.",2);
+            printStep("database",2);
             contr.registerCustomerToSale(810111);
             contr.endSale();
+            printStep("IV.", "Program presents price after discount,",0);
+            printStep("based on discount rules.",3);
             printStep("10a.", "Cashier tells customer the total,", 0);
             printStep("and asks for payment.");
             Amount paidAmount = new Amount(500);
             printStep("11a.", "Customer pays cash.");
             printStep("Paying " + paidAmount);
-            printStep("12.", "Cashier enters amount paid");
+            printStep("12.", "Cashier enters amount paid",0);
             printStep("13.", "Program logs completed sale.",0);
             printStep("14.", "Program sends sale information to ", 0);
             printStep("external accounting system (for accounting)", 0);
@@ -163,7 +164,7 @@ public class View {
             printStep("15.", "Program increases the amount present in the ",0);
             printStep("register with the amount paid.",0);
             printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer.",2);
+            printStep("change to give customer.",3);
             contr.pay(paidAmount);
             Thread.sleep(1000);
             printStep("17.", "Customer leaves with receipt and goods.",0);
