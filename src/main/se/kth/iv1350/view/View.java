@@ -159,13 +159,13 @@ public class View {
             printStep("11a.", "Customer pays cash.");
             printStep("Paying " + paidAmount);
             printStep("12.", "Cashier enters amount paid");
-            printStep("13.", "Program logs completed sale.");
+            printStep("13.", "Program logs completed sale.",0);
             printStep("14.", "Program sends sale information to ", 0);
             printStep("external accounting system (for accounting)", 0);
             printStep("and external inventory system (to update", 0);
-            printStep("inventory).");
+            printStep("inventory).",0);
             printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid.");
+            printStep("register with the amount paid.",0);
             printStep("16.", "Program prints receipt and tells how much ", 0);
             printStep("change to give customer.",2);
             contr.pay(paidAmount);
