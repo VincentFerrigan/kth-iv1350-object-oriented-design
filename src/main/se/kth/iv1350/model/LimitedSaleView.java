@@ -20,13 +20,13 @@ public interface LimitedSaleView {
     Amount getTotalPricePaid();
 
     /**
-     * Gets the total amount for the current sale.
+     * Gets the total amount for the current sale, including possible discount.
      * @return The total amount of the current sale.
      */
     Amount getTotalPrice();
 
     /**
-     * Calculates the total cost of the shopping cart, including possible discount.
+     * Calculates the total cost of the shopping cart
      * @return The running total as a {@link Amount}.
      */
     Amount calculateRunningTotal();
@@ -43,4 +43,15 @@ public interface LimitedSaleView {
      * @return A {@link Collection} of the items in the shopping cart.
      */
     Collection<ShoppingCartItem> getCollectionOfItems();
+
+    /**
+     * Gets the discount of the current sale, if any.
+     * @return the total discount of the current sale.
+     */
+    Amount getDiscount();
+    /**
+     * Gets the discount information, if any.
+     * @return the discount information as string. Returns empty discount if no discount was applied
+     */
+    String createStringDiscountInfo();
 }

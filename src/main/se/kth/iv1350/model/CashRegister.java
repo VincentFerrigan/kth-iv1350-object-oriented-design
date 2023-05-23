@@ -62,7 +62,7 @@ public class CashRegister {
      * All the specified observers will be notified when the revenue has been updated
      * @param observers The observers to notify.
      */
-    public void addCashRegisterObservers(List<CashRegisterObserver> observers) {
+    public void addAllCashRegisterObservers(List<CashRegisterObserver> observers) {
         cashRegisterObservers.addAll(observers);
     }
 }

@@ -20,11 +20,24 @@ public class RunningSaleView extends SaleView {
      */
     @Override
     protected void printCurrentState(LimitedSaleView sale) {
-        System.out.println("----------------- Display follows ----------------");
-        System.out.println(createSaleItemsInfoString());
+        System.out.println("");
+        System.out.println("------------------ Display follows -----------------");
+        System.out.print(createSaleItemsInfoString());
         System.out.println("%-40s%s".formatted("Running total:", sale.calculateRunningTotal()));
         System.out.println("%-40s%s".formatted("Including VAT:", sale.getTotalVATCosts()));
-        System.out.println("------------------ End of Display ----------------");
+        System.out.println("------------------- End of Display -----------------");
+        System.out.println("");
+    }
+
+    /**
+     *
+     * @param isComplete is the sale complete?
+     * @return if sale is not complete, the view should update and therefore return true
+     */
+    @Override
+    protected boolean shouldUpdate(boolean isComplete) {
+        if (isComplete) {return false;}
+        else {return true;}
     }
 
     @Override

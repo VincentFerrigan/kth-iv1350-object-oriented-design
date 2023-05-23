@@ -16,4 +16,5 @@ public interface DiscountStrategy {
      * @return the lowest total price.
      */
     Amount getTotal(Sale sale);
+    Amount getDiscount();
 }

@@ -17,6 +17,7 @@ public class CompositeDiscountStrategy implements DiscountStrategy {
     CompositeDiscountStrategy(){
         discountStrategies = new ArrayList<>();
     }
+    private DiscountStrategy usedDiscountStrategy;
 
     /**
      * Invokes all discount and promotion algorithms added to this composite.
@@ -26,10 +27,15 @@ public class CompositeDiscountStrategy implements DiscountStrategy {
     @Override
     public Amount getTotal(Sale sale) {
         Amount lowestTotalPrice = sale.calculateRunningTotal();
+
         for (Iterator i = discountStrategies.iterator(); i.hasNext();) {
           DiscountStrategy strategy = (DiscountStrategy) i.next();
           Amount total = strategy.getTotal(sale);
-          lowestTotalPrice = lowestTotalPrice.compareTo(total) > 0 ? total : lowestTotalPrice;
+          if (lowestTotalPrice.compareTo(total) > 0) {
+              lowestTotalPrice = total;
+              usedDiscountStrategy = strategy;
+          }
+
         }
         return lowestTotalPrice;
     }
@@ -42,5 +48,18 @@ public class CompositeDiscountStrategy implements DiscountStrategy {
      */
     public void addDiscountStrategy(DiscountStrategy discountStrategy) {
         discountStrategies.add(discountStrategy);
+    }
+
+    public Amount getDiscount() {
+        return usedDiscountStrategy != null
+                ? usedDiscountStrategy.getDiscount()
+                : new Amount(0);
+    }
+
+    @Override
+    public String toString() {
+        return usedDiscountStrategy != null
+                ? usedDiscountStrategy.toString()
+                : "".toString(); // empty string
     }
 }

@@ -1,7 +1,5 @@
 package se.kth.iv1350.model;
 
-import se.kth.iv1350.util.Event;
-
 /**
  * A listener interface for receiving notifications about
  * the total revenue in the Register.

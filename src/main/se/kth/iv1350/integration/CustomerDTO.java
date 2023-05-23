@@ -1,14 +1,14 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.integration.pricing.DiscountType;
+import se.kth.iv1350.integration.pricing.CustomerType;
 
 public class CustomerDTO {
     private final int customerID;
-    private final DiscountType discountType;
+    private final CustomerType customerType;
     private final int bonusPoints;
-    public CustomerDTO(int customerID, DiscountType discountType, int bonusPoints) {
+    public CustomerDTO(int customerID, CustomerType customerType, int bonusPoints) {
         this.customerID = customerID;
-        this.discountType = discountType;
+        this.customerType = customerType;
         this.bonusPoints = bonusPoints;
     }
 
@@ -16,8 +16,8 @@ public class CustomerDTO {
         return customerID;
     }
 
-    public DiscountType getDiscountType() {
-        return discountType;
+    public CustomerType getDiscountType() {
+        return customerType;
     }
 
     public int getBonusPoints() {

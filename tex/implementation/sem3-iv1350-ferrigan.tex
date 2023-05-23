@@ -1,0 +1,472 @@
+\documentclass[a4paper]{scrreprt}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage{fancyvrb}
+%\usepackage{hyperref}
+
+\usepackage{pdflscape}
+% \usepackage{lscape}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\usepackage{caption}
+\usepackage{hyperref}
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+
+
+% Create header and footer
+\headheight 27pt
+\pagestyle{fancyplain}
+\lhead{\footnotesize{Object-Oriented Design, IV1350}}
+\chead{\footnotesize{Seminar 3 Implementation}}
+\rhead{}
+\lfoot{}
+\cfoot{\thepage\ (\pageref{LastPage})}
+\rfoot{}
+
+% Create title page
+\title{Seminar 3, Implementation}
+\subtitle{Object-Oriented Design, IV1350}
+\author{Vincent Ferrigan ferrigan@kth.se}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents %Generates the TOC
+
+\chapter{Introduction}
+The aim of this seminar task is to %practice basic object-oriented design and
+program and test a system under development based on a design that development
+during previous seminars.
+
+UML and Object-Oriented Patterns were applied when designing the object-oriented
+architecture of this object-oriented system.
+
+%TODO Lägg till github konto.
+
+The author collaborated with
+\emph{Elin Blomquist} and \emph{Robert Koivusalo},
+
+
+
+\chapter{Method}
+\section*{Tools}
+The UML modeling tool used was \emph{PlantUML}.
+PlantUML is an open-source tool for creating UML diagrams using a text-based
+syntax. It was chosen to enable version control through git and to avoid using a
+proprietary graphical editor.
+
+All code was written in \emph{IntelliJ IDEA} and the unit tests were written with the \emph{JUnit 5} test framework.
+
+\section*{The overall Work-flow}
+Both the \emph{Class Diagram} and \emph{System Diagram}, that were designed during the previous seminars,
+provided a visual representation of the system's architecture and design.
+
+This diagram served as a blueprint for the programming process,
+guiding the implementation of each system operation.
+The programming process was carried out incrementally,
+with the focus on implementing one system operation at a time.
+This iterative methodology forced the team to constantly review and
+update the system design when needed.
+Discrepancies were discovered when certain methods
+were implemented  and
+quite a few issues arose during and were addressed after each system operations
+were implemented.
+
+As a result, the system design was continuously refined,
+allowing for a more robust and correct system.
+
+%Methods that were too long were split and large classes reviewed and divided into several if and when appropriate.
+%The latter in order to keep a higher cohesion.
+
+\section*{The program}
+\subsection*{Main}
+We started by setting up all the packages (representing the system's layers)
+and creating all the classes (including their initial attributes and methods)
+according to our UML diagrams.
+
+Overall, the program
+contains the layers
+\verb|startup|, \verb|view|, \verb|controller|, \verb|model|,
+\verb|integration|, and \verb|data|.
+
+As mentioned, we quickly discovered that the initial design had flaws.
+following the UML from the previous seminar.
+The sequence diagrams, class diagrams and code therefore rewritten and
+developed in parallel, and we therefore added functionality gradually to solve and cover all
+the discovered issues and blind spots.
+During the development process, not only did new problems arise,
+but also new ideas on how the program should work to function as intended.
+
+Methods that became very long were divided into smaller methods and classes that became
+too big were split in accordance to with the main goal of achieving high cohesion.
+
+\subsection*{The Data Layer}
+Instead of hardcoding data in the integration classes, flat file databases were used to store records.
+These CSV-files were used to store, read and update data for accounting, inventory, item registry and discounts.
+
+Since the system was reading and writing to files, handling exceptions became necessary.
+This was done with \emph{try-catch blocks}.
+
+\section*{Tests}
+The tests were created using the JUnit 5 framework
+and follow best practice i.e. they have the same directory architecture as the program,
+and are placed outside the source folder for the program (the SUT).
+We started by creating tests for the controller and item.
+The controller covers all system operations
+and handles calls to all other layers.
+However, the tests in the controller are
+much more complex than the tests performed in classes with low dependency.
+Items have lower dependency, making the tests much less complex.
+The choice of
+our tests has led us to cover large parts of the program's functionality.
+
+Testing erroneous conditions was postponed until error handing is added.
+Which will be done prior to the next seminar.
+%
+%Tests were written in bottom-up order, first for c.....
+%
+%\begin{longlisting}
+%    \inputminted[
+%        label=Uppgift A,
+%        linenos=true,
+%        bgcolor=lightgray,
+%%        frame=single,
+%        fontsize=\footnotesize,
+%    ]{java}{../../src/main/se/kth/iv1350/startup/Main.java}
+%    \caption{Caption text av något slag.}
+%    \label{listing:main}
+%\end{longlisting}
+
+%\section{The refined Design}
+
+
+%When creating the Class Diagram in figure \ref{fig:CD} we followed the MVC and layer patterns
+%mentioned in the course textbook,
+%and chose to use the layers that were used in the course textbooks case study.
+%
+%Together, we designed one system operation at a time, while striving for \emph{high cohesion},
+%\emph{low coupling} and a high degree of \emph{encapsulation}.
+%
+%After each system operation, we updated the class diagrams with the objects and their attributes and methods in use.
+%\begin{enumerate}
+%    \item The \verb|StartSale| System Operations -- see figure~\ref{fig:SD}
+%    \item The \verb|registerItem| System Operations -- see figure~\ref{fig:SD1}
+%    \item The \verb|endSal|e System Operations -- see figure~\ref{fig:SD2}
+%    \item The \verb|registerCustomerToSale| System Operations -- see figure~\ref{fig:SD3}
+%    \item The \verb|addPayment| System Operations -- see figure~\ref{fig:SD4}
+%    \item The Start up, \verb|Main| System Operation -- see figure~\ref{fig:SD5}
+%\end{enumerate}
+%Naturally we revised every system operation and discussed which methods and attributes that were to be
+%public, private or package private and when or if it was appropriate to use \emph{DTOs (Data Transfer Objects)} or not.
+%All the DTOs that were chosen are depicted in figure~\ref{fig:DTO}.
+
+\newpage
+\chapter{Result}
+\label{sec:result}
+The program starts in the layer \verb|StartUp|,
+where \verb|Main| is located.
+Within \verb|Main|, instances of \verb|Printer|,
+\verb|Display|, and \verb|RegisterCreator| are created.
+Subsequently, a Controller instance is created using these previously established instances as input arguments.
+The Main method then proceeds to create a View instance,
+with the Controller passed as an argument.
+Following this,
+the View (representing the cashier or, in this specific case, the method "hardkodadegrejer")
+initiates calls to the Controller.
+
+The entire program can be found here:
+
+\subsubsection*{GitHub-Repo}
+\url{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design}
+
+%\section{The Class Diagram}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{uml/output/CD_Sem1}
+%        \caption{The class diagram after all system operations have been designed.}
+%        \label{fig:CD}
+%    \end{center}
+%\end{figure}
+%The Class Diagram illustrated in figure \ref{fig:CD} emphasizes the links between the objects, i.e.\ the instances of
+%our classes.
+%It also groups the classes into subsystems in accordance with the MVC architectural pattern.
+%
+%All possible attributes and methods that belong to a class (including their parameters) are shown.
+%In other words, all methods (and parameters) that were depicted in the Interaction Diagrams are all
+%collected and grouped here in the Class Diagram.
+\newpage
+%\begin{landscape}
+    \section*{The Refined Design}
+    \subsection*{Class Diagram}
+%    \newgeometry{left=0cm,right=0cm,top=0cm,bottom=0cm}
+
+    \begin{figure}[h!]
+        \begin{center}
+            \includegraphics[width=\textwidth]{../../uml/output/uml_v3}
+            \caption{The Class Diagram}
+            \label{fig:CD}
+        \end{center}
+    \end{figure}
+
+    \begin{figure}[h!]
+        \begin{center}
+            \includegraphics[width=\textwidth]{../../uml/output/uml_v3_001}
+            \caption{The DTOs (Data Transfer Objects)}
+            \label{fig:DTO}
+        \end{center}
+    \end{figure}
+
+\newpage
+\subsection*{System Operations}
+\subsubsection*{The Start up, Main System Operation}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_002}
+%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The Start Up \verb|Main| system operations}
+        \caption{The Start Up Main system operations}
+        \label{fig:SD5}
+    \end{center}
+\end{figure}
+
+\subsubsection*{The StartSale System Operations}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003}
+%        \includegraphics[trim=0cm 0cm 51cm 0cm ,clip, width=\textwidth]{../uml/output/uml_v3.png}
+%        \caption{The \verb|startSale| system operation }
+        \caption{The startSale system operation }
+        \label{fig:SD}
+    \end{center}
+\end{figure}
+%
+\newpage
+\subsubsection*{The registerItem System Operations}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_004}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{The registerItem operation }
+        \label{fig:SD1}
+    \end{center}
+\end{figure}
+
+\subsection*{Displaying the ouput of current sale}
+\begin{longlisting}
+    \inputminted[
+        label= Output of a current sale,
+        linenos=false,
+%        bgcolor=lightgray,
+        firstline=1,
+        lastline=8,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{bash}{output/outputs.txt}
+    \caption{The Receipt printed to System.out}
+    \label{listing:checkoutOutput}
+\end{longlisting}
+
+\subsubsection*{The endSale System Operations}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_005}
+%        \includegraphics[trim=0cm 0cm 50cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|endSale| system operation }
+        \caption{The endSale system operation }
+        \label{fig:SD2}
+    \end{center}
+\end{figure}
+
+\subsubsection*{End of Sale - Displaying the output of a checkout}
+\begin{longlisting}
+    \inputminted[
+        label= Output of a checkout,
+        linenos=false,
+%        bgcolor=lightgray,
+        firstline=61,
+        lastline=72,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{bash}{output/outputs.txt}
+    \caption{The checkout shopping cart printed to System.out}
+    \label{listing:checkout}
+\end{longlisting}
+
+\subsubsection*{The discountRequest System Operations}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_006}
+%        \includegraphics[trim=0cm 0cm 30cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+        \caption{The discoutRequest system operation }
+        \label{fig:SD3}
+    \end{center}
+\end{figure}
+
+\subsubsection*{The addPayment System Operations}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_007}
+%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|addPayment| system operation }
+        \caption{The addPayment system operation }
+        \label{fig:SD4}
+    \end{center}
+\end{figure}
+
+\subsubsection*{Receipt}
+\begin{longlisting}
+    \inputminted[
+        label= Receipt,
+        linenos=false,
+%        bgcolor=lightgray,
+        firstline=73,
+        lastline=91,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{bash}{output/outputs.txt}
+    \caption{The Receipt printed to System.out}
+    \label{listing:receipt}
+\end{longlisting}
+
+%    \restoregeometry
+%\end{landscape}
+
+
+\chapter{Discussion}
+\label{sec:discussion}
+
+During the development
+process, one constantly encounters new problems that need to be solved.
+We wanted to create a program with as little hard coding as possible, and since we
+haven't learned how to implement databases properly yet,
+the obvious choice was to use CSV files as flat file databases.
+We were careful with the documentation and made sure that all
+declarations have explanatory names and follow convention.
+
+\section*{Flexibility and efficiency}
+To easily change the currency, depending on which region the
+system will be used in, we used both Javas currency class and a Locale class.
+The class provides
+methods for obtaining information such as language, country code, and currency
+by region.
+By changing the region, the unit of the shopping cart and receipt
+amount changes to display, for example, €, £, etc.
+
+In \verb|addItem|, we check if the
+item is already in the shopping cart and do not need to fetch item information
+again from the inventory.
+This makes the program faster and more efficient, as
+you do not have to retrieve the same type of information repeatedly
+
+When creating systems and their tests, they should be made as flexible as possible
+and made easy to change
+when needed.
+Which we believe that we have.
+
+\section*{The code does not smell}
+\emph{Code smell} refers to characteristics or patterns within a program's source code that
+indicate potential issues, often making the code difficult to maintain, understand, or extend.
+Eventhough these smells might not immediate errors, they may lead to technical debt,
+decreased software quality, and more complex debugging processes in the long run.
+
+We kept functions and classes smal and focused, regularly refactored code and wrote descriptive names for
+variables, functions and classes.
+Code duplication was avoided, \emph{JavaDocs} was written for all but private functions.
+
+\section*{Testing}
+\label{sec:testing}
+Writing tests before or immediately after implementing a method would have helped us identify
+potential issues early on and ensured code quality.
+In other words, a Test-Driven-Development approach would have been most desirable.
+Unfortunately, the entire program was written before writing a single test.
+
+While implementing the JUnit tests, the team and I quickly understood that
+the optimal way would have been to apply the Test-Driven-Development approach.
+It would have both saved us time, and improved our design and overall code quality.
+
+We have created the tests to be self-evaluating and they display an informative message
+if a test should fail.
+We have also followed the correct structure so that the
+tests are not located under the source folder for the program.
+
+Not all tests have been written yet, which is something I intend to do prior to the next seminar.
+
+%As mentioned earlier, the group found Sequence diagrams to be more notationally rich and advantageous
+%over communication diagrams.
+%For example, it is easier to see the ''call-flow sequence'' with sequence
+%diagrams -- since they simply read from top
+%to bottom.
+%With communication diagrams one must read the sequence numbers which were,
+%sometimes, hard to follow.
+%
+%Additionally, the group chose Sequence diagrams over
+%Communication diagrams for the following reasons:
+%\begin{enumerate}
+%    \item Clearer visualization of the timeline: Sequence diagrams provide a clear
+%    representation of the temporal ordering of interactions, making it easier for
+%    the team to understand the chronological flow of events in the system.
+%    \item Better focus on message exchanges: Sequence diagrams place more emphasis on the
+%    message exchanges between objects, which the group found particularly
+%    important in a \emph{Point of Sale system}, where understanding the order of interactions can
+%    help us a great deal when we start programming the system.
+%    \item More intuitive representation of object lifelines:
+%    In Sequence diagrams, object
+%    lifelines are visually clear and make it easy to see when an object is created,
+%    used, called etc., allowing for a better understanding of object lifecycles
+%    and their interactions with other objects.
+%\end{enumerate}
+%
+%However, naturally, Sequence diagrams have their limitations.
+%For instance, new objects have to always be added to the right edge, which is
+%quite limiting—it quickly consumes and exhausts right-edge space on a page.
+%Free space in the vertical dimension is not efficiently used, potentially
+%leading to cluttered diagrams and reduced readability.
+%
+%In conclusion, the group decided to use Sequence diagrams over Communication
+%diagrams due to their clearer representation of the call-flow sequence,
+%improved visualization of the timeline and better focus on message exchanges.
+%Despite their limitations, such as the inefficient use of space,
+%Sequence diagrams provide more intuitive
+%object lifeline representation, enhanced readability and maintainability.
+%
+%
+%%\section{The Start Up Layer}
+%
+%\section{Open Issues}
+%\label{sec:open_issues}
+%\emph{Which constructors should be package private and which must be public?}
+%    We chose to make all constructors, other than \verb|Receipt| and \verb|Amount|, as public.
+%    There was no need for \verb|Receipt| and \verb|Amount| to be other than package private since they
+%were only created by objects withing the same layer and package; the \emph{model}.
+%    But why not \verb|CashPayment|, \verb|ShoppingCartItem| and \verb|Amount|?
+%
+%    We also had a hard time knowing when, where and how to model the external systems;
+%\verb|CustomerRegistry|, \verb|AccountingSystem|, \verb|InventorySystem|.
+%    Which attributes should they have?
+%    Shall we instantiate objects out of them, and if so, when and where?
+%    It was especially tricky to know which methods and attributes to add to the CustomerRegistry.
+%    It was hard to read how to implement the business rules.
+%
+%
+%We chose to put that and the other discussion to rest until we start programming, i.e.\ until the next task.
+%And hope that much of the issues get clarified during the seminars.
+
+\listoflistings % Now typeset the list
+\end{document}

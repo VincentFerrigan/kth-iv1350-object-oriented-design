@@ -3,11 +3,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.integration.pricing.DiscountFactory;
 import se.kth.iv1350.integration.pricing.DiscountStrategy;
-import se.kth.iv1350.util.Event;
-
 import static java.util.stream.Collectors.toList;
 
 /* TODO: Keep the following for the report.
@@ -22,7 +21,7 @@ import static java.util.stream.Collectors.toList;
  * Represents a particular sale.
  */
 public class Sale {
-    private Map<Event, List<SaleObserver>> saleObservers;
+    private List<SaleObserver> saleObservers;
     private LocalDateTime timeOfSale; // TODO ska den vara kvar? Syfte?
     private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
     private CashPayment payment;
@@ -30,27 +29,20 @@ public class Sale {
     private Customer customer;
     private boolean isComplete;
 
-//    private Amount discountAmount;
-
     /**
      * Creates a new instance, representing a sale made by a customer.
+     * @throws OperationFailedException when unable to set up pricing.
      */
-    public Sale(){
+    public Sale() throws OperationFailedException {
         this.timeOfSale = LocalDateTime.now();
-        saleObservers = new HashMap<>();
+        saleObservers = new ArrayList<>();
         isComplete = false;
         try {
-            pricing = DiscountFactory.getInstance().getDiscountStrategy();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            DiscountFactory discountFactory = DiscountFactory.getInstance();
+            pricing = discountFactory.getDiscountStrategy();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                 | NoSuchMethodException | InvocationTargetException ex) {
+            throw new OperationFailedException("Unable to instantiate pricing algorithms", ex);
         }
     }
 
@@ -65,7 +57,7 @@ public class Sale {
         if (existingShoppingCartItem != null) {
             existingShoppingCartItem.addToQuantity(quantity);
             isComplete = false;
-            notifyObservers(Event.NEW_ITEM);
+            notifyObservers();
         } else {
             throw new ItemNotFoundInShoppingCartException(itemID);
         }
@@ -87,20 +79,19 @@ public class Sale {
                 .addToQuantity(alreadyExistedShoppingCartItem.getQuantity());
         }
         isComplete = false;
-        notifyObservers(Event.NEW_ITEM);
+        notifyObservers();
     }
 
     /**
-     * Gets the total amount for the current sale.
+     * Gets the total amount for the current sale, including possible discount.
      * @return The total amount of the current sale.
      */
     public Amount getTotalPrice() {
-        // TODO: bör begränsas eller slås ihop med calculate. Alternativt endast hämtas från DTO
         return pricing.getTotal(this);
     }
 
     /**
-     * Calculates the total cost of the shopping cart, including possible discount.
+     * Calculates the total cost of the shopping cart
      * @return The running total as a {@link Amount}.
      */
     public Amount calculateRunningTotal() {
@@ -131,7 +122,6 @@ public class Sale {
         Amount totalVATAmount = new Amount(0);
         List<Amount> vatAmounts = getCollectionOfItems().stream().map(ShoppingCartItem::getVATCosts).collect(toList());
         return totalVATAmount.plus(vatAmounts);
-
     }
 
     /**
@@ -172,14 +162,14 @@ public class Sale {
     public void endSale() {
         // what else apart from notification?
         isComplete = true;
-        notifyObservers(Event.CHECKED_OUT);
+        notifyObservers();
     }
 
     /**
      * Add customer to Sale. Discount applied discount or promotion exists.
      * @param customerInfo customer information as a {@link CustomerDTO}.
      */
-    public void applyDiscount(CustomerDTO customerInfo) {
+    public void addCustomerToSale(CustomerDTO customerInfo) {
         this.customer = new Customer(customerInfo);
     }
 
@@ -192,6 +182,22 @@ public class Sale {
     }
 
     /**
+     * Gets the discount of the current sale, if any.
+     * @return the total discount of the current sale.
+     */
+    public Amount getDiscount() {
+        return pricing.getDiscount();
+    }
+
+    /**
+     * Gets the discount information, if any.
+     * @return the discount information as string. Returns empty discount if no discount was applied
+     */
+    public String createStringDiscountInfo() {
+        return pricing.toString();
+    }
+
+    /**
      * The sale is paid by the specified payment
      * @param payment The payment used to pay for
      * this sale, as a {@link CashPayment}.
@@ -199,7 +205,6 @@ public class Sale {
     public void pay(CashPayment payment) {
         payment.calculateTotalCost(this);
         this.payment = payment;
-        notifyObservers(Event.PAID);
     }
 
     /**
@@ -211,9 +216,9 @@ public class Sale {
         printer.printReceipt(receipt);
     }
 
-    private void notifyObservers(Event eventType) {
+    private void notifyObservers() {
         LimitedSaleView limitedSaleView = new LimitedSaleViewWrapper(this);
-        saleObservers.get(eventType).forEach(observer -> observer.updateSale(limitedSaleView));
+        saleObservers.forEach(observer -> observer.updateSale(limitedSaleView));
     }
 
     /**
@@ -221,7 +226,7 @@ public class Sale {
      *
      * @param observers The observers to notify.
      */
-    public void addSaleObservers(Map<Event, List<SaleObserver>> observers) {
-        saleObservers.putAll(observers);
+    public void addAllSaleObservers(List<SaleObserver> observers) {
+        saleObservers.addAll(observers);
     }
 }

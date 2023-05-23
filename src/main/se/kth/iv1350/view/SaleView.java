@@ -18,17 +18,21 @@ public abstract class SaleView implements SaleObserver {
     protected SaleView() {}
     @Override
     public void updateSale(LimitedSaleView sale) {
+        if (!shouldUpdate(sale.isComplete())) { return; }
         addNewSaleInfoDetails(sale);
         sortShoppingCart(listOfShoppingCartItems);
-        printCurrentState(sale);
+        printCurrentState(this.sale);
     }
     protected String createSaleItemsInfoString() {
         // Pretty printing
         StringBuilder builder = new StringBuilder();
         for (ShoppingCartItem item: listOfShoppingCartItems) {
-            builder.append("%-40s%s%n".formatted(item.getName(), item.getTotalSubPrice()));
-            builder.append("(%d * %s)\n".formatted(item.getQuantity(), item.getUnitPrice()));
+            builder.append("%-40s%s".formatted(item.getName(), item.getTotalSubPrice()));
+            builder.append("%n".formatted());
+            builder.append("(%d * %s)".formatted(item.getQuantity(), item.getUnitPrice()));
+            builder.append("%n".formatted());
         }
+        builder.append("%n".formatted());
         return builder.toString();
     }
 
@@ -48,5 +52,6 @@ public abstract class SaleView implements SaleObserver {
      * @param listOfShoppingCartItems contains the shopping cart
      */
     protected abstract void sortShoppingCart(List<ShoppingCartItem> listOfShoppingCartItems);
-}
 
+    protected abstract boolean shouldUpdate(boolean isComplete);
+}

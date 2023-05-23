@@ -11,9 +11,11 @@ public class TotalRevenueView extends TotalRevenue {
      */
     @Override
     protected void doShowTotalRevenue(Amount totalRevenue) {
+        System.out.println("");
         System.out.println("--------------- Revenue update follows --------------");
         System.out.println("%-40s%s".formatted("Total revenue:", totalRevenue));
         System.out.println("--------------- End of Revenue update ---------------");
+        System.out.println("");
     }
 
     @Override

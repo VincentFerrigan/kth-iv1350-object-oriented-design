@@ -19,9 +19,9 @@ public class RegisterCreator {
      */
     public RegisterCreator() throws IOException {
         this.saleLog = new SaleLog();
-        this.itemRegistry = ItemRegistry.getInstance();
-        this.customerRegistry = CustomerRegistry.getInstance();
         this.accountingSystem = AccountingSystem.getInstance();
+        this.customerRegistry = CustomerRegistry.getInstance();
+        this.itemRegistry = ItemRegistry.getInstance();
     }
 
     /**
@@ -44,7 +44,7 @@ public class RegisterCreator {
      * Get the cash register as {@link CustomerRegistry}
      * @return the discount register
      */
-    public CustomerRegistry getDiscountRegister() {
+    public CustomerRegistry getCustomerRegistry() {
         return customerRegistry;
     }
 

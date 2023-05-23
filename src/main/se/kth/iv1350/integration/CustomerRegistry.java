@@ -1,17 +1,13 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.integration.pricing.DiscountType;
-import se.kth.iv1350.model.Customer;
+import se.kth.iv1350.integration.pricing.CustomerType;
 import se.kth.iv1350.model.Sale;
-import se.kth.iv1350.model.ShoppingCartItem;
 import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,7 +60,7 @@ public class CustomerRegistry {
                 String[] splitArray = line.split(CSV_DELIMITER);
                 CustomerData customerData = new CustomerData(
                         Integer.parseInt(splitArray[0]),
-                        DiscountType.valueOf(splitArray[1]),
+                        CustomerType.valueOf(splitArray[1]),
                         Integer.parseInt(splitArray[2]));
                 this.customerTable.put(customerData.customerID, customerData);
             }
@@ -114,8 +110,6 @@ public class CustomerRegistry {
         }
     }
 
-
-
     /**
      * Searches for customer in the customer database with specified ID.
      * @param customerID The customer identification
@@ -130,7 +124,7 @@ public class CustomerRegistry {
         } else if (customerTable.containsKey(customerID)) {
             CustomerData customerData = this.customerTable.get(customerID);
             return new CustomerDTO(
-                    customerData.customerID, customerData.discountType, customerData.bonusPoints);
+                    customerData.customerID, customerData.customerType, customerData.bonusPoints);
         } else {
             throw new CustomerNotFoundInCustomerRegistryException(customerID);
         }
@@ -138,12 +132,12 @@ public class CustomerRegistry {
 
     private static class CustomerData {
         private int customerID;
-        private DiscountType discountType;
+        private CustomerType customerType;
         private int bonusPoints;
 
-        public CustomerData(int customerID, DiscountType discountType, int bonusPoints)  {
+        public CustomerData(int customerID, CustomerType customerType, int bonusPoints)  {
             this.customerID = customerID;
-            this.discountType = discountType;
+            this.customerType = customerType;
             this.bonusPoints = bonusPoints;
         }
 
@@ -152,7 +146,7 @@ public class CustomerRegistry {
             StringBuilder builder = new StringBuilder();
             builder.append(customerID);
             builder.append(CustomerRegistry.CSV_DELIMITER);
-            builder.append(discountType);
+            builder.append(customerType);
             builder.append(CustomerRegistry.CSV_DELIMITER);
             builder.append(bonusPoints);
             return builder.toString();

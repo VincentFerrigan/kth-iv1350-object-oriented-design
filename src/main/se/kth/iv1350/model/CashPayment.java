@@ -23,7 +23,14 @@ public class CashPayment {
      */
     void calculateTotalCost(Sale paidSale) {
         totalCostPaid = paidSale.getTotalPrice();
-        if (paidSale.getCustomer() != null) {paidSale.getCustomer().addBonusPoints(totalCostPaid);}
+        Customer customer = paidSale.getCustomer();
+        if (customer != null) {customer.addBonusPoints(totalCostPaid);}
+    }
+
+    // Should this be used instead? Will it simplify?
+    void calculateTotalCost(Amount totalPrice, Customer customer) {
+        totalCostPaid = totalPrice;
+        if (customer != null) {customer.addBonusPoints(totalCostPaid);}
     }
 
     /**

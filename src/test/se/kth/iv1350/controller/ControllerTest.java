@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.util.Event;
 import se.kth.iv1350.view.EndOfSaleView;
 import se.kth.iv1350.view.RunningSaleView;
 
@@ -45,6 +44,8 @@ class ControllerTest {
             Printer printer = new Printer();
             registerCreator = new RegisterCreator();
             instance = new Controller(printer, registerCreator);
+            instance.addSaleObserver(new RunningSaleView());
+            instance.addSaleObserver(new EndOfSaleView());
 
         } catch (IOException ex)  {
             // Not part of the test
@@ -63,17 +64,16 @@ class ControllerTest {
     @Test
     void testAddSaleObserver() {
         try {
-            instance.addSaleObserver(Event.NEW_ITEM, new RunningSaleView());
+            instance.addSaleObserver(new RunningSaleView());
         } catch (NullPointerException ex) {
-            fail("Unable to add observer to subsription. " +
+            fail("Unable to add observer to subscription. " +
                     "No instance of Map (for saleObservers) was created");
         }
     }
     @Test
     void testStartSale() {
-        instance.addSaleObserver(Event.NEW_ITEM, new RunningSaleView());
-        instance.startSale();
         try {
+            instance.startSale();
             instance.registerItem(TEST_ITEM_ID);
         } catch (NullPointerException ex) {
             fail("No instance of Sale was created in startSale");
@@ -92,11 +92,9 @@ class ControllerTest {
 
     @Test
     void testRegisterItem() {
-        instance.startSale();
-        instance.addSaleObserver(Event.NEW_ITEM, new RunningSaleView());
-        instance.addSaleObserver(Event.CHECKED_OUT, new EndOfSaleView());
         int singleQuantity = 1;
         try {
+            instance.startSale();
             instance.registerItem(TEST_ITEM_ID);
             String result = outContent.toString();
             assertTrue(result.contains("Display"),
@@ -126,10 +124,10 @@ class ControllerTest {
 
     @Test
     void testItemThatDoesNotExist() {
-        instance.startSale();
         int incorrectItemID = -1;
-        assertThrows(ItemNotFoundInItemRegistryException.class,() -> instance.registerItem(incorrectItemID));
         try {
+            instance.startSale();
+            assertThrows(ItemNotFoundInItemRegistryException.class,() -> instance.registerItem(incorrectItemID));
             instance.registerItem(incorrectItemID);
         } catch(OperationFailedException ex) {
             fail("Wrong exception called" +
@@ -141,9 +139,9 @@ class ControllerTest {
     }
     @Test
     void testNoConnectionToInventorySystem() {
-        instance.startSale();
-        assertThrows(OperationFailedException.class,() -> instance.registerItem(404));
         try {
+            instance.startSale();
+            assertThrows(OperationFailedException.class,() -> instance.registerItem(404));
             instance.registerItem(404);
         } catch (ItemNotFoundInItemRegistryException ex) {
             fail("Wrong exception called" +
@@ -155,10 +153,8 @@ class ControllerTest {
 
     @Test
     void testEndSale() {
-        instance.startSale();
-        instance.addSaleObserver(Event.NEW_ITEM, new RunningSaleView());
-        instance.addSaleObserver(Event.CHECKED_OUT, new EndOfSaleView());
         try {
+            instance.startSale();
             instance.registerItem(TEST_ITEM_ID);
         } catch (ItemNotFoundInItemRegistryException | OperationFailedException ex) {
             // Not part of the test

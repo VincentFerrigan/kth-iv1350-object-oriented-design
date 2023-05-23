@@ -20,9 +20,11 @@ public class Printer {
      * @param receipt The receipt
      */
     public void printReceipt(Receipt receipt) {
-        System.out.println("----------------- Receipt follows ----------------");
+        System.out.println("");
+        System.out.println("------------------ Receipt follows -----------------");
         System.out.println(receipt);
-        System.out.println("------------------ End of receipt ----------------");
+        System.out.println("------------------- End of receipt -----------------");
+        System.out.println("");
 
     }
 }

@@ -4,11 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.util.Event;
 import se.kth.iv1350.view.EndOfSaleView;
 import se.kth.iv1350.view.RunningSaleView;
-import se.kth.iv1350.view.TotalRevenueView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -36,17 +35,16 @@ class SaleTest {
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
     @BeforeEach
-    void setUp() {
+    void setUp() throws OperationFailedException {
         instance = new Sale();
         originalSysOut = System.out;
         outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-        Map<Event, List<SaleObserver>> saleObservers;
-        saleObservers = new HashMap<>();
-        Arrays.stream(Event.values()).forEach(event -> saleObservers.put(event, new ArrayList<>()));
-        saleObservers.get(Event.NEW_ITEM).add(new RunningSaleView());
-        saleObservers.get(Event.CHECKED_OUT).add(new EndOfSaleView());
-        instance.addSaleObservers(saleObservers);
+        List<SaleObserver> saleObservers;
+        saleObservers = new ArrayList<>();
+        saleObservers.add(new RunningSaleView());
+        saleObservers.add(new EndOfSaleView());
+        instance.addAllSaleObservers(saleObservers);
 //        // TODO Nedan korrekt? Funkar enbart om cash reg skulle köras från sale. Vilket den inte gör§v
 //        CashRegister cashRegister = new CashRegister();
 //        cashRegister.addCashRegisterObserver(new TotalRevenueView());

@@ -39,9 +39,12 @@ class ErrorMessageHandler implements Logger {
     public void log(Object message) {
         String errorMessage = (String) message;
         StringBuilder errorMsgBuilder = new StringBuilder();
+        errorMsgBuilder.append("%n".formatted());
         errorMsgBuilder.append(createTime());
         errorMsgBuilder.append(", ERROR: ");
+        errorMsgBuilder.append("%n".formatted());
         errorMsgBuilder.append(errorMessage);
+        errorMsgBuilder.append("%n".formatted());
 
         System.out.println(errorMsgBuilder);
     }

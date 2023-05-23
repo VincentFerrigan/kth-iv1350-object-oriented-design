@@ -1,7 +1,6 @@
 package se.kth.iv1350.controller;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.util.Event;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ import java.util.*;
  * through here.
  */
 public class Controller {
-    private Map<Event, List<SaleObserver>> saleObservers;
+    private List<SaleObserver> saleObservers;
     private Printer printer;
     private SaleLog saleLog;
     private ItemRegistry itemRegistry;
@@ -37,22 +36,20 @@ public class Controller {
     public Controller (Printer printer, RegisterCreator registerCreator) throws IOException {
         this.printer = printer;
         saleLog = registerCreator.getSaleLog();
-        itemRegistry = registerCreator.getInventorySystem();
-        customerRegistry = registerCreator.getDiscountRegister();
         accountingSystem = registerCreator.getAccountingSystem();
+        customerRegistry = registerCreator.getCustomerRegistry();
+        itemRegistry = registerCreator.getInventorySystem();
         cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
         logger = ErrorFileLogHandler.getInstance();
-        saleObservers = new HashMap<>();
-        Arrays.stream(Event.values()).forEach(event -> saleObservers.put(event, new ArrayList<>()));
+        saleObservers = new ArrayList<>();
     }
 
     /**
      * The specified observer will be notified when this sale has been updated.
-     * @param eventType The event as {@Link Event}
      * @param observer The observer to notify.
      */
-    public void addSaleObserver(Event eventType, SaleObserver observer) {
-        saleObservers.get(eventType).add(observer);
+    public void addSaleObserver(SaleObserver observer) {
+        saleObservers.add(observer);
     }
 
     /**
@@ -66,9 +63,14 @@ public class Controller {
     /**
      * Start a new sale. This method must be called before doing anything else during a sale.
      */
-    public void startSale(){
-        this.currentSale = new Sale();
-        currentSale.addSaleObservers(saleObservers);
+    public void startSale() throws OperationFailedException {
+        try {
+            this.currentSale = new Sale();
+        } catch (OperationFailedException ex) {
+            logger.log(ex);
+            throw new OperationFailedException("Unable to start sale", ex);
+        }
+        currentSale.addAllSaleObservers(saleObservers);
     }
 
     /**
@@ -125,18 +127,18 @@ public class Controller {
      * @throws OperationFailedException when there is a fail with customer database
      * @throws IllegalStateException if this method is called before calling newSale and registerItem.
      */
-    public void discountRequest (int customerID)
+    public void registerCustomerToSale(int customerID)
             throws CustomerNotFoundInCustomerRegistryException, OperationFailedException {
         if (currentSale == null || currentSale.isComplete() == false) {
             throw new IllegalStateException(
-                    "Call to discountRequest before initiating a new sale and registering items.");
+                    "Call to registerCustomerToSale before initiating a new sale and registering items.");
         }
         try {
             CustomerDTO customerInfo = customerRegistry.getCustomerInfo(customerID);
-            currentSale.applyDiscount(customerInfo);
+            currentSale.addCustomerToSale(customerInfo);
         } catch (CustomerRegistryException custRegExc) {
             logger.log(custRegExc);
-            throw new OperationFailedException("No connection to inventory system. Try again.", custRegExc);
+            throw new OperationFailedException("No connection customer registry. Try again.", custRegExc);
         }
     }
 
@@ -157,10 +159,10 @@ public class Controller {
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
         saleLog.logSale(currentSale);
-        itemRegistry.updateInventory(currentSale);
         accountingSystem.updateToAccountingSystem(currentSale);
         customerRegistry.updateCustomerDatabase(currentSale);
+        itemRegistry.updateInventory(currentSale);
         currentSale.printReceipt(printer);
-        currentSale = null;
+        currentSale = null; // Är du säker?
     }
 }

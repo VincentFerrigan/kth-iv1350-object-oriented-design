@@ -1,14 +1,12 @@
 package se.kth.iv1350.model;
 
-import se.kth.iv1350.util.Event;
-
 /**
  * A listener interface for receiving notifications about
  * running sale.
  * The class that is interested in such
  * notifications implements this interface, and the object
  * created with that class is registered with
- * {@link se.kth.iv1350.controller.Controller#addSaleObserver(Event, SaleObserver)} 
+ * {@link se.kth.iv1350.controller.Controller#addSaleObserver(SaleObserver)}
  * When an item is added to sale, that object’s {@link #updateSale updateSale}
  * method is invoked.
  */
