@@ -85,12 +85,13 @@ public class View {
             } catch (OperationFailedException exc) {
                 writeToLogAndUI("Wrong exception was thrown.", exc);
             }
+            Thread.sleep(1000);
             System.out.println("ALTERNATIVE FLOW 3-4B");
             printStep("3-4b.", "An item with the specified identifier has", 0);
-            printStep("already been entered in the current sale.",0);
+            printStep("already been entered in the current sale.");
             printStep("I.", "Program increases the sold quantity of the item,",0);
             printStep("and presents item description price,", 0);
-            printStep("and running total.");
+            printStep("and running total.\n");
             printStep( "3b.","Cashier enters item identifier.");
             contr.registerItem(5);
             printStep( "3b.","Cashier enters item identifier.");
@@ -99,9 +100,9 @@ public class View {
             System.out.println("*ALTERNATIVE FLOW 3-4C*");
             printStep("3-4c.", "Customer purchases multiple items of the same", 0);
             printStep("goods (with the same identifier),",0);
-            printStep("and cashier registers them together",0);
-            printStep("I.", "Cashier enters item identifier.",0);
-            printStep("II.", "Cashier enters quantity",0);
+            printStep("and cashier registers them together");
+            printStep("I.", "Cashier enters item identifier.");
+            printStep("II.", "Cashier enters quantity");
             printStep("III.", "Program calculates price, records the sold item", 0);
             printStep("and quantity, and presents item",0);
             printStep("description, price, and running total.\n",2);
@@ -111,6 +112,7 @@ public class View {
             contr.registerItem(10, 4);
             Thread.sleep(1000);
             try {
+                Thread.sleep(1000);
                 System.out.println( "* UNCHECKED EXCEPTION HANDLING, RUNTIME-ERROR *");
                 printStep( "I.", "Simulating a temporary server connection loss, ",0 );
                 printStep( "should generate an error.\n");
@@ -139,34 +141,35 @@ public class View {
             printStep("10.", "Cashier tells customer the total,", 0);
             printStep("and asks for payment.\n");
 
+            Thread.sleep(1000);
             System.out.println("*ALTERNATIVE FLOW 9A*");
             printStep("9a", "(may also be 10a or 11a) ",0);
-            printStep("Customer says they are eligible for a discount.",0);
-            printStep("I.", "Cashier signals discount request.",0);
-            printStep("II.", "Cashier enters customer identification.",0);
+            printStep("Customer says they are eligible for a discount.");
+            printStep("I.", "Cashier signals discount request.");
+            printStep("II.", "Cashier enters customer identification.");
             printStep("III.", "Program fetches discount from the discount",0);
-            printStep("database",2);
+            printStep("database");
             contr.registerCustomerToSale(810111);
             contr.endSale();
             printStep("IV.", "Program presents price after discount,",0);
-            printStep("based on discount rules.",3);
+            printStep("based on discount rules.");
             printStep("10a.", "Cashier tells customer the total,", 0);
             printStep("and asks for payment.");
-            Amount paidAmount = new Amount(500);
+            Amount paidAmount = new Amount(1000);
             printStep("11a.", "Customer pays cash.");
             printStep("Paying " + paidAmount);
-            printStep("12.", "Cashier enters amount paid",0);
-            printStep("13.", "Program logs completed sale.",0);
+            printStep("12.", "Cashier enters amount paid");
+            printStep("13.", "Program logs completed sale.");
             printStep("14.", "Program sends sale information to ", 0);
             printStep("external accounting system (for accounting)", 0);
             printStep("and external inventory system (to update", 0);
-            printStep("inventory).",0);
+            printStep("inventory).");
             printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid.",0);
+            printStep("register with the amount paid.");
             printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer.",3);
+            printStep("change to give customer.",2);
             contr.pay(paidAmount);
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             printStep("17.", "Customer leaves with receipt and goods.",0);
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));

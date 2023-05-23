@@ -8,12 +8,12 @@ import se.kth.iv1350.model.Sale;
 
 /**
  * A <code>Discount Strategy</code> that applies promotions
- * If total price is greater than a threshold the discount is applied depending on
- * if the customer is registered or not.
+ * If total price is greater than a threshold the discount is applied depending.
+ * The threshold depends on if the customer is registered member or not.
  */
 public class Promotion implements DiscountStrategy {
-    private Amount threshold  = new Amount(1000);
-    private Amount bonusCheck = new Amount(50);
+    private Amount threshold  = new Amount(500);
+    private Amount bonusCheck = new Amount(100);
     private Amount discountAmount;
     @Override
     public Amount getTotal(Sale sale) {
@@ -21,9 +21,14 @@ public class Promotion implements DiscountStrategy {
         Amount totalPrice = sale.calculateRunningTotal();
 
         CustomerType customerType = customer != null ? customer.getCustomerType() : null;
-        Amount newPrice = totalPrice.compareTo(threshold) > 0
-                ? (customerType == null ? totalPrice.minus(bonusCheck) : totalPrice.minus(bonusCheck.multiply(2)))
-                : totalPrice;
+        Amount newPrice = (customerType == null)
+                ? totalPrice.compareTo(threshold.multiply(2)) > 0
+                    ? totalPrice.minus(bonusCheck) : totalPrice
+                : totalPrice.compareTo(threshold)  > 0
+                    ? totalPrice.minus(bonusCheck) : totalPrice;
+//        Amount newPrice2 = totalPrice.compareTo(threshold) > 0
+//                ? (customerType == null ? totalPrice.minus(bonusCheck) : totalPrice.minus(bonusCheck.multiply(2)))
+//                : totalPrice;
 
         discountAmount = totalPrice.minus(newPrice);
         return new Amount(newPrice);

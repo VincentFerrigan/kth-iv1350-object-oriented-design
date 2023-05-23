@@ -24,10 +24,10 @@ public class Main {
 
             View view = new View(contr);
             view.hardKodadeGrejerWithFailureAndErrors();
-            view.HardKodadeGrejerWithStaffDiscount();
-            view.hardKodadeGrejerWithMemberDiscount();
-            view.hardKodadeGrejerWithoutDiscount();
-            view.hardKodadeGrejerWithPromotion();
+//            view.HardKodadeGrejerWithStaffDiscount();
+//            view.hardKodadeGrejerWithMemberDiscount();
+//            view.hardKodadeGrejerWithoutDiscount();
+//            view.hardKodadeGrejerWithPromotion();
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
             ex.printStackTrace();

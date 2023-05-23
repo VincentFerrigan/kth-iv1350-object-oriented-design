@@ -15,7 +15,6 @@ public class TotalRevenueView extends TotalRevenue {
         System.out.println("--------------- Revenue update follows --------------");
         System.out.println("%-40s%s".formatted("Total revenue:", totalRevenue));
         System.out.println("--------------- End of Revenue update ---------------");
-        System.out.println("");
     }
 
     @Override
