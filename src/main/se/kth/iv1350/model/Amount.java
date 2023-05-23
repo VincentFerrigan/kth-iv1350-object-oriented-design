@@ -96,7 +96,6 @@ public class Amount implements Comparable {
      * @return the amount as a floating point number.
      */
     public Double getAmount() {
-        // TODO skall den returnera en Amount istället?
         return amount;}
 
     @Override

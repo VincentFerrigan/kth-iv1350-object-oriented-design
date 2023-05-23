@@ -198,7 +198,8 @@ public class Sale {
     }
 
     /**
-     * The sale is paid by the specified payment
+     * Pay sale with specified payment.
+     * If customer registered, bonus points will be added.
      * @param payment The payment used to pay for
      * this sale, as a {@link CashPayment}.
      */
