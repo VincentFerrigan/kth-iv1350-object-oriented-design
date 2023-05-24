@@ -47,6 +47,15 @@ public class CashRegister {
         revenue = revenue.plus(payment.getTotalCostPaid());
         notifyObservers();
     }
+
+    public Amount getBalance() {
+        return balance;
+    }
+
+    public Amount getRevenue() {
+        return revenue;
+    }
+
     private void notifyObservers() {
         cashRegisterObservers.forEach(observer -> observer.updateRevenue(revenue));
     }
