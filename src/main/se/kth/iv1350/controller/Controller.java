@@ -78,6 +78,7 @@ public class Controller {
      * @param itemID ShoppingCartItem identifier.
      * @throws ItemNotFoundInItemRegistryException when item ID does not exist in inventory
      * @throws OperationFailedException when there is a fail with inventory system
+     * @throws IllegalStateException if this method is called before initiating a new sale
      */
     public void registerItem(int itemID) throws OperationFailedException, ItemNotFoundInItemRegistryException {
         registerItem(itemID, 1);
