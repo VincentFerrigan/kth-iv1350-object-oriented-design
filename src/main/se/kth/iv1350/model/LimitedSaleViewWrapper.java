@@ -40,7 +40,7 @@ public class LimitedSaleViewWrapper implements LimitedSaleView {
      */
     @Override
     public Amount getTotalPrice() {
-        return sale.getTotalPrice();
+        return sale.calculateTotalPrice();
     }
 
     /**
