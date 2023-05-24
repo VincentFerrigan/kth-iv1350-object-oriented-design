@@ -43,7 +43,7 @@ public class VAT {
                 this.vatRate = 0.12;
                 break;
             case 3:
-                this.vatRate = 0.6;
+                this.vatRate = 0.06;
                 break;
             default:
                 this.vatRate = 0.25;
