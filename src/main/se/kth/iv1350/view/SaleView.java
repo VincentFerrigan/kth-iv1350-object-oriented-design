@@ -29,7 +29,7 @@ public abstract class SaleView implements SaleObserver {
         for (ShoppingCartItem item: listOfShoppingCartItems) {
             builder.append("%-40s%s".formatted(item.getName(), item.getTotalSubPrice()));
             builder.append("%n".formatted());
-            builder.append("(%d * %s)".formatted(item.getQuantity(), item.getUnitPrice()));
+            builder.append("(%d * %s)".formatted(item.getQuantity(), item.getUnitPriceIncVAT()));
             builder.append("%n".formatted());
         }
         builder.append("%n".formatted());

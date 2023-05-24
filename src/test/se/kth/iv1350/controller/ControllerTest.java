@@ -23,12 +23,13 @@ class ControllerTest {
     private static final int TEST_ITEM_ID = 0;
     private static final int TEST_QUANTITY = 5;
     private static final String TEST_NAME = "test name";
-    private static final Amount TEST_UNIT_PRICE = new Amount(10);
+    private static final Amount TEST_UNIT_PRICE_INCL_VAT = new Amount(10);
+    private static final Amount TEST_UNIT_PRICE_EX_VAT = new Amount(8);
     private static final VAT TEST_VAT = new VAT(1);
-    private static final Amount PAID_AMOUNT = new Amount(5);
+    private static final Amount PAID_AMOUNT = new Amount(100);
     private static final String TEST_DESCRIPTION = "test description";
     private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
-            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE, TEST_VAT);
+            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT);
     private static final int CUSTOMER_ID = 880822;
     private Controller instance;
     private RegisterCreator registerCreator;
@@ -100,16 +101,16 @@ class ControllerTest {
             assertTrue(result.contains("Display"),
                     "No display output");
             StringBuilder expOutSingleItem = new StringBuilder();
-            expOutSingleItem.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE.multiply(singleQuantity)));
-            expOutSingleItem.append("(%d * %s)\n".formatted(singleQuantity, TEST_UNIT_PRICE));
+            expOutSingleItem.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE_INCL_VAT.multiply(singleQuantity)));
+            expOutSingleItem.append("(%d * %s)\n".formatted(singleQuantity, TEST_UNIT_PRICE_INCL_VAT));
             assertTrue(result.contains(expOutSingleItem.toString()),
                     "ShoppingCartItem registration did not work");
 
             instance.registerItem(TEST_ITEM_ID, TEST_QUANTITY);
             result = outContent.toString();
             StringBuilder expOutMultipleItems = new StringBuilder();
-            expOutMultipleItems.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE.multiply(TEST_QUANTITY + singleQuantity)));
-            expOutMultipleItems.append("(%d * %s)\n".formatted(TEST_QUANTITY + singleQuantity, TEST_UNIT_PRICE));
+            expOutMultipleItems.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE_INCL_VAT.multiply(TEST_QUANTITY + singleQuantity)));
+            expOutMultipleItems.append("(%d * %s)\n".formatted(TEST_QUANTITY + singleQuantity, TEST_UNIT_PRICE_INCL_VAT));
             assertTrue(result.contains(expOutMultipleItems.toString()),
                             "ShoppingCartItem did not have the right quantity when added with quantity.");
         } catch (ItemNotFoundInItemRegistryException ex) {
@@ -173,18 +174,18 @@ class ControllerTest {
             LocalDateTime saleTime = LocalDateTime.now();
             instance.pay(PAID_AMOUNT);
             StringBuilder expOut = new StringBuilder();
-            expOut.append("%-40s%s%n".formatted("Total Cost:", TEST_UNIT_PRICE.multiply(1)));
-            expOut.append("%-40s%s%n".formatted("Total VAT:", TEST_UNIT_PRICE.multiply(1).multiply(TEST_VAT.getVATRate())));
+            expOut.append("%-40s%s%n".formatted("Total Cost:", TEST_UNIT_PRICE_INCL_VAT.multiply(1)));
+            expOut.append("%-40s%s%n".formatted("Total VAT:", TEST_UNIT_PRICE_EX_VAT.multiply(1).multiply(TEST_VAT.getVATRate())));
             expOut.append("\n");
             expOut.append("%-40s%s%n".formatted("Paid Amount:", PAID_AMOUNT));
-            expOut.append("%-40s%s%n".formatted("Change:", PAID_AMOUNT.minus(TEST_UNIT_PRICE.multiply(1))));
+            expOut.append("%-40s%s%n".formatted("Change:", PAID_AMOUNT.minus(TEST_UNIT_PRICE_INCL_VAT.multiply(1))));
             String result = outContent.toString();
             assertTrue(result.contains(expOut), "Wrong output of change and paid amount.");
             assertTrue(result.contains(PAID_AMOUNT.toString()), "Output does not contain paid amount.");
             assertTrue(result.contains(Integer.toString(saleTime.getYear())), "Wrong year on receipt.");
             assertTrue(result.contains(Integer.toString(saleTime.getHour())), "Wrong hour on receipt.");
             assertTrue(result.contains(Integer.toString(saleTime.getMinute())), "Wrong minute on receipt.");
-            assertTrue(result.contains(PAID_AMOUNT.minus(TEST_UNIT_PRICE.multiply(1)).toString()), "Wrong change on receipt.");
+            assertTrue(result.contains(PAID_AMOUNT.minus(TEST_UNIT_PRICE_INCL_VAT.multiply(1)).toString()), "Wrong change on receipt.");
         } catch (ItemNotFoundInItemRegistryException | OperationFailedException ex) {
             // Not part of the test
         }

@@ -30,22 +30,6 @@ public class ShoppingCartItem {
     public ShoppingCartItem(ItemDTO item){
         this(item, 1);
     }
-//    @Deprecated
-//    public void addItem(ShoppingCartItem anotherShoppingCartItem){
-//        //TODO denna är bättre i sale
-//        this.timeOfUpdate = LocalDateTime.now();
-//        if (this.equals(anotherShoppingCartItem)) {
-//            addToQuantity(anotherShoppingCartItem.getQuantity());
-//        }
-//    }
-//    /**
-//     * Set the quantity.
-//     * @param  quantity nbr of items.
-//     */
-//    public void setQuantity(int quantity){
-//        this.timeOfUpdate = LocalDateTime.now();
-//        this.quantity = quantity;
-//    }
 
     /**
      * Add quantity to item.
@@ -61,7 +45,7 @@ public class ShoppingCartItem {
      * @return the total price for all the same items.
      */
     public Amount getTotalSubPrice() {
-        return getUnitPrice().multiply(quantity);
+        return getUnitPriceIncVAT().multiply(quantity);
     }
 
     /**
@@ -69,8 +53,12 @@ public class ShoppingCartItem {
      * @return the total VAT
      */
     public Amount calculateTotalSubVATCost() {
+        return calculateUnitVATCost().multiply(quantity);
+    }
+
+    private Amount calculateUnitVATCost() {
         double vatRate = itemInfo.getVATRate();
-        return getTotalSubPrice().multiply(vatRate);
+        return itemInfo.getUnitPrice().multiply(vatRate);
     }
 
     /**
@@ -111,7 +99,7 @@ public class ShoppingCartItem {
      * Get the unit price
      * @return the unit price
      */
-    public Amount getUnitPrice() {return itemInfo.getUnitPrice();}
+    public Amount getUnitPriceIncVAT() {return itemInfo.getUnitPrice().plus(calculateUnitVATCost());}
 
     /**
      * Get the name of the item

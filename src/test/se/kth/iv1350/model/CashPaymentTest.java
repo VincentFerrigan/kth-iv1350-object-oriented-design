@@ -5,10 +5,6 @@ import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.CustomerDTO;
 import se.kth.iv1350.integration.ItemDTO;
 import se.kth.iv1350.integration.pricing.CustomerType;
-import se.kth.iv1350.integration.pricing.DiscountFactory;
-import se.kth.iv1350.integration.pricing.DiscountStrategy;
-
-import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,8 +28,8 @@ class CashPaymentTest {
             ex.printStackTrace();
         }
         itemInfo = new ItemDTO(1, "Product name", "Product Description",
-                new Amount(100), new VAT(1));
-        itemPrice = itemInfo.getUnitPrice();
+                new Amount(80), new VAT(1));
+        itemPrice = new Amount(100);
         sale.addItem(itemInfo, 1);
     }
 
@@ -49,7 +45,7 @@ class CashPaymentTest {
     @Test
     void testCalculateTotalCost() {
         instance.calculateTotalCost(sale);
-        Amount expResult = itemInfo.getUnitPrice();
+        Amount expResult = itemPrice;
         Amount result = instance.getTotalCostPaid();
         assertEquals(expResult, result, "Wrong total cost");
     }
@@ -60,7 +56,7 @@ class CashPaymentTest {
         sale.addCustomerToSale(customerInfo);
         instance.calculateTotalCost(sale);
         Customer customer = sale.getCustomer();
-        Amount expPriceResult = itemInfo.getUnitPrice().minus(sale.getDiscount());
+        Amount expPriceResult = itemPrice.minus(sale.getDiscount());
         Amount totalCostPaidResult = instance.getTotalCostPaid();
 
         int bonusPointResult = customer.getBonusPoints();

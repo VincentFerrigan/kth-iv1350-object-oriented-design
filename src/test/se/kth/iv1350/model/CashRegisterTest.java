@@ -28,8 +28,8 @@ class CashRegisterTest {
             ex.printStackTrace();
         }
         itemInfo = new ItemDTO(1, "Product name", "Product Description",
-                new Amount(100), new VAT(1));
-        itemPrice = itemInfo.getUnitPrice();
+                new Amount(80), new VAT(1));
+        itemPrice = itemInfo.getUnitPrice().multiply(1.25);
         sale.addItem(itemInfo, 1);
         sale.pay(payment);
     }

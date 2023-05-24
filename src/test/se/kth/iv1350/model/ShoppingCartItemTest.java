@@ -14,9 +14,10 @@ class ShoppingCartItemTest {
     private static final String TEST_NAME = "test name";
     private static final String TEST_DESCRIPTION = "test description";
     private static final Amount TEST_UNIT_PRICE = new Amount(10);
+    private static final Amount TEST_UNIT_PRICE_EX_VAT = TEST_UNIT_PRICE.multiply(1/1.25);
     private static final VAT TEST_VAT = new VAT(1);
     private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
-            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE, TEST_VAT);
+            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT);
 
     @BeforeEach
     void setUp() {
@@ -38,7 +39,7 @@ class ShoppingCartItemTest {
     @Test
     void testCalculateVATCost() {
         double vatRate = 0.25;
-        Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).multiply(vatRate);
+        Amount expResult = TEST_UNIT_PRICE_EX_VAT.multiply(TEST_QUANTITY).multiply(vatRate);
         Amount result = instance.calculateTotalSubVATCost();
         assertEquals(expResult, result, "Wrong vat");
     }
