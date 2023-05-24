@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
+import se.kth.iv1350.integration.pricing.CustomerType;
 import se.kth.iv1350.view.EndOfSaleView;
 import se.kth.iv1350.view.RunningSaleView;
 
@@ -34,6 +35,7 @@ class SaleTest {
     private static final Amount TEST_PAID_AMOUNT = new Amount(5);
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
+
     @BeforeEach
     void setUp() throws OperationFailedException {
         instance = new Sale();
@@ -64,7 +66,7 @@ class SaleTest {
             instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
             fail("Exception should have been thrown, the item was the first to be added to the shopping cart");
         } catch (ItemNotFoundInShoppingCartException e) {
-            assertEquals(TEST_ITEM_ID,e.getItemIDNotFound());
+            assertEquals(TEST_ITEM_ID, e.getItemIDNotFound());
         }
 
         // First addItem with item dto
@@ -76,7 +78,7 @@ class SaleTest {
         List<ShoppingCartItem> listOfSaleItems = new ArrayList<>(instance.getCollectionOfItems());
         int result = listOfSaleItems.get(0).getQuantity();
 
-        assertEquals(expResult, result,"ShoppingCartItem quantity not equal");
+        assertEquals(expResult, result, "ShoppingCartItem quantity not equal");
         assertTrue(outputResult.contains("Display"), "No display output");
 
         // second addItem with item id
@@ -94,11 +96,12 @@ class SaleTest {
         String outputResultOfAddedQuantity = outContent.toString();
         result = listOfSaleItems.get(0).getQuantity();
 
-        assertEquals(expResultOfAddedQuantity, result,"ShoppingCartItem quantity not equal");
+        assertEquals(expResultOfAddedQuantity, result, "ShoppingCartItem quantity not equal");
         assertTrue(outputResultOfAddedQuantity.contains("Display"), "No display output");
         assertTrue(outContent.toString().contains(expOutMultipleItems.toString()),
                 "ShoppingCartItem did not have the right quantity when added with quantity.");
     }
+
     @Test
     void testItemNotFoundInShoppingCartException() {
         assertThrows(ItemNotFoundInShoppingCartException.class,
@@ -107,12 +110,36 @@ class SaleTest {
             instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
             fail("Exception should have been thrown, the item was the first to be added to the shopping cart");
         } catch (ItemNotFoundInShoppingCartException ex) {
-            assertEquals(TEST_ITEM_ID,ex.getItemIDNotFound());
+            assertEquals(TEST_ITEM_ID, ex.getItemIDNotFound());
         }
     }
+
     @Disabled
     @Test
-    void applyDiscount(){}
+    void testAddCustomerToSale() {
+        CustomerDTO customerInfo = new CustomerDTO(1, CustomerType.MEMBER, 0);
+        Customer exResult = new Customer(customerInfo);
+        instance.addCustomerToSale(customerInfo);
+        Customer result = instance.getCustomer();
+        assertEquals(exResult, result, "Customer not equal");
+    }
+
+    @Test
+    void testCalculateRunningTotal() {
+        instance.addItem(TEST_ITEM_INFO,TEST_QUANTITY);
+        Amount exResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY);
+        Amount result = instance.calculateRunningTotal();
+        assertEquals(exResult, result, "Wrong running total");
+    }
+    @Test
+    void testCalculateTotalPrice() {
+        instance.addItem(TEST_ITEM_INFO, TEST_QUANTITY);
+        instance.addCustomerToSale(new CustomerDTO(1, CustomerType.STAFF, 0));
+        Amount discount = instance.getDiscount();
+        Amount exResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).minus(discount);
+        Amount result = instance.calculateRunningTotal();
+        assertEquals(exResult, result, "Wrong total price");
+    }
 
     @Test
     void testPay() {
