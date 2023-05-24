@@ -103,7 +103,7 @@ public class Amount implements Comparable {
 
     @Override
     public String toString() {
-        return String.format("%,.2f %s",this.amount, this.currency.getSymbol(locale));
+        return String.format("%,.2f %s", this.amount, this.currency.getSymbol(locale));
     }
 
     @Override
