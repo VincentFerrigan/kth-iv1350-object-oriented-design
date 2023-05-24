@@ -86,7 +86,7 @@ public class Sale {
      * Gets the total amount for the current sale, including possible discount.
      * @return The total amount of the current sale.
      */
-    public Amount getTotalPrice() {
+    public Amount calculateTotalPrice() {
         return pricing.getTotal(this);
     }
 

@@ -22,7 +22,7 @@ public class CashPayment {
      * @param paidSale The sale that the customer is paying.
      */
     void calculateTotalCost(Sale paidSale) {
-        totalCostPaid = paidSale.getTotalPrice();
+        totalCostPaid = paidSale.calculateTotalPrice();
         Customer customer = paidSale.getCustomer();
         if (customer != null) {customer.addBonusPoints(totalCostPaid);}
     }
