@@ -36,10 +36,17 @@ class ShoppingCartItemTest {
                 "ShoppingCartItem did not have correct quantity when quantity was added to an existing ShoppingCartItem.");
     }
 
-    @Disabled
+    @Test
+    void testCalculateVATCost() {
+        double vatRate = 0.25;
+        Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).multiply(vatRate);
+        Amount result = instance.calculateVATCost();
+        assertEquals(expResult, result, "Wrong vat");
+    }
+
     @Test
     void testEquals() {
-        ShoppingCartItem a = new ShoppingCartItem(TEST_ITEM_INFO);
+        ShoppingCartItem a = new ShoppingCartItem(TEST_ITEM_INFO, 2);
         ShoppingCartItem b = new ShoppingCartItem(TEST_ITEM_INFO,2);
         boolean expResult = true;
         boolean result =  a.equals(b);
