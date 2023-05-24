@@ -68,7 +68,7 @@ public class ShoppingCartItem {
      * Get the total VAT as {@link Amount}.
      * @return the total VAT
      */
-    public Amount getVATCosts() {
+    public Amount calculateTotalSubVATCost() {
         double vatRate = itemInfo.getVATRate();
         return getTotalSubPrice().multiply(vatRate);
     }

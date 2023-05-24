@@ -2,7 +2,6 @@ package se.kth.iv1350.model;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.integration.ItemDTO;
 
@@ -40,7 +39,7 @@ class ShoppingCartItemTest {
     void testCalculateVATCost() {
         double vatRate = 0.25;
         Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).multiply(vatRate);
-        Amount result = instance.calculateVATCost();
+        Amount result = instance.calculateTotalSubVATCost();
         assertEquals(expResult, result, "Wrong vat");
     }
 

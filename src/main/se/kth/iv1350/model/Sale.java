@@ -120,7 +120,7 @@ public class Sale {
     private Amount calculateTotalVATAmount() {
         // Momsberäkning
         Amount totalVATAmount = new Amount(0);
-        List<Amount> vatAmounts = getCollectionOfItems().stream().map(ShoppingCartItem::getVATCosts).collect(toList());
+        List<Amount> vatAmounts = getCollectionOfItems().stream().map(ShoppingCartItem::calculateTotalSubVATCost).collect(toList());
         return totalVATAmount.plus(vatAmounts);
     }
 
