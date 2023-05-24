@@ -7,15 +7,15 @@ class VATTest {
 
     @Test
     void testVATDefault() {
-        VAT vatDefualt = new VAT();
-        double vatRateResult = vatDefualt.getVATRate();
-        int vatRateGroupCodeResult = vatDefualt.getVATRateGroupCode();
+        VAT vatDefault = new VAT();
+        double vatRateResult = vatDefault.getVATRate();
+        int vatRateGroupCodeResult = vatDefault.getVATRateGroupCode();
 
-        double exVATRateResult = 0.25;
-        int exVATRateGroupCaodResult = 1;
+        double expVATRateResult = 0.25;
+        int expVATRateGroupCodeResult = 1;
 
-        assertEquals(exVATRateResult, exVATRateResult, "Wrong VAT rate");
-        assertEquals(exVATRateGroupCaodResult, vatRateGroupCodeResult, "Wrong VAT Group Code");
+        assertEquals(expVATRateResult, vatRateResult, "Wrong VAT rate");
+        assertEquals(expVATRateGroupCodeResult, vatRateGroupCodeResult, "Wrong VAT Group Code");
     }
 
     @Test

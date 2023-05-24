@@ -39,13 +39,13 @@ class CashRegisterTest {
         instance.addPayment(payment);
         Amount balanceResult = instance.getBalance();
         Amount revenueResult = instance.getRevenue();
-        Amount exRevenueResult = payment.getTotalCostPaid();
-        Amount exBalanceResult = payment.getTotalCostPaid().plus(INITIAL_BALANCE);
+        Amount expRevenueResult = payment.getTotalCostPaid();
+        Amount expBalanceResult = payment.getTotalCostPaid().plus(INITIAL_BALANCE);
 
-        assertEquals(exBalanceResult, balanceResult, "Wrong balance based on payment");
+        assertEquals(expBalanceResult, balanceResult, "Wrong balance based on payment");
         assertEquals(itemPrice.plus(INITIAL_BALANCE), balanceResult, "Wrong balance based on total item price");
 
-        assertEquals(exRevenueResult, revenueResult, "Wrong revenue based on total cost paid");
+        assertEquals(expRevenueResult, revenueResult, "Wrong revenue based on total cost paid");
         assertEquals(itemPrice, revenueResult, "Wrong revenue based on total item price");
     }
 }

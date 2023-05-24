@@ -118,27 +118,27 @@ class SaleTest {
     @Test
     void testAddCustomerToSale() {
         CustomerDTO customerInfo = new CustomerDTO(1, CustomerType.MEMBER, 0);
-        Customer exResult = new Customer(customerInfo);
+        Customer expResult = new Customer(customerInfo);
         instance.addCustomerToSale(customerInfo);
         Customer result = instance.getCustomer();
-        assertEquals(exResult, result, "Customer not equal");
+        assertEquals(expResult, result, "Customer not equal");
     }
 
     @Test
     void testCalculateRunningTotal() {
         instance.addItem(TEST_ITEM_INFO,TEST_QUANTITY);
-        Amount exResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY);
+        Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY);
         Amount result = instance.calculateRunningTotal();
-        assertEquals(exResult, result, "Wrong running total");
+        assertEquals(expResult, result, "Wrong running total");
     }
     @Test
     void testCalculateTotalPrice() {
         instance.addItem(TEST_ITEM_INFO, TEST_QUANTITY);
         instance.addCustomerToSale(new CustomerDTO(1, CustomerType.STAFF, 0));
         Amount discount = instance.getDiscount();
-        Amount exResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).minus(discount);
+        Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).minus(discount);
         Amount result = instance.calculateRunningTotal();
-        assertEquals(exResult, result, "Wrong total price");
+        assertEquals(expResult, result, "Wrong total price");
     }
 
     @Test

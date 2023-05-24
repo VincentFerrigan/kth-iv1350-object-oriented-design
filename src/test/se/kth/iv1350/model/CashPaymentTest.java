@@ -49,9 +49,9 @@ class CashPaymentTest {
     @Test
     void testCalculateTotalCost() {
         instance.calculateTotalCost(sale);
-        Amount exResult = itemInfo.getUnitPrice();
+        Amount expResult = itemInfo.getUnitPrice();
         Amount result = instance.getTotalCostPaid();
-        assertEquals(exResult, result, "Wrong total cost");
+        assertEquals(expResult, result, "Wrong total cost");
     }
 
     @Test
@@ -60,26 +60,26 @@ class CashPaymentTest {
         sale.addCustomerToSale(customerInfo);
         instance.calculateTotalCost(sale);
         Customer customer = sale.getCustomer();
-        Amount exPriceResult = itemInfo.getUnitPrice().minus(sale.getDiscount());
+        Amount expPriceResult = itemInfo.getUnitPrice().minus(sale.getDiscount());
         Amount totalCostPaidResult = instance.getTotalCostPaid();
 
         int bonusPointResult = customer.getBonusPoints();
-        int exBonusPointResult = exPriceResult.getAmount().intValue();
-        assertEquals(exPriceResult, totalCostPaidResult, "Wrong total cost");
-        assertEquals(exBonusPointResult, bonusPointResult, "Bonus points not registered");
+        int expBonusPointResult = expPriceResult.getAmount().intValue();
+        assertEquals(expPriceResult, totalCostPaidResult, "Wrong total cost");
+        assertEquals(expBonusPointResult, bonusPointResult, "Bonus points not registered");
     }
     @Test
     void getTotalCostPaid() {
         instance.calculateTotalCost(sale);
-        Amount exResult = itemPrice;
+        Amount expResult = itemPrice;
         Amount result = instance.getTotalCostPaid();
-        assertEquals(exResult, result, "Wrong paid amount");
+        assertEquals(expResult, result, "Wrong paid amount");
     }
     @Test
     void getChange() {
         instance.calculateTotalCost(sale);
-        Amount exResult = paidAmount.minus(itemPrice);
+        Amount expResult = paidAmount.minus(itemPrice);
         Amount result = instance.getChange();
-        assertEquals(exResult, result, "Wrong change");
+        assertEquals(expResult, result, "Wrong change");
     }
 }
