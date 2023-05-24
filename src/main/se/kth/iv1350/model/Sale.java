@@ -217,11 +217,6 @@ public class Sale {
         printer.printReceipt(receipt);
     }
 
-    private void notifyObservers() {
-        LimitedSaleView limitedSaleView = new LimitedSaleViewWrapper(this);
-        saleObservers.forEach(observer -> observer.updateSale(limitedSaleView));
-    }
-
     /**
      * All the specified observers will be notified when this sale has been updated.
      *
@@ -229,5 +224,10 @@ public class Sale {
      */
     public void addAllSaleObservers(List<SaleObserver> observers) {
         saleObservers.addAll(observers);
+    }
+
+    private void notifyObservers() {
+        LimitedSaleView limitedSaleView = new LimitedSaleViewWrapper(this);
+        saleObservers.forEach(observer -> observer.updateSale(limitedSaleView));
     }
 }

@@ -56,10 +56,6 @@ public class CashRegister {
         return revenue;
     }
 
-    private void notifyObservers() {
-        cashRegisterObservers.forEach(observer -> observer.updateRevenue(revenue));
-    }
-
     /**
      * The specified observer will be notified when this revenue has changed
      * @param observer The observer to notify.
@@ -73,5 +69,9 @@ public class CashRegister {
      */
     public void addAllCashRegisterObservers(List<CashRegisterObserver> observers) {
         cashRegisterObservers.addAll(observers);
+    }
+
+    private void notifyObservers() {
+        cashRegisterObservers.forEach(observer -> observer.updateRevenue(revenue));
     }
 }

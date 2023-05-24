@@ -15,7 +15,7 @@ public interface LimitedSaleView {
 
     /**
      * Gets the total price that was paid by the customer
-     * return The total amount paid by the customer.
+     * @return The total amount paid by the customer.
      */
     Amount getTotalPricePaid();
 
