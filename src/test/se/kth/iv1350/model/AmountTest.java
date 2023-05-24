@@ -123,7 +123,7 @@ class AmountTest {
                 instanceOneHundred.toString(),
                 "Wrong string returned by toString");
         assertEquals(
-                "%,.2f $.formatted(ONE_HUNDRED",
+                "%,.2f $".formatted(ONE_HUNDRED),
                 instanceOneHundredInUSDollars.toString(),
                 "Wrong string returned by toString");
 
