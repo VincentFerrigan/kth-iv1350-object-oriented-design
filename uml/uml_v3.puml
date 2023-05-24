@@ -9,6 +9,12 @@ skinparam package {
 'top to bottom direction
 left to right direction
 skinparam ClassAttributeIconSize 0
+interface "<<interface>>\nComparable " as Comparable{
+    + compareTo(Object o) : int
+    }
+
+
+
 together {
 package startup {
     class Main{
@@ -28,49 +34,55 @@ package startup {
     }
     package controller {
         class Controller{
-            - saleObserver : HashMap<Event, List<SaleObserver>
+            - saleObserver : List<SaleObserver>
             - printer : Printer
             - saleLog : SaleLog
             - itemRegistry : ItemRegistry
-            - discountRegister : DiscountRegister
+            - customerRegister : CustomerRegister
             - accountingSystem : AccountingSystem
             - cashRegister : CashRegister
             - currentSale : Sale
+            - logger : ErrorFileLogHandler
             + <<create>> Controller(printer : Printer, registerCreator:RegisterCreator) : Controller
-            + addSaleObserver(eventType : Event, observer : SaleObserver) : void
-            + startSale() : void
+            + addSaleObserver(observer : SaleObserver) : void
+            + addCashRegisterObserver(observer : CashRegisterObserver) : void
+            + startSale() : void {exception OperationFailedException}
             + registerItem(itemID : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
             + registerItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
             + endSale() : void {exception IllegalStateException}
-            + discountRequest(customerID : int) void {exception IllegalStateException}
+            + registerCustomerToSale(customerID : int) void {exceptions  IllegalStateException}
             + pay(paidAmt : Amount) : void {exception IllegalStateException}
         }
     }
     package model {
         class Sale{
-            - saleObserver : HashMap<Event, List<SaleObserver>
+            - saleObserver : List<SaleObserver>
             - timeOfSale : LocalDateTime
             - shoppingCart : HashMap<Integer, ShoppingCartItem>
             - payment : CashPayment
-            - discount : DiscountDTO
+            - pricing : DiscountStrategy
+            - customer : Customer
             - isComplete : boolean
-            + <<create>> Sale() : Sale
+            + <<create>> Sale() : Sale {exception OperationFailedException}
             + addItem(itemID : int, quantity : int) : void {exception ItemNotFoundInShoppingCartException}
             + addItem(itemInfo : ItemDTO, quantity : int) : void
-            + getTotalPrice() : Amount
+            + calculateTotalPrice() : Amount
             - calculateRunningTotal() : Amount
             + getTotalVATCosts() : Amount
             - calculateTotalVATAmount() : Amount
             + isComplete() : boolean
             ~ getPayment() : CashPayment
+            + getTotalPricePaid() : Amount
             ~ getCollectionOfItems() : Collection<Item>
             + endSale() : void
-            + applyDiscount(discount : DiscountDTO) : void
+            + addCustomerToSale(customerInfo : CustomerDTO) : void
+            + getCustomer() : Customer
+            + getDiscount() : Amount
+            + createStringDiscountInfo() : String
             + pay(payment : CashPayment) : void
             + printReceipt(printer : Printer) : void
-            - notifyObservers(eventType : Event) : void
-            + addSaleObserver(eventType : Event, observer : SaleObserver) : void
             + addSaleObservers(eventType : observers : Map<Event, List<SaleObserver>>) : void
+            - notifyObservers(eventType : Event) : void
         }
         class ShoppingCartItem{
             - itemInfo : ItemDTO
@@ -78,52 +90,66 @@ package startup {
             - quantity : int
             + <<create>> ShoppingCartItem(itemInfo:ItemDTO) : ShoppingCartItem
             + <<create>> ShoppingCartItem(itemInfo:ItemDTO, quantity : int): ShoppingCartItem
-'            + addItem(anotherItem : ShoppingCartItem) : void
             + addToQuantity(additionalQuantity : int) : void
-'            + setQuantity(quantity : int) : void
             + getTotalSubPrice() : Amount
-            + getVatCosts() : Amount
+            + calculateTotalSubVATCosts() : Amount
+            - calculateUnitVATCost() : Amount
             + getTimeOfUpdate() : LocalDateTime
             + getItemDTO() : ItemDTO
             + getItemID() : int
             + getQuantity() : int
-            + getUnitPrice() : Amount
+            + getUnitPriceIncVAT() : Amount
             + getName() : String
             + equals(o Object) : boolean
             }
         class CashPayment{
             - paidAmt : Amount
-            - totalCost : Amount
+            - totalCostPaid : Amount
             + <<create>> CashPayment(paidAmt:Amount): CashPayment
-            ~ calculateTotalCost(paidSale:Sale):void
+            ~ calculateTotalCost(paidSale:Sale) : void
+'            ~ calculateTotalCost(totalPrice : Amount, customer : Customer) : void
             ~ getPaidAmt() : Amount
-            ~ getTotalCost() : Amount
+            ~ getTotalCostPaid() : Amount
             ~ getChange() : Amount
             }
         class CashRegister{
             + <<static>> INITIAL_AMOUNT : double
+            - cashRegisterObservers : List<CashRegisterObserver>
             - balance : Amount
+            - revenue : Amount
             + <<create>> CashRegister(initialAmount : Amount) : CashRegister
             + <<create>> CashRegister(initialAmount : double) : CashRegister
             + <<create>> CashRegister() : CashRegister
             + addPayment(payment : CashPayment) : void
+            + getBalance() : Amount
+            + getRevenue() : Amount
+            + addCashRegisterObserver(observer : CashRegisterObserver) : void
+            + addCashRegisterObserver(observer : CashRegisterObserver) : void
+            - notifyObservers() : void
         }
         class Receipt{
             - sale : Sale
             - timeOfSale : LocalDateTime
+            - listOfShoppingCartItems : List<ShoppingCartItem>
             - locale : Locale
             - formatter : DateTimeFormatter
+            - totalPricePreDiscount : Amount
+            - totalPricePaid : Amount
             ~ <<create>> Receipt(sale: Sale) : Receipt
+            - sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            - createStringDiscountInfo() : String
+            - createStringDiscountInfo() : String
             + toString() : String
-
         }
+
         class Amount{
             - currency : Currency
             - locale : Locale
             - amount : double
-            ~ <<create>> Amount(amount : double, locale:Locale) : Amount
-            ~ <<create>> Amount(amount : double) : Amount
-            ~ <<create>> Amount(another : Amount) : Amount
+            + <<create>> Amount(amount : double, locale:Locale) : Amount
+            + <<create>> Amount(amount : double) : Amount
+            + <<create>> Amount(another : Amount) : Amount
+            + <<create>> Amount() : Amount
             + minus(other : Amount) : Amount
             + plus(other : Amount) : Amount
             + plus(amounts : List<Amount>) : Amount
@@ -131,16 +157,49 @@ package startup {
             + getAmount() : Double
             + toString() : String
             + equals(o : Object) : boolean
+            + compareTo(o : Object) : int
         }
         class VAT{
             - vatRateGroupCode : int
             - vatRate : double
             + <<create>> VAT(vatRateGroupCode : int) : VAT
+            + <<create>> VAT() : VAT
             + getVATRateGroupCode() : Int
             + getVATRate() : double
             + equals(Object o)
         }
-        class SaleObserver <<interface>> {}
+        class Customer {
+            - customerID : int
+            - customerType : CustomerType
+            - bonusPoints : int
+            + <<create>> Customer(customerID : int, customerType : CustomerType, bonusPoints : int) : Customer
+            + <<create>> Customer(customerInfo : CustomerDTO)) : Customer
+            + getBonusPoints() : int
+            + addBonusPoints(paidAmount : Amount)
+            + decreaseBonusPoints(usedBonusPoints : int) : void
+            + equals(Object o)
+        }
+        interface SaleObserver <<interface>> {
+            + updateSale(sale : LimitedSaleView)
+        }
+        interface "<<interface>>\nCashRegisterObserver" as CashRegisterObserver {
+            + updateRevenue(totalRevenue : Amount) : void
+        }
+        interface "<<interface>>\n: LimitedSaleView" as LimitedSaleView {
+            + isComplete() : boolean
+            + getTotalPricePaid() : Amount
+            + getTotalPrice() : Amount
+            + calculateRunningTotal() : Amount
+            + getTotalVATCosts() : Amount
+            + getCollectionOfItems() : Collection<ShoppingCartItem>
+            + getDiscount() : Amount
+            + createStringDiscountInfo() : String
+        }
+        class LimitedSaleViewWrapper {
+            - sale : Sale
+            + <<create>> LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
+
+        }
     }
 }
     package integration {
@@ -187,6 +246,11 @@ package startup {
         enum Event {}
         class Logger <<interface>> {}
     }
+
+'interfaces
+Comparable <|-[dashed]- Amount
+LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
+
 Main --> View
 Main -left-> Controller
 Main ---> Printer
