@@ -10,8 +10,6 @@ public class Customer {
     private final int customerID;
     private final CustomerType customerType;
     private int bonusPoints;
-    private Amount discount;
-    private String discountInformation;
 
     /**
      * Creates a new instance.
@@ -35,22 +33,44 @@ public class Customer {
         this.bonusPoints = customerInfo.getBonusPoints();
     }
 
+    /**
+     * Get customer identification number
+     * @return customer identification
+     */
     public int getCustomerID() {
         return customerID;
     }
 
+    /**
+     * Get customer type
+     * @return customer type as {@link CustomerType}
+     */
     public CustomerType getCustomerType() {
         return customerType;
     }
 
+    /**
+     * Get eared bonus.
+     * @return bonus points
+     */
     public int getBonusPoints() {
         return bonusPoints;
     }
 
+    /**
+     * Add bonus points based on default ratio.
+     * 1 point per price unit.
+     * E.g. 1 kr = 1 point.
+     * @param paidAmount paid amount. Gets converted to bonus points according to the default ratio 1:1.
+     */
     public void addBonusPoints(Amount paidAmount) {
         this.bonusPoints += paidAmount.getAmount().intValue();
     }
 
+    /**
+     * Decrease bonus points.
+     * @param usedBonusPoints used bonus points
+     */
     public void decreaseBonusPoints(int usedBonusPoints) { this.bonusPoints -= usedBonusPoints; }
 
     @Override
