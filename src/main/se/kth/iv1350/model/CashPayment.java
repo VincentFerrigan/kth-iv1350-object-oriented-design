@@ -5,8 +5,8 @@ package se.kth.iv1350.model;
  * The sale is paid in cash.
  */
 public class CashPayment {
-    private final Amount paidAmt; // TODO ändra till final
-    private Amount totalCost;
+    private final Amount paidAmt;
+    private Amount totalCostPaid;
 
     /**
      * Creates a new instance of the cash that is
@@ -22,21 +22,29 @@ public class CashPayment {
      * @param paidSale The sale that the customer is paying.
      */
     void calculateTotalCost(Sale paidSale) {
-        this.totalCost = paidSale.getTotalAmount();
+        totalCostPaid = paidSale.calculateTotalPrice();
+        Customer customer = paidSale.getCustomer();
+        if (customer != null) {customer.addBonusPoints(totalCostPaid);}
+    }
+
+    // Should this be used instead? Will it simplify?
+    void calculateTotalCost(Amount totalPrice, Customer customer) {
+        totalCostPaid = totalPrice;
+        if (customer != null) {customer.addBonusPoints(totalCostPaid);}
     }
 
     /**
      * @return The amount of cash that was given by the customer.
      */
-    Amount getPaidAmt() {
+    public Amount getPaidAmt() {
         return paidAmt;
     }
 
     /**
-     * @return The total cost of the rental that was paid.
+     * @return The total cost of the sale that was paid.
      */
-    Amount getTotalCost() {
-        return totalCost;
+    Amount getTotalCostPaid() {
+        return totalCostPaid == null? new Amount(0) : new Amount(totalCostPaid);
     }
 
     /**
@@ -45,6 +53,6 @@ public class CashPayment {
     Amount getChange() {
         // TODO här är change negativt om kund betalat för lite. Just nu är det det vi tror är rätt. Vi vet först efter accountinssystem är gjord.
         // TODO Ett negativt belopp kan innebära att vi skickar ett "felmeddelande" om att kund betalat för lite.
-        return paidAmt.minus(totalCost);
+        return paidAmt.minus(totalCostPaid);
     }
 }

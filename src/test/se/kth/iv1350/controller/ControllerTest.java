@@ -3,10 +3,11 @@ package se.kth.iv1350.controller;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import se.kth.iv1350.integration.DiscountDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.util.LogHandler;
+import se.kth.iv1350.view.EndOfSaleView;
+import se.kth.iv1350.view.RunningSaleView;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -14,164 +15,179 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/* TODO: Would it be possible to setup ones own inventory list?
+   TODO: Check how to send filename to singletons.
+   Temp. solution is to use ITEM_ID 0
+ */
 class ControllerTest {
-    private Controller controller;
-    private Printer printer;
-    private Display display;
+    private static final int TEST_ITEM_ID = 0;
+    private static final int TEST_QUANTITY = 5;
+    private static final String TEST_NAME = "test name";
+    private static final Amount TEST_UNIT_PRICE_INCL_VAT = new Amount(10);
+    private static final Amount TEST_UNIT_PRICE_EX_VAT = new Amount(8);
+    private static final VAT TEST_VAT = new VAT(1);
+    private static final Amount PAID_AMOUNT = new Amount(100);
+    private static final String TEST_DESCRIPTION = "test description";
+    private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
+            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT);
+    private static final int CUSTOMER_ID = 880822;
+    private Controller instance;
     private RegisterCreator registerCreator;
-    private final int ITEM_ID = 3;
-    private final int QUANTITY = 5;
-
-    private SaleDTO testRegID;
-    private SaleDTO testRegIDQ;
-    private Sale testSale;
-    private SaleDTO currentSale;
-    private DiscountDTO discountDTO;
-    private final int CUSTOMER_ID = 880822;
-    private ItemRegistry itemRegistry;
-    private DiscountRegister discountRegister;
-    private Amount paidAmount;
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
-
 
     @BeforeEach
     void setUp() {
         try {
-            registerCreator = new RegisterCreator();
-            itemRegistry = registerCreator.getInventorySystem();
-            testSale = new Sale(itemRegistry);
-            discountRegister = registerCreator.getDiscountRegister();
-            printer = new Printer();
-            display = new Display();
-            controller = new Controller(printer, display, registerCreator);
-            testRegID = null;
-            testRegIDQ = null;
-            currentSale = null;
             originalSysOut = System.out;
             outContent = new ByteArrayOutputStream();
             System.setOut(new PrintStream(outContent));
-            paidAmount = new Amount(1000);
+            Printer printer = new Printer();
+            registerCreator = new RegisterCreator();
+            instance = new Controller(printer, registerCreator);
+            instance.addSaleObserver(new RunningSaleView());
+            instance.addSaleObserver(new EndOfSaleView());
+
         } catch (IOException ex)  {
-            System.out.println("Unable to set up the ControllerTest");
-            ex.printStackTrace();
+            // Not part of the test
+            fail("No exception should be thrown, unable to set up the ControllerTest. " +
+                    "%s".formatted(ex.getMessage()));
         }
     }
     @AfterEach
     void tearDown() {
-        registerCreator = null;
-        itemRegistry = null;
-        testSale = null;
-        discountRegister = null;
-        printer = null;
-        display = null;
-        controller = null;
-        testRegID = null;
-        testRegIDQ = null;
-        currentSale = null;
-        paidAmount = null;
         outContent = null;
         System.setOut(originalSysOut);
+        instance = null;
+        registerCreator = null;
     }
 
     @Test
-    void testStartSale() {
-        controller.startSale();
+    void testAddSaleObserver() {
         try {
-            controller.registerItem(ITEM_ID);
-        } catch (NullPointerException e ) {
-            fail("No instance of Sale was created in startSale");
-        } catch (ItemNotFoundException | OperationFailedException ex) {
-            //This is not part of the test.
+            instance.addSaleObserver(new RunningSaleView());
+        } catch (NullPointerException ex) {
+            fail("Unable to add observer to subscription. " +
+                    "No instance of Map (for saleObservers) was created");
         }
+    }
+    @Test
+    void testStartSale() {
+        try {
+            instance.startSale();
+            instance.registerItem(TEST_ITEM_ID);
+        } catch (NullPointerException ex) {
+            fail("No instance of Sale was created in startSale");
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            // Not part of the test
+            fail("No exception should be thrown: item ID is valid." +
+                    "%s".formatted(ex.getMessage()));
+        } catch(OperationFailedException ex) {
+            // Not part of the test
+            fail("No exception should be thrown: %s".formatted(ex.getMessage()));
+        }
+
+        assertTrue(outContent.toString().contains("Display"),
+                "The observers were passed on by startSale to the sales subscription list");
     }
 
     @Test
     void testRegisterItem() {
-        controller.startSale();
-
+        int singleQuantity = 1;
         try {
-            testRegID = controller.registerItem(ITEM_ID);
-            assertNotNull(testRegID, "Item registration did not work");
-            assertEquals(1, testRegID.getSaleItemsInfo().get(0).getQuantity(),
-                    "Item did not have quantity 1 when added without quantity.");
+            instance.startSale();
+            instance.registerItem(TEST_ITEM_ID);
+            String result = outContent.toString();
+            assertTrue(result.contains("Display"),
+                    "No display output");
+            StringBuilder expOutSingleItem = new StringBuilder();
+            expOutSingleItem.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE_INCL_VAT.multiply(singleQuantity)));
+            expOutSingleItem.append("(%d * %s)\n".formatted(singleQuantity, TEST_UNIT_PRICE_INCL_VAT));
+            assertTrue(result.contains(expOutSingleItem.toString()),
+                    "ShoppingCartItem registration did not work");
 
-            testRegIDQ = controller.registerItem(4, QUANTITY);
-            assertNotNull(testRegIDQ, "Item registration did not work");
-            assertEquals(QUANTITY, testRegIDQ.getSaleItemsInfo().get(0).getQuantity(),
-                    "Item did not have the right quantity when added with quantity.");
-        } catch (ItemNotFoundException ex) {
-            fail("No exception should be thrown: item ID is valid.");
-        } catch (OperationFailedException e) {
-            fail("No exception should be thrown, if connection is thrown.");
+            instance.registerItem(TEST_ITEM_ID, TEST_QUANTITY);
+            result = outContent.toString();
+            StringBuilder expOutMultipleItems = new StringBuilder();
+            expOutMultipleItems.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE_INCL_VAT.multiply(TEST_QUANTITY + singleQuantity)));
+            expOutMultipleItems.append("(%d * %s)\n".formatted(TEST_QUANTITY + singleQuantity, TEST_UNIT_PRICE_INCL_VAT));
+            assertTrue(result.contains(expOutMultipleItems.toString()),
+                            "ShoppingCartItem did not have the right quantity when added with quantity.");
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            fail("No exception should be thrown: item ID should be valid. + " +
+                    "Error message: %s".formatted(ex.getMessage()));
+        } catch(OperationFailedException ex) {
+            // Not part of the test
+            fail("No exception should be thrown: %s" +
+            "Error message: %s".formatted(ex.getMessage()));
         }
     }
 
     @Test
-    void testRegisterItemNEW() {
-        controller.startSale();
-        int expectedSingularQuantity = 1;
+    void testItemThatDoesNotExist() {
+        int incorrectItemID = -1;
         try {
-            SaleItemDTO expResult = new SaleItemDTO(new ItemDTO(0, "", "", new Amount(1.0), new VAT(1)), expectedSingularQuantity, new Amount(1.0 * expectedSingularQuantity));
-            SaleItemDTO result = controller.registerItem(0).getSaleItemsInfo().get(0);
-            assertEquals(expResult, result, "Wrong quantity, expected %d".formatted(expectedSingularQuantity));
-        } catch (ItemNotFoundException ex) {
-            fail("No exception should be thrown: item ID is valid.");
-        } catch (OperationFailedException e) {
-            fail("No exception should be thrown, if connection is thrown.");
+            instance.startSale();
+            assertThrows(ItemNotFoundInItemRegistryException.class,() -> instance.registerItem(incorrectItemID));
+            instance.registerItem(incorrectItemID);
+        } catch(OperationFailedException ex) {
+            fail("Wrong exception called" +
+                    "Error message: %s".formatted(ex.getMessage()));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            assertTrue(ex.getMessage()
+                    .contains("Unable to find item with ID \"%d\" in the inventory system.".formatted(incorrectItemID)));
+        }
+    }
+    @Test
+    void testNoConnectionToInventorySystem() {
+        try {
+            instance.startSale();
+            assertThrows(OperationFailedException.class,() -> instance.registerItem(404));
+            instance.registerItem(404);
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            fail("Wrong exception called" +
+                    "Error message: %s".formatted(ex.getMessage()));
+        } catch(OperationFailedException ex) {
+            assertTrue(ex.getMessage().contains("No connection to inventory system. Try again."));
         }
     }
 
     @Test
     void testEndSale() {
-        controller.startSale();
-        currentSale = controller.endSale();
-        assertNotNull(currentSale, "End sale did not work");
-    }
-
-    @Test
-    void testDiscountRequest() {
         try {
-            discountDTO = discountRegister.getDiscount(CUSTOMER_ID);
-            testSale.addItem(ITEM_ID);
-            testSale.endSale();
-            Amount beforeD = testSale.getTotalAmount();
-            testSale.applyDiscount(discountDTO);
-            testSale.endSale();
-            Amount afterD = testSale.getTotalAmount();
-            assertNotEquals(beforeD, afterD,
-                    "Discount not applied.");
-        } catch (ItemNotFoundException e) {
-            fail("No exception should be thrown here: item ID is valid.");
-        } catch (ItemRegistryException ex) {
-            fail("No exception should be thrown here, if connection is valid.");
+            instance.startSale();
+            instance.registerItem(TEST_ITEM_ID);
+        } catch (ItemNotFoundInItemRegistryException | OperationFailedException ex) {
+            // Not part of the test
         }
+        instance.endSale();
+        String result = outContent.toString();
+        assertTrue(result.contains("End of Sale"), "End sale did not work");
     }
 
     @Test
     void testPay() {
         try {
-            controller.startSale();
-            controller.registerItem(ITEM_ID);
-            SaleDTO paySaleInfo = controller.endSale();
-            paidAmount = new Amount(100);
+            instance.startSale();
+            instance.registerItem(TEST_ITEM_ID);
+            instance.endSale();
             LocalDateTime saleTime = LocalDateTime.now();
-            controller.pay(paidAmount);
+            instance.pay(PAID_AMOUNT);
             StringBuilder expOut = new StringBuilder();
-            expOut.append("%-40s%s%n".formatted("Total Cost:", paySaleInfo.getTotalPrice()));
-            expOut.append("%-40s%s%n".formatted("Total VAT:", paySaleInfo.getTotalVATAmount()));
+            expOut.append("%-40s%s%n".formatted("Total Cost:", TEST_UNIT_PRICE_INCL_VAT.multiply(1)));
+            expOut.append("%-40s%s%n".formatted("Total VAT:", TEST_UNIT_PRICE_EX_VAT.multiply(1).multiply(TEST_VAT.getVATRate())));
             expOut.append("\n");
-            expOut.append("%-40s%s%n".formatted("Paid Amount:", paidAmount));
-            expOut.append("%-40s%s%n".formatted("Change:", paidAmount.minus(paySaleInfo.getTotalPrice())));
+            expOut.append("%-40s%s%n".formatted("Paid Amount:", PAID_AMOUNT));
+            expOut.append("%-40s%s%n".formatted("Change:", PAID_AMOUNT.minus(TEST_UNIT_PRICE_INCL_VAT.multiply(1))));
             String result = outContent.toString();
             assertTrue(result.contains(expOut), "Wrong output of change and paid amount.");
-            assertTrue(result.contains("100,00 kr"), "Output does not contain paid amount.");
+            assertTrue(result.contains(PAID_AMOUNT.toString()), "Output does not contain paid amount.");
             assertTrue(result.contains(Integer.toString(saleTime.getYear())), "Wrong year on receipt.");
             assertTrue(result.contains(Integer.toString(saleTime.getHour())), "Wrong hour on receipt.");
             assertTrue(result.contains(Integer.toString(saleTime.getMinute())), "Wrong minute on receipt.");
-            assertTrue(result.contains(paidAmount.minus(paySaleInfo.getTotalPrice()).toString()), "Wrong change on receipt.");
-        } catch (ItemNotFoundException | OperationFailedException ex) {
-            //This is not part of the test.
+            assertTrue(result.contains(PAID_AMOUNT.minus(TEST_UNIT_PRICE_INCL_VAT.multiply(1)).toString()), "Wrong change on receipt.");
+        } catch (ItemNotFoundInItemRegistryException | OperationFailedException ex) {
+            // Not part of the test
         }
     }
 }

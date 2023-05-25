@@ -11,8 +11,11 @@ import java.util.*;
 public class Receipt {
     private final Sale sale;
     private final LocalDateTime timeOfSale;
+    private List<ShoppingCartItem> listOfShoppingCartItems;
     private Locale locale = new Locale("sv", "SE");
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
+    private Amount totalPricePreDiscount;
+    private Amount totalPricePaid;
 
     /**
      * Creates a new instance of {@link Receipt}.
@@ -21,6 +24,38 @@ public class Receipt {
     Receipt(Sale sale) {
         this.sale = sale;
         this.timeOfSale = LocalDateTime.now();
+        listOfShoppingCartItems = new ArrayList<>(sale.getCollectionOfItems());
+        sortShoppingCart(listOfShoppingCartItems);
+        totalPricePreDiscount = sale.calculateRunningTotal();
+        totalPricePaid = sale.getTotalPricePaid();
+    }
+
+    private void sortShoppingCart(List<ShoppingCartItem> listOfShoppingCartItems) {
+        Collections.sort(listOfShoppingCartItems, Comparator.comparing(ShoppingCartItem::getName));
+    }
+    private String createSaleItemsInfoString() {
+        // Pretty printing
+        StringBuilder saleItemsInfoBuilder = new StringBuilder();
+        for (ShoppingCartItem item : listOfShoppingCartItems) {
+            saleItemsInfoBuilder.append("%-40s%s".formatted(item.getName(), item.getTotalSubPrice()));
+            saleItemsInfoBuilder.append("%n".formatted());
+            saleItemsInfoBuilder.append("(%d * %s)".formatted(item.getQuantity(), item.getUnitPriceIncVAT()));
+            saleItemsInfoBuilder.append("%n".formatted());
+        }
+        saleItemsInfoBuilder.append("%n".formatted());
+        return saleItemsInfoBuilder.toString();
+    }
+
+    private String createDiscountInfoString(){
+        StringBuilder discountInfoBuilder = new StringBuilder();
+        if (!totalPricePaid.equals(totalPricePreDiscount)) {
+            discountInfoBuilder.append("%-40s-%s".formatted("Total discount:", sale.getDiscount()));
+            discountInfoBuilder.append("%n".formatted());
+            discountInfoBuilder.append("(%s)".formatted(sale.createStringDiscountInfo()));
+            discountInfoBuilder.append("%n".formatted());
+            discountInfoBuilder.append("%n".formatted());
+        }
+        return discountInfoBuilder.toString();
     }
 
     /**
@@ -30,30 +65,28 @@ public class Receipt {
      */
     @Override
     public String toString() {
-        List<Item> listOfItems = new ArrayList<>(sale.getCollectionOfItems());
-
-        // Sorterar listan per namn
-        Collections.sort(listOfItems, Comparator.comparing(Item::getName));
-
         // Pretty printing
-        StringBuilder builder = new StringBuilder();
-        builder.append("%-22s%s%n".formatted("", "RECEIPT"));
-        builder.append("%-19s%s%n".formatted("", "Grocery store"));
-        builder.append("%-16s%s%n".formatted("", this.timeOfSale.format(formatter)));
-        builder.append("\n");
-        for (Item item: listOfItems) {
-            builder.append("%-40s%s%n".formatted(item.getName(), item.getTotalPrice()));
-            builder.append("(%d * %s)\n".formatted(item.getQuantity(), item.getUnitPrice()));
-        }
-        builder.append("\n");
-        if (this.sale.getDiscountAmount() != null) {
-            builder.append("%-40s-%s%n".formatted("Total discount:", this.sale.getDiscountAmount()));
-        }
-        builder.append("%-40s%s%n".formatted("Total Cost:", this.sale.getPayment().getTotalCost()));
-        builder.append("%-40s%s%n".formatted("Total VAT:", this.sale.getTotalVAT()));
-        builder.append("\n");
-        builder.append("%-40s%s%n".formatted("Paid Amount:", this.sale.getPayment().getPaidAmt()));
-        builder.append("%-40s%s%n".formatted("Change:", this.sale.getPayment().getChange()));
-        return builder.toString();
+        StringBuilder receiptBuilder = new StringBuilder();
+        receiptBuilder.append("%-22s%s".formatted("", "RECEIPT"));
+        receiptBuilder.append("%n".formatted());
+        receiptBuilder.append("%-19s%s".formatted("", "Grocery store"));
+        receiptBuilder.append("%n".formatted());
+        receiptBuilder.append("%-16s%s".formatted("", this.timeOfSale.format(formatter)));
+        receiptBuilder.append("%n".formatted());
+        receiptBuilder.append("%n".formatted());
+
+        receiptBuilder.append(createSaleItemsInfoString());
+        receiptBuilder.append(createDiscountInfoString());
+
+        receiptBuilder.append("%-40s%s".formatted("Total Cost:", totalPricePaid));
+        receiptBuilder.append("%n".formatted());
+        receiptBuilder.append("%-40s%s".formatted("Total VAT:", this.sale.getTotalVATCosts()));
+        receiptBuilder.append("%n".formatted());
+        receiptBuilder.append("%n".formatted());
+        receiptBuilder.append("%-40s%s".formatted("Paid Amount:", this.sale.getPayment().getPaidAmt()));
+        receiptBuilder.append("%n".formatted());
+        receiptBuilder.append("%-40s%s".formatted("Change:", this.sale.getPayment().getChange()));
+        receiptBuilder.append("%n".formatted());
+        return receiptBuilder.toString();
     }
 }

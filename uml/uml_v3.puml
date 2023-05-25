@@ -9,179 +9,248 @@ skinparam package {
 'top to bottom direction
 left to right direction
 skinparam ClassAttributeIconSize 0
+interface "<<interface>>\nComparable " as Comparable{
+    + compareTo(Object o) : int
+    }
+
+
+
 together {
 package startup {
     class Main{
-        +main(args : String[]) : void
+        + <<static>> main(args : String[]) : void
     }
 }
     package view {
-    class View {
-        + <<create>> View(contr : Controller) : View
-    }
+        class View {
+            - contr: Controller
+            + <<create>> View(contr : Controller) : View
+        }
+        class EndOfSaleView {}
+        class RunningSaleView {}
+        abstract class SaleView {}
+        abstract class TotalRevenue {}
+        class TotalRevenueView {}
     }
     package controller {
         class Controller{
+            - saleObserver : List<SaleObserver>
             - printer : Printer
-            - display : Display
             - saleLog : SaleLog
-            - inventorySystem : ItemRegistry
-            - discountRegister : DiscountRegister
+            - itemRegistry : ItemRegistry
+            - customerRegister : CustomerRegister
             - accountingSystem : AccountingSystem
             - cashRegister : CashRegister
             - currentSale : Sale
-            +<<create>> Controller(printer : Printer, display : Display, registerCreator:RegisterCreator) : Controller
-            +startSale() : void
-            +registerItem(itemID : int) : SaleDTO
-            +registerItem(itemID : int, quantity:int) : SaleDTO
-            +endSale() : SaleDTO
-            +discountRequest(customerID : int) void
-            +pay(paidAmt : Amount) : void
+            - logger : ErrorFileLogHandler
+            + <<create>> Controller(printer : Printer, registerCreator:RegisterCreator) : Controller
+            + addSaleObserver(observer : SaleObserver) : void
+            + addCashRegisterObserver(observer : CashRegisterObserver) : void
+            + startSale() : void {exception OperationFailedException}
+            + registerItem(itemID : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+            + registerItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+            + endSale() : void {exception IllegalStateException}
+            + registerCustomerToSale(customerID : int) void {exceptions  IllegalStateException}
+            + pay(paidAmt : Amount) : void {exception IllegalStateException}
         }
     }
     package model {
         class Sale{
+            - saleObserver : List<SaleObserver>
             - timeOfSale : LocalDateTime
-            - shoppingCart : HashMap<Integer, Item>
+            - shoppingCart : HashMap<Integer, ShoppingCartItem>
             - payment : CashPayment
-            - discount : DiscountDTO
-            - itemRegistry : ItemRegistry
-            + <<create>> Sale(itemRegistry : ItemRegistry) : Sale
-            + addItem(itemID : int, quantity : int) : void
-            + addItem(itemID : int) : void
+            - pricing : DiscountStrategy
+            - customer : Customer
+            - isComplete : boolean
+            + <<create>> Sale() : Sale {exception OperationFailedException}
+            + addItem(itemID : int, quantity : int) : void {exception ItemNotFoundInShoppingCartException}
             + addItem(itemInfo : ItemDTO, quantity : int) : void
-            + addItem(itemInfo : ItemDTO) : void
-            + getRunningTotal() : Amount
-            + getTotalVATAmount() : Amount
+            + calculateTotalPrice() : Amount
+            - calculateRunningTotal() : Amount
+            + getTotalVATCosts() : Amount
+            - calculateTotalVATAmount() : Amount
+            + isComplete() : boolean
             ~ getPayment() : CashPayment
+            + getTotalPricePaid() : Amount
             ~ getCollectionOfItems() : Collection<Item>
             + endSale() : void
-            + applyDiscount(discount : DiscountDTO) : void
+            + addCustomerToSale(customerInfo : CustomerDTO) : void
+            + getCustomer() : Customer
+            + getDiscount() : Amount
+            + createStringDiscountInfo() : String
             + pay(payment : CashPayment) : void
             + printReceipt(printer : Printer) : void
-            + displayCurrentSale(printer : Printer) : SaleDTO
-            + displayEndOfSale(printer : Printer) : SaleDTO
-            + updateInventory : void
+            + addSaleObservers(eventType : observers : Map<Event, List<SaleObserver>>) : void
+            - notifyObservers(eventType : Event) : void
         }
-        class Item{
+        class ShoppingCartItem{
             - itemInfo : ItemDTO
             - timeOfUpdate : LocalDateTime
             - quantity : int
-            - totalPrice : Amount
-            + <<create>> Item(itemInfo:ItemDTO) : Item
-            + <<create>> Item(itemInfo:ItemDTO, quantity : int): Item
-            + addItem(anotherItem : Item) : void
+            + <<create>> ShoppingCartItem(itemInfo:ItemDTO) : ShoppingCartItem
+            + <<create>> ShoppingCartItem(itemInfo:ItemDTO, quantity : int): ShoppingCartItem
             + addToQuantity(additionalQuantity : int) : void
-            + setQuantity(quantity : int) : void
-            + getTotalPrice() : Amount
-            + getVatAmount() : Amount
+            + getTotalSubPrice() : Amount
+            + calculateTotalSubVATCosts() : Amount
+            - calculateUnitVATCost() : Amount
             + getTimeOfUpdate() : LocalDateTime
-            + getItemDTO : ItemDTO
-            + getQuantity : int
-            + getUnitPrice : Amount
-'            + increment():void
-'            + decrement():void
+            + getItemDTO() : ItemDTO
+            + getItemID() : int
+            + getQuantity() : int
+            + getUnitPriceIncVAT() : Amount
+            + getName() : String
+            + equals(o Object) : boolean
             }
         class CashPayment{
             - paidAmt : Amount
-            - totalCost : Amount
+            - totalCostPaid : Amount
             + <<create>> CashPayment(paidAmt:Amount): CashPayment
-            ~ calculateTotalCost(paidSale:Sale):void
+            ~ calculateTotalCost(paidSale:Sale) : void
+'            ~ calculateTotalCost(totalPrice : Amount, customer : Customer) : void
             ~ getPaidAmt() : Amount
-            ~ getTotalCost() : Amount
+            ~ getTotalCostPaid() : Amount
             ~ getChange() : Amount
             }
         class CashRegister{
+            + <<static>> INITIAL_AMOUNT : double
+            - cashRegisterObservers : List<CashRegisterObserver>
             - balance : Amount
+            - revenue : Amount
             + <<create>> CashRegister(initialAmount : Amount) : CashRegister
             + <<create>> CashRegister(initialAmount : double) : CashRegister
             + <<create>> CashRegister() : CashRegister
             + addPayment(payment : CashPayment) : void
+            + getBalance() : Amount
+            + getRevenue() : Amount
+            + addCashRegisterObserver(observer : CashRegisterObserver) : void
+            + addCashRegisterObserver(observer : CashRegisterObserver) : void
+            - notifyObservers() : void
         }
         class Receipt{
             - sale : Sale
             - timeOfSale : LocalDateTime
+            - listOfShoppingCartItems : List<ShoppingCartItem>
             - locale : Locale
             - formatter : DateTimeFormatter
-            ~ <<create>> Receipt(saleInfo: SaleDTO, printer : Printer) : Receipt
-
+            - totalPricePreDiscount : Amount
+            - totalPricePaid : Amount
+            ~ <<create>> Receipt(sale: Sale) : Receipt
+            - sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            - createStringDiscountInfo() : String
+            - createStringDiscountInfo() : String
+            + toString() : String
         }
+
         class Amount{
             - currency : Currency
             - locale : Locale
             - amount : double
-            ~ <<create>> Amount(amount : double, locale:Locale) : Amount
-            ~ <<create>> Amount(amount : double) : Amount
-            ~ <<create>> Amount(another : Amount) : Amount
+            + <<create>> Amount(amount : double, locale:Locale) : Amount
+            + <<create>> Amount(amount : double) : Amount
+            + <<create>> Amount(another : Amount) : Amount
+            + <<create>> Amount() : Amount
             + minus(other : Amount) : Amount
             + plus(other : Amount) : Amount
             + plus(amounts : List<Amount>) : Amount
             + multiply(multiplier : double) : Amount
+            + getAmount() : Double
+            + toString() : String
+            + equals(o : Object) : boolean
+            + compareTo(o : Object) : int
         }
         class VAT{
             - vatRateGroupCode : int
             - vatRate : double
             + <<create>> VAT(vatRateGroupCode : int) : VAT
+            + <<create>> VAT() : VAT
             + getVATRateGroupCode() : Int
             + getVATRate() : double
+            + equals(Object o)
         }
-        class SaleOutput {
+        class Customer {
+            - customerID : int
+            - customerType : CustomerType
+            - bonusPoints : int
+            + <<create>> Customer(customerID : int, customerType : CustomerType, bonusPoints : int) : Customer
+            + <<create>> Customer(customerInfo : CustomerDTO)) : Customer
+            + getBonusPoints() : int
+            + addBonusPoints(paidAmount : Amount)
+            + decreaseBonusPoints(usedBonusPoints : int) : void
+            + equals(Object o)
+        }
+        interface SaleObserver <<interface>> {
+            + updateSale(sale : LimitedSaleView)
+        }
+        interface "<<interface>>\nCashRegisterObserver" as CashRegisterObserver {
+            + updateRevenue(totalRevenue : Amount) : void
+        }
+        interface "<<interface>>\n: LimitedSaleView" as LimitedSaleView {
+            + isComplete() : boolean
+            + getTotalPricePaid() : Amount
+            + getTotalPrice() : Amount
+            + calculateRunningTotal() : Amount
+            + getTotalVATCosts() : Amount
+            + getCollectionOfItems() : Collection<ShoppingCartItem>
+            + getDiscount() : Amount
+            + createStringDiscountInfo() : String
+        }
+        class LimitedSaleViewWrapper {
             - sale : Sale
-            - listOfItems : List<Item>
-            - saleInfo : SaleDTO
-            ~ <<create>> SaleOutput(sale : Sale) : SaleOutput
-            + getSaleInfo() : SaleDTO
-            + createOpenSaleString() : String
-            + createCheckoutString() : String
-            - updateSaleInfo() : void
-            - getSaleItemsInfo() : List<SleItemDTO>
-            - sortShoppingCartListAfterDescendingTimeOrder() : void
-            - sortShoppingCartListAfterAscendingNameOrder() : void
-            - sortShoppingCartListAfterAscendingItemID() : void
-'           Ska getSaleInfo vara private eller packageprivate? Hur ska den användas externt?
+            + <<create>> LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
+
         }
     }
 }
     package integration {
         class RegisterCreator{
+            - saleLog : SaleLog
+            - itemRegistry:ItemRegistry
+            - discountRegister : DiscountRegister
+            - accountingSystem : AccountingSystem
             + getSaleLog() : SaleLog
             + getInventorySystem() : ItemRegistry
             + getDiscountRegister() : DiscountRegister
             + getAccountingSystem() : AccountingSystem
+            + <<create>> RegisterCreator() : RegisterCreator
+
         }
-        class DiscountRegister{
-            +discountRequest(customerID : int) : DiscountDTO
-            ~<<create>> DiscountRegister() : DiscountRegister
+        class DiscountRegister <<singleton>> {
+            +getDiscountInfo(customerID : int) : DiscountDTO
         }
-        class ItemRegistry{
-            - flatFileDb : String
-            - inventoryTable : HashMap<Integer, ItemData>
-            - addItemData() : void
-            + getItemInfo(itemID : int) : ItemDTO
-            + updateInventory(saleInfo : SaleDTO) : void
-            ~ <<create>> ItemRegistry() : ItemRegistry
+        class ItemRegistry <<singleton>> {
+'            - flatFileDb : String
+'            - inventoryTable : HashMap<Integer, ItemData>
+'            - addItemData() : void
+            + getItemInfo(itemID : int) : ItemDTO {exception=(ItemNotFoundInItemRegistryException, ItemRegistryException)}
+            + updateInventory(closedSale : Sale) : void
         }
             note bottom : ItemData is a nested class
         class SaleLog{
             + sales : List<Sale>
             ~<<create>>SaleLog() : SaleLog
             + logSale(sale : Sale) : void
+            + findSaleByTotalAmount(totalAmount : Amount) : List<Sale>
         }
         class AccountingSystem{
-            + updateAccounting(saleInfo : SaleDTO) : void
+            + updateAccounting(closedSale : Sale) : void
             ~ <<create>> Accounting() : Accounting
         }
         class Printer{
             + <<create>>Printer() : Printer
             + printReceipt(receipt : Receipt) : void
-            + printSaleLog(saleLog : SaleLog) : void
-        }
-        class Display{
-            + <<create>> Display() :  Display
-            + displayOpenSale(saleOutput : SaleOutput) : void
-            + displayCheckout(saleOutput : SaleOutput) : void
+'            + printSaleLog(saleLog : SaleLog) : void
         }
     }
+    package util{
+        enum Event {}
+        class Logger <<interface>> {}
+    }
+
+'interfaces
+Comparable <|-[dashed]- Amount
+LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
+
 Main --> View
 Main -left-> Controller
 Main ---> Printer
@@ -200,15 +269,16 @@ View -right-> Controller
 Controller --> Sale
 Controller --> CashPayment
 Sale --> CashPayment
-Controller --> SaleLog
 Receipt <-- Sale
 Sale --> Printer
-Sale --> Item
+Sale --> ShoppingCartItem
+Sale --> Amount
 @enduml
 
 @startuml
 'title DTO
 ' //TODO Ska vi ha en customerDTO och customerDb?
+' //TODO Ska DTO:erna flyttas till CD?
 hide circle
 skinparam ClassAttributeIconSize 0
 skinparam linetype ortho
@@ -216,13 +286,6 @@ skinparam package {
     BackgroundColor LightYellow
 }
     package dto {
-        class SaleDTO{
-            - timeOfSale : LocalDateTime
-            - saleItemsInfo : List<SaleItemDTO>
-            - totalPrice : Amount
-            - totalVATAmount : Amount
-            + <<create>> SaleDTO() : SaleDTO
-        }
         class ItemDTO{
             - itemId : int
             - name : String
@@ -230,22 +293,16 @@ skinparam package {
             - price : Amount
             - vat : VAT
             +<<create>> ItemDTO() : ItemDTO
+            + equals(o : Object)
         }
-        class SaleItemDTO{
-            - itemInfo : ItemDTO
-            - quantity : Int
-            - totalPrice : Amount
-            + <<create>> SaleItemDTO() : SaleItemDTO
-        }
-        class DiscountDTO{
+
+        class CustomerDTO{
 '            // TODO ska discount finnas med i SaleDTO?
-'            -customerID : int
-'            -discountRules
-            - discountRate : Double
-            +<<create>>DiscountDTO() : DiscountDTO
-            +<<create>>DiscountDTO(discountRate : Double) : DiscountDTO
-            + getDiscountRate() : double
-            + getDiscountMultiplier() : double
+            - customerID : int
+            - customerType : CustomerType
+            - bonusPoints : int
+            +<<create>>DiscountDTO(customerID : int, customerType : CustomerType, bonusPoints : int) : DiscountDTO
+            + equals(o : Object) : boolean
 '        note bottom : Attributes TBD based on Discount Rules.
         }
     }
@@ -256,73 +313,94 @@ note top: getters, toString and equals are included as methods for all DTO attri
 skinparam style strictuml
 participant ":Main" as Main
 participant "printer:Printer" as printer
-participant "display:Display" as display
-participant ":View" as View
 participant "registerCreator:RegisterCreator" as registerCreator
-participant "contr:Controller" as contr
 participant "saleLog:SaleLog" as saleLog
-participant ":DiscountRegister" as DiscountRegister
 participant ":AccountingSystem" as AccountingSystem
+
 participant ":ItemRegistry" as ItemRegistry
-participant "cashRegister:CashRegister" as cashRegister
+participant "contr:Controller" as contr
+participant "cashRegister : CashRegister" as cashRegister
+participant "view : View" as view
 ' user -> Main: main()
-' create Printer
+activate Main
+create printer
 autonumber 1
-Main -> printer : <<create>>\n printer = Printer():Printer
-activate printer
-deactivate printer
+Main -[dashed]->> printer : <<create>>\n printer = Printer() : Printer
 
+create registerCreator
 autonumber 2
-Main -> display : <<create>>\n display = Display():Display
-activate display
-deactivate display
-
-autonumber 3
-Main -> registerCreator : <<create>>\n registerCreator = RegisterCreator():RegisterCreator
+Main -[dashed]->> registerCreator : <<create>>\n registerCreator = RegisterCreator() : RegisterCreator
 activate registerCreator
 
-autonumber 3.1
-registerCreator -> saleLog : <<create>>\n saleLog = SaleLog():SaleLog
-activate saleLog
-deactivate saleLog
+autonumber 2.1
+create saleLog
+registerCreator -[dashed]->> saleLog : <<create>>\n saleLog = SaleLog() : SaleLog
 
-' create AccountingSystem
-autonumber 3.2
-registerCreator -> AccountingSystem : <<create>>\n AccountingSystem():AccountingSystem
-activate AccountingSystem
-deactivate AccountingSystem
+create AccountingSystem
+autonumber 2.2
+registerCreator -> AccountingSystem : <<static>>\ngetInstance() : AccountingSystem
 
-' create DiscountRegister
-autonumber 3.3
-registerCreator -> DiscountRegister : <<create>>\n DiscountRegister():DiscountRegister
-activate DiscountRegister
-deactivate DiscountRegister
+create CustomerRegistry
+autonumber 2.3
+registerCreator -> CustomerRegistry : <<static>>\ngetInstance() : CustomerRegistry
+'activate CustomerRegister
+'deactivate CustomerRegister
 
-' create ItemRegistry
-autonumber 3.4
-registerCreator -> ItemRegistry: <<create>>\n ItemRegistry():ItemRegistry
-activate ItemRegistry
-deactivate ItemRegistry
+create ItemRegistry
+autonumber 2.4
+registerCreator -> ItemRegistry: <<static>>\ngetInstance() : ItemRegistry
+'activate ItemRegistry
+'deactivate ItemRegistry
 deactivate registerCreator
 
-autonumber 4
-' create contr
-Main -> contr : <<create>>\n contr = Controller(printer : Printer, display : Display, registerCreator : RegisterCreator):Controller
+autonumber 3
+create contr
+Main -[dashed]->> contr : <<create>>\n contr = Controller(printer : Printer, registerCreator : RegisterCreator) : Controller
 activate contr
 
-' create CashRegister
-autonumber 4.1
-contr -> cashRegister : <<create>>\n cashRegister = CashRegister(initialAmount: int):CashRegister
-activate cashRegister
-deactivate cashRegister
+autonumber 3.1
+contr -> registerCreator : saleLog = getSaleLog() : SaleLog
+activate registerCreator
+deactivate registerCreator
 
+autonumber 3.2
+contr -> registerCreator : accountingSystem = getAccountingSystem() : AccountingSystem
+activate registerCreator
+deactivate registerCreator
+
+autonumber 3.3
+contr -> registerCreator : customerRegistry = getCustomerRegistry() : CustomerRegistry
+activate registerCreator
+deactivate registerCreator
+
+autonumber 3.4
+contr -> registerCreator : itemRegistry = getItemRegistry() : ItemRegistry
+activate registerCreator
+deactivate registerCreator
+
+create cashRegister
+autonumber 3.5
+contr -[dashed]->> cashRegister : <<create>>\n cashRegister = CashRegister(initialAmount: int) : CashRegister
+'activate cashRegister
+'deactivate cashRegister
+'TODO ska jag lägga till att contr skapar en Lista för SaleObservers?
 deactivate contr
 
-' create View
+create view
+autonumber 4
+Main -[dashed]->> view : <<create>>\n View(contr: Controller):View
+activate view
+
 autonumber 5
-Main -> View : <<create>>\n View(contr: Controller):View
-activate View
-deactivate View
+view -> contr : addSaleObserver(new SaleObserver() : SaleObserver) : void
+activate contr
+deactivate contr
+deactivate view
+deactivate Main
+'TODO ska jag lägga till att view skapar observers?
+'TODO ska jag lägga till att view anropar contr för alla RegisterObservers?
+'TODO ska jag lägga till att view anropar contr för alla SaleObservers?
+
 @enduml
 
 @startuml
@@ -333,18 +411,46 @@ skinparam style strictuml
 hide unlinked
 'title "startSale"
 participant ":View" as View
-participant "contr:Controller" as contr
-participant "currentSale:Sale" as currentSale
+participant "contr : Controller" as contr
+participant "currentSale : Sale" as currentSale
+participant ": DiscountFactory" as DiscountFactory
+participant "saleObservers : List<SaleObserver>" as saleObservers
 
 autonumber 1
 View -> contr : startSale(): void
 activate contr
 
 autonumber 1.1
-'contr -> currentSale :  <<create>> \n currentSale = Sale(printer: Printer):Sale
-contr -> currentSale :  <<create>> \n currentSale = Sale(itemRegistry : ItemRegistry):Sale
+create currentSale
+contr -[dashed]->> currentSale :  <<create>>\n currentSale = Sale() : Sale
 activate currentSale
+autonumber 1.1.1
+currentSale -> DiscountFactory : <<static>>\n discountFactory = getInstance() : DiscountFactory
+activate DiscountFactory
+deactivate DiscountFactory
+currentSale -> DiscountFactory : pricing = getDiscountStrategy() : DiscountStrategy
+
+'Hur lägga till brytningen som Leif har i sitt exempel?
+activate DiscountFactory
+autonumber stop
+currentSale <<- DiscountFactory : <<exception>>\nClassNotFoundException
+currentSale <<- DiscountFactory : <<exception>>\nInvocationTargetException
+currentSale <<- DiscountFactory : <<exception>>\nNoSuchMethodException
+currentSale <<- DiscountFactory : <<exception>>\nInstantiationException
+currentSale <<- DiscountFactory : <<exception>>\nIllegalAccessException
+deactivate DiscountFactory
+contr <<- currentSale : <<exception>>\nOperationFailedException
 deactivate currentSale
+View <<- contr : <<exception>>\nOperationFailedException
+autonumber 1.2
+contr -> currentSale : addAllSaleObservers(saleObservers : List<SaleObserver>) : void
+activate currentSale
+autonumber 1.2.1
+currentSale -> saleObservers : addAll(observers : List<SaleObserver>) : void
+activate saleObservers
+deactivate saleObservers
+deactivate currentSale
+
 deactivate contr
 
 autonumber stop
@@ -359,39 +465,26 @@ hide unlinked
 participant ":View" as View
 participant "contr:Controller" as contr
 participant "currentSale:Sale" as currentSale
-participant "shoppingCart:Map<Integer, Item>" as shoppingCart
+participant "shoppingCart:Map<Integer, ShoppingCartItem>" as shoppingCart
 participant "itemRegistry:ItemRegistry" as itemRegistry
-participant ":Item" as Item
-participant ":SaleOutput" as SaleOutput
-participant "saleOutput:SaleOutput" as saleOutput
-participant "display:Display" as display
+participant "item : ShoppingCartItem" as item
+participant "newItem : ShoppingCartItem" as newItem
 
 loop moreItems
 '[validIdentifier]
     alt singleItem
         autonumber 1
-        View -> contr : saleInfo = registerItem(itemID:int) : SaleDTO
+        View -> contr : registerItem(itemID:int) : void
         activate contr
         autonumber 1.1
-        contr -> contr : registerItem(itemID:int, 1 : int) : SaleDTO
+        contr -> contr : registerItem(itemID:int, 1 : int) : void
         activate contr
         deactivate contr
         deactivate contr
-
-'        autonumber 1.1
-''        contr -> inventorySystem : itemInfo = registerItem(itemID:int):ItemDTO
-'        contr -> itemRegistry : itemInfo = getItemInfo(itemID:int):ItemDTO
-'        activate itemRegistry
-'        alt invalidItem
-'        autonumber 1.1.1
-'        contr <-- itemRegistry : itemNotFound(itemID:int)
-'        deactivate itemRegistry
-'        autonumber 1.2
-'        View <-- contr : itemNotFound(itemID:int)
 
    else else
         autonumber 1
-        View -> contr : saleInfo = registerItem(itemID:int, quantity:int) : SaleDTO
+        View -> contr : registerItem(itemID:int, quantity:int) : void
         activate contr
    end
         deactivate itemRegistry
@@ -400,50 +493,49 @@ loop moreItems
         autonumber 1.2
         contr -> currentSale : addItem(itemID : int, quantity:int) : void
         activate currentSale
-        autonumber 1.2.1
-        currentSale -> shoppingCart : isItemInCart = containsKey(itemID : int) : bool
-        alt isItemInCart
-            autonumber 1.2.2
-            currentSale -> shoppingCart : get.(itemID : int) : Item
+            autonumber 1.2.1
+            currentSale -> shoppingCart : item = get.(itemID : int) : ShoppingCartItem
             activate shoppingCart
             deactivate shoppingCart
-            autonumber 1.2.3
-            currentSale -> Item : addToQuantity(quantity : int) : void
-            activate Item
-            deactivate Item
-        else
             autonumber 1.2.2
-            currentSale -> itemRegistry : itemInfo = getItemInfo(itemID : int) : ItemDTO
-            autonumber 1.2.3
-            currentSale -> Item : <<create>> \n item = Item(itemInfo : ItemDTO, quantity : int)
-            activate Item
-            deactivate Item
-            autonumber 1.2.4
-            currentSale -> shoppingCart : put((itemID(), item) : Item
+            currentSale -> item : addToQuantity(quantity : int) : void
+            activate item
+            deactivate item
+            autonumber stop
+            contr <<- currentSale : <<exception>>\nItemNotFoundInShoppingCartException
+            ref over currentSale
+                Notify Sale Observers
+            end ref
+            deactivate currentSale
+'            activate currentSale
+        group Item not found in Shopping Cart
+            autonumber 1.2
+            contr -> itemRegistry : itemInfo = getItemInfo(itemID : int) : ItemDTO
+            activate itemRegistry
+            autonumber stop
+            contr <<- itemRegistry : <<exception>>\nItemNotFoundInItemRegistryException
+            contr <<- itemRegistry : <<exception>>\nItemRegistryException
+            deactivate itemRegistry
+            autonumber 1.3
+            contr -> currentSale : addItem(itemInfo : ItemDTO, quantity:int) : void
+            activate currentSale
+            autonumber 1.3.1
+            create newItem
+            currentSale -[dashed]->> newItem : <<create>> \n newItem = ShoppingCartItem(itemInfo : ItemDTO, quantity : int) : ShoppingCartItem
+'            activate newItem
+'            deactivate newItem
+            autonumber 1.3.2
+            currentSale -> shoppingCart : put(item.itemID():int, newItem : ShoppingCartItem) : ShoppingCartItem
             activate shoppingCart
             deactivate shoppingCart
+        deactivate currentSale
+            ref over currentSale
+                Notify Sale Observers
+            end ref
         end
-        deactivate currentSale
-        autonumber 1.3
-        contr -> currentSale : displayOpenSale(display : Display) : SaleDTO
-        activate currentSale
-        autonumber 1.3.1
-        currentSale -> SaleOutput : <<create>> \n saleOutput = SaleOutput(sale : Sale) : SaleOutput
-        activate SaleOutput
-        deactivate SaleOutput
-        autonumber 1.3.2
-        currentSale -> display : displayOpenSale(saleOutput : SaleOutput) : void
-        activate display
-'        display -> saleOutput : createOpenSaleString() : String
-'        activate saleOutput
-'        deactivate saleOutput
-        deactivate display
-        autonumber 1.3.3
-        currentSale -> saleOutput : getSaleInfo() : SaleDTO
-        activate saleOutput
-        deactivate saleOutput
-        deactivate currentSale
-
+        autonumber stop
+            View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
+            View <<- contr : <<exception>>\nOperationFailedException
         deactivate contr
 
         deactivate contr
@@ -451,7 +543,45 @@ end
 
 autonumber stop
 @enduml
+@startuml
 
+skinparam style strictuml
+mainframe **sd** Notify Sale Observers
+participant ": Sale" as Sale
+participant "<<interface>>\n: LimitedSaleView" as LimitedSaleView
+participant "saleObservers : List<SaleObserver>" as saleObservers
+
+-> Sale : [some sale update]
+activate Sale
+Sale -> Sale : notifyObservers() : void
+activate Sale
+create LimitedSaleView
+Sale -[dashed]->> LimitedSaleView : <<create>>\n limitedSaleView = LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
+loop for each SaleObserver in saleObservers
+    Sale -> saleObservers : updateSale(limitedSaleView : LimitedSaleView) : void
+    activate saleObservers
+    deactivate saleObservers
+end loop
+
+@enduml
+@startuml
+
+skinparam style strictuml
+mainframe **sd** Notify Cash Register Observers
+participant ": CashRegister" as CashRegister
+participant "cashRegisterObservers\n: List<CashRegisterObserver>" as cashRegisterObservers
+
+-> CashRegister : addPayment()
+activate CashRegister
+CashRegister -> CashRegister : notifyObservers() : void
+activate CashRegister
+loop for each CashRegisterObserver in cashRegisterObservers
+    CashRegister -> cashRegisterObservers : updateRevenue(revenue : Amount) : void
+    activate cashRegisterObservers
+    deactivate cashRegisterObservers
+end loop
+
+@enduml
 @startuml
 skinparam style strictuml
 'title EndSale
@@ -459,65 +589,60 @@ skinparam style strictuml
 participant ":View" as View
 participant "contr:Controller" as contr
 participant "currentSale:Sale" as currentSale
-participant "display:Display" as display
-participant ":SaleOutput" as SaleOutput
-participant "saleOutput:SaleOutput" as saleOutput
 
 autonumber 1
-View -> contr : saleInfo = endSale() : SaleDTO
+View -> contr : endSale() : void
+activate View
 activate contr
 autonumber 1.1
-contr -> currentSale : saleInfo = endSale (): void (DEN GÖR INGET NU)
+contr -> currentSale : endSale (): void
 activate currentSale
-deactivate currentSale
-autonumber 1.2
-contr -> currentSale : displayCheckout(display : Display) : SaleDTO
-activate currentSale
-autonumber 1.2.1
-currentSale -> SaleOutput : <<create>> \n saleOutput= SaleOutput(sale : Sale) : SaleOutput
-activate SaleOutput
-deactivate SaleOutput
-autonumber 1.2.2
-currentSale -> display : displayCheckout(saleOutput : SaleOutput)
-activate display
-deactivate display
-autonumber 1.2.3
-currentSale -> saleOutput : getSaleInfo() : SaleDTO
-activate saleOutput
-deactivate saleOutput
+            ref over currentSale
+                Notify Sale Observers
+            end ref
 deactivate currentSale
 deactivate contr
-note right: saleOutput creates saleDTO
+deactivate View
 
 autonumber stop
 @enduml
 
 @startuml
 skinparam style strictuml
-'title discountRequest
+'title registerCustomerToSale
 
-participant ":View" as View
-participant "contr:Controller" as contr
-participant ":DiscountRegister" as DiscountRegister
-participant "currentSale:Sale" as currentSale
+participant ": View" as View
+participant "contr : Controller" as contr
+participant ": CustomerRegistry" as CustomerRegistry
+participant "currentSale : Sale" as currentSale
+participant ": Customer" as customer
 
 autonumber 1
-View -> contr : discountRequest(customerID:int): void
+View -> contr : registerCustomerToSale(customerID:int): void
+activate View
 activate contr
-note right : gets new SaleDTO after discount
 autonumber 1.1
-'create DiscountRegister
-contr -> DiscountRegister : discount = DiscountRequest(customerID:int) : DiscountDTO
-activate DiscountRegister
-deactivate DiscountRegister
-note right: Discount creates discountDTO
+'create CustomerRegistry
+contr -> CustomerRegistry : customerInfo = \ngetCustomerInfo(customerID:int) : CustomerDTO
+activate CustomerRegistry
+autonumber stop
+contr <<- CustomerRegistry : <<exception>>\nCustomerNotFoundInCustomerRegistryException
+contr <<- CustomerRegistry : <<exception>>\nCustomerRegistryException
+deactivate CustomerRegistry
+View <<- contr : <<exception>>\nCustomerNotFoundInCustomerRegistryException
+View <<- contr : <<exception>>\nOperationFailedException
 autonumber 1.2
-contr -> currentSale : applyDiscount(discount:DiscountDTO): void
+contr -> currentSale : addCustomerToSale(customerInfo:CustomerDTO): void
 activate currentSale
-deactivate currentSale
-note right: discountDTO is used to \nupdate currentSale to \ninclude discount(s)
+create customer
+autonumber 1.2.1
+currentSale -[dashed]-> customer : <<create>>\nCustomer(customerInfo : CustomerDTO) \n: Customer
+activate customer
+deactivate customer
+deactivate customer
 
 deactivate contr
+deactivate View
 
 autonumber stop
 @enduml
@@ -526,35 +651,31 @@ autonumber stop
 skinparam style strictuml
 'title addPayment
 
-participant ":View" as View
-participant "contr:Controller" as contr
-participant "currentSale:Sale" as currentSale
-participant "printer:Printer" as printer
-participant "itemRegistry:ItemRegistry" as itemRegistry
-participant "cashRegister:CashRegister" as cashRegister
-participant "payment:CashPayment" as payment
-participant ":AccountingSystem" as AccountingSystem
-participant "currentReceipt:Receipt" as currentReceipt
-participant "saleLog:SaleLog" as saleLog
+'TODO: HÄR ÄR DU.
+participant ": View" as View
+participant "contr : Controller" as contr
+participant "payment : CashPayment" as payment
+participant "currentSale : Sale" as currentSale
+participant "cashRegister : CashRegister" as cashRegister
+participant "currentReceipt : Receipt" as currentReceipt
+participant "printer : Printer" as printer
 
-
+activate View
 autonumber 1
-'View -> contr : changeAmount = pay(payment:CashPayment) : Amount
-View -> contr : changeAmount = pay(paidAmt:Amount) : void
+View -> contr : pay(paidAmt : Amount) : void
 activate contr
+create payment
 autonumber 1.1
-contr -> payment : <<create>> \npayment = CashPayment(paidAmt:Amount) : CashPayment
-activate payment
-deactivate payment
+contr -[dashed]->> payment : <<create>> \npayment = \nCashPayment(paidAmt:Amount) : CashPayment
 autonumber 1.2
 contr -> currentSale : pay(payment:CashPayment) : void
 activate currentSale
-autonumber 1.2.1
-currentSale -> payment : calculateTotalCost(paidSale:Sale):void
-activate payment
-autonumber 1.2.1.1
-payment -> currentSale : payment.totalCost = getRunningTotal() : void
-activate currentSale
+ref over currentSale, payment
+Pricing; discount and customer bonus points strategy
+'TODO ref:
+end
+deactivate currentSale
+
 deactivate currentSale
 deactivate payment
 deactivate currentSale
@@ -562,43 +683,119 @@ autonumber 1.3
 contr -> cashRegister : addPayment (payment:CashPayment) : void
 activate cashRegister
 autonumber 1.3.1
-note right : balance.plus(payment.getPaidAmt())\nbalance.minus(payment.getChange())
+cashRegister -> payment : getPaidAmt() : Amount
+activate payment
+deactivate payment
+cashRegister -> payment : getChange() : Amount
+activate payment
+deactivate payment
+cashRegister -> payment : getTotalCostPaid() : Amount
+activate payment
+deactivate payment
+ref over cashRegister
+Notify Cash Register Observers
+end ref
 deactivate cashRegister
 
-
+ref over contr, currentSale
+Log sale and update external systems
+'TODO ref:
+'participant "contr : Controller" as contr
+'participant "currentSale : Sale" as currentSale
+'participant "saleLog:SaleLog" as saleLog
+'participant ": AccountingSystem" as AccountingSystem
+'participant "customerRegistry : CustomerRegistry" as customerRegistry
+'participant "itemRegistry : ItemRegistry" as itemRegistry
+'autonumber 1.4
+'contr -> saleLog:logSale(currentSale : Sale):void
+'activate saleLog
+'deactivate saleLog
+'
+'autonumber 1.5
+'contr -> AccountingSystem : updateToAccounting(currentSale : Sale): void
+'activate AccountingSystem
+'autonumber 1.5.1
+'AccountingSystem -> AccountingSystem : updateDatabase() :void
+'activate AccountingSystem
+'deactivate AccountingSystem
+'deactivate AccountingSystem
+'
+'autonumber 1.6
+'contr -> customerRegistry : updateToAccounting(currentSale : Sale): void
+'activate customerRegistry
+'autonumber 1.6.1
+'customerRegistry -> customerRegistry : updateDatabase() :void
+'activate customerRegistry
+'deactivate customerRegistry
+'deactivate customerRegistry
+'
+'autonumber 1.7
+'contr -> itemRegistry : updateInventory(currentSale : Sale)
+'activate itemRegistry
+'autonumber 1.7.1
+'itemRegistry -> itemRegistry : updateDatabase() :void
+'activate itemRegistry
+'deactivate itemRegistry
+'deactivate itemRegistry
+'deactivate currentSale
+end ref
 autonumber 1.4
-contr -> saleLog:logSale(saleInfo:SaleDTO):void
-activate saleLog
-deactivate saleLog
-
-autonumber 1.5
-contr -> currentSale : updateInventory():void
-activate currentSale
-autonumber 1.5.1
-currentSale -> itemRegistry : updateInventory(currentSale.getCollectionOfItems() : Collection<Item>)
-activate itemRegistry
-autonumber 1.5.1.1
-itemRegistry -> itemRegistry : updateDatabase() :void
-activate itemRegistry
-deactivate itemRegistry
-deactivate itemRegistry
-deactivate currentSale
-autonumber 1.6
-contr -> AccountingSystem : updateToAccounting(saleInfo:SaleDTO): void
-activate AccountingSystem
-deactivate AccountingSystem
-autonumber 1.7
 contr -> currentSale : printReceipt(printer:Printer) : void
 activate currentSale
-autonumber 1.7.1
-currentSale -> currentReceipt : <<create>>\n receipt = Receipt(sale:Sale) : Receipt
-activate currentReceipt
-deactivate currentReceipt
-autonumber 1.7.2
+create currentReceipt
+autonumber 1.4.1
+currentSale -[dashed]->> currentReceipt : <<create>>\n receipt = \n Receipt(sale:Sale) : Receipt
+'activate currentReceipt
+'deactivate currentReceipt
+autonumber 1.4.2
 currentSale -> printer :printReceipt(receipt:Receipt):void
 activate printer
 deactivate printer
 deactivate currentSale
 deactivate contr
+deactivate View
 autonumber stop
+
+@enduml
+@startuml
+mainframe **sd** Pricing; discount and customer bonus points strategy
+participant "currentSale : Sale" as currentSale
+participant "payment : CashPayment" as payment
+participant "pricing : CompositeDiscountStrategy" as pricing
+participant "discountStrategies :\n List<DiscountStrategy>" as discountStrategies
+participant "strategy : DiscountStrategy" as strategy
+participant "customer : Customer" as customer
+
+skinparam style strictuml
+
+-> currentSale : pay(payment : CashPayment) : void
+activate currentSale
+currentSale -> payment : calculateTotalCost(currentSale : Sale) : void
+activate payment
+payment -> currentSale : totalCostPaid =\n getTotalPrice() : Amount
+activate currentSale
+currentSale -> pricing : getTotal(currentSale : Sale) : Amount
+activate pricing
+pricing -> currentSale : lowestTotalPrice =\n calculateRunningTotal() : Amount
+activate currentSale
+deactivate currentSale
+loop i.hasNext
+    pricing -> discountStrategies : strategy = i.next() : DiscountStrategy
+    activate discountStrategies
+    deactivate discountStrategies
+    pricing -> strategy : total =\ngetTotal(currentSale)
+    activate strategy
+    deactivate strategy
+    opt lowestTotalPrice > total
+        pricing -> pricing : lowestTotalPrice = total
+        pricing -> pricing : usedDiscountStrategy = strategy
+    end opt
+    deactivate pricing
+end loop
+
+payment -> currentSale : customer =\n getCustomer() : Customer
+opt customer != null
+payment ->  customer : addBonusPoints(totalCostPaid : Amount)
+end opt
+deactivate currentSale
 @enduml
