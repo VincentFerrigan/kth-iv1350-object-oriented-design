@@ -1,9 +1,9 @@
-# kth-iv1350-point-of-sale
+# Object-Oriented Design 
+### - Learning to program with design patterns.
 
-KTH IV1350 Object-Oriented Design - Learning to program with design patterns.
 ## The Project
+Developing one single object-oriented program; Point Of Sale.
 This project is based on assignments for a course in 'Object-Oriented Design' given at KTH Royal Institute of Technology in Stockholm.
-It's also a continuation of the repository at [kth-iv1350-object-oriented-design](VincentFerrigan/kth-iv1350-object-oriented-design).
 
 ## Content and learning outcomes
 ### Course contents
@@ -19,4 +19,10 @@ One shall be able to
 * discuss the quality of a programme and then refer to established guidelines for object-oriented architecture, design and programming
 * interpret and clarify a given specification by applying established guidelines for analysis. 
 ## Basic Flow
-![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/Peek.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/peek_basic_flow.gif)
+
+## Alternative Flows
+![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/peek_alternative_flows.gif)
+
+## Exceptions 
+![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/peek_exceptions.gif)
