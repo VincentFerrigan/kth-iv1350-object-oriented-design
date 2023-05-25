@@ -23,11 +23,9 @@ public class Main {
             Controller contr = new Controller(printer, registerCreator);
 
             View view = new View(contr);
-            view.hardKodadeGrejerWithFailureAndErrors();
-//            view.HardKodadeGrejerWithStaffDiscount();
-//            view.hardKodadeGrejerWithMemberDiscount();
-//            view.hardKodadeGrejerWithoutDiscount();
-//            view.hardKodadeGrejerWithPromotion();
+            view.basicFlow();
+            view.AlternativeFlow();
+            view.basicFlowWithExceptions();
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
             ex.printStackTrace();
