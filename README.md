@@ -19,10 +19,10 @@ One shall be able to
 * discuss the quality of a programme and then refer to established guidelines for object-oriented architecture, design and programming
 * interpret and clarify a given specification by applying established guidelines for analysis. 
 ## Basic Flow
-![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/peek_basic_flow.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_basic_flow.gif)
 
 ## Alternative Flows
-![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/peek_alternative_flows.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows.gif)
 
 ## Exceptions 
-![](https://github.com/VincentFerrigan/kth-iv1350-point-of-sale/blob/main/output/peek_exceptions.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_exceptions.gif)
