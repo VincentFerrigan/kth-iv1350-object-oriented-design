@@ -1,5 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
+'TODO: abstract and static members should have {abstract} {static}
+'TODO pricing and vat package
 title CD
 hide circle
 skinparam linetype ortho
@@ -26,7 +28,6 @@ package startup {
             - contr: Controller
             + <<create>> View(contr : Controller) : View
         }
-'TODO: abstract and static members should have {abstract} {static}
         abstract class TotalRevenue {
             # TotalRevenue
             # {abstract} doShowTotalRevenue(totalRevenue : Amount)
@@ -224,11 +225,16 @@ package startup {
         class LimitedSaleViewWrapper {
             - sale : Sale
             + <<create>> LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
-
         }
     }
 }
     package integration {
+        package pricing {
+'        TODO
+        }
+        package vat {
+'        TODO
+        }
         class RegisterCreator{
             - saleLog : SaleLog
             - itemRegistry:ItemRegistry
@@ -239,7 +245,6 @@ package startup {
             + getDiscountRegister() : DiscountRegister
             + getAccountingSystem() : AccountingSystem
             + <<create>> RegisterCreator() : RegisterCreator
-
         }
         class DiscountRegister <<singleton>> {
             +getDiscountInfo(customerID : int) : DiscountDTO
