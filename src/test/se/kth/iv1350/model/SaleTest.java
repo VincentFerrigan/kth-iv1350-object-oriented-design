@@ -30,9 +30,9 @@ class SaleTest {
     private static final String TEST_DESCRIPTION = "test description";
     private static final Amount TEST_UNIT_PRICE = new Amount(10);
     private static final Amount TEST_UNIT_PRICE_EX_VAT = TEST_UNIT_PRICE.multiply(1/1.25);
-    private static final VAT TEST_VAT = new VAT(1);
+    private static final int TEST_VAT_GROUP_CODE = 1;
     private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
-            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT);
+            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT_GROUP_CODE);
     private static final Amount TEST_PAID_AMOUNT = new Amount(100);
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
@@ -71,7 +71,13 @@ class SaleTest {
         }
 
         // First addItem with item dto
-        instance.addItem(TEST_ITEM_INFO, TEST_QUANTITY);
+        try {
+            instance.addItem(TEST_ITEM_INFO, TEST_QUANTITY);
+        } catch (OperationFailedException e) {
+            fail("Exception should not have been thrown, " +
+                    e.getMessage());
+            throw new RuntimeException(e);// TODO behövs denna?
+        }
         assertEquals(instance.isComplete(), false);
 
         int expResult = TEST_QUANTITY;
@@ -127,14 +133,27 @@ class SaleTest {
 
     @Test
     void testCalculateRunningTotal() {
-        instance.addItem(TEST_ITEM_INFO,TEST_QUANTITY);
+        try {
+            instance.addItem(TEST_ITEM_INFO,TEST_QUANTITY);
+        } catch (OperationFailedException e) {
+            fail("Exception should not have been thrown, " +
+                    e.getMessage());
+            throw new RuntimeException(e);
+        }
         Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY);
         Amount result = instance.calculateRunningTotal();
         assertEquals(expResult, result, "Wrong running total");
     }
     @Test
     void testCalculateTotalPrice() {
-        instance.addItem(TEST_ITEM_INFO, TEST_QUANTITY);
+
+        try {
+            instance.addItem(TEST_ITEM_INFO, TEST_QUANTITY);
+        } catch (OperationFailedException e) {
+            fail("Exception should not have been thrown, " +
+                    e.getMessage());
+            throw new RuntimeException(e);
+        }
         instance.addCustomerToSale(new CustomerDTO(1, CustomerType.STAFF, 0));
         Amount discount = instance.getDiscount();
         Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).minus(discount);

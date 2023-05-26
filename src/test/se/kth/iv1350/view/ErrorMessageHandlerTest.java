@@ -24,7 +24,7 @@ class ErrorMessageHandlerTest {
 
     @BeforeEach
     void setUp() {
-        errorMessageHandler = new ErrorMessageHandler();
+        errorMessageHandler = ErrorMessageHandler.getInstance();
         System.setOut(new PrintStream(outputArr));
         output = outputArr.toString();
     }
@@ -38,10 +38,13 @@ class ErrorMessageHandlerTest {
     @Test
     void testPrintErrorMessage() {
         StringBuilder testMessage = new StringBuilder();
+        testMessage.append("\n");
         testMessage.append(LocalDateTime.now().format(formatter));
         testMessage.append(", ERROR: ");
+        testMessage.append("\n");
         testMessage.append(testError);
-        errorMessageHandler.showErrorMessage(testError);
+        testMessage.append("\n");
+        errorMessageHandler.log(testError);
         assertEquals(testMessage.toString() +"\n", outputArr.toString());
     }
 }

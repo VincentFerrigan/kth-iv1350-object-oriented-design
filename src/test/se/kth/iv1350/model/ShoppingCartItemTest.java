@@ -3,9 +3,11 @@ package se.kth.iv1350.model;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.ItemDTO;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ShoppingCartItemTest {
     private ShoppingCartItem instance;
@@ -15,13 +17,19 @@ class ShoppingCartItemTest {
     private static final String TEST_DESCRIPTION = "test description";
     private static final Amount TEST_UNIT_PRICE = new Amount(10);
     private static final Amount TEST_UNIT_PRICE_EX_VAT = TEST_UNIT_PRICE.multiply(1/1.25);
-    private static final VAT TEST_VAT = new VAT(1);
+    private static final int TEST_VAT_GROUP_CODE = 1;
     private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
-            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT);
+            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT_GROUP_CODE);
 
     @BeforeEach
     void setUp() {
-        instance = new ShoppingCartItem(this.TEST_ITEM_INFO, TEST_QUANTITY);
+        try {
+            instance = new ShoppingCartItem(this.TEST_ITEM_INFO, TEST_QUANTITY);
+        } catch (OperationFailedException e) {
+            fail("Exception should not have been thrown, " +
+                    e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     @AfterEach
@@ -46,8 +54,16 @@ class ShoppingCartItemTest {
 
     @Test
     void testEquals() {
-        ShoppingCartItem a = new ShoppingCartItem(TEST_ITEM_INFO, 2);
-        ShoppingCartItem b = new ShoppingCartItem(TEST_ITEM_INFO,2);
+        ShoppingCartItem a = null;
+        ShoppingCartItem b = null;
+        try {
+            a = new ShoppingCartItem(TEST_ITEM_INFO, 2);
+            b = new ShoppingCartItem(TEST_ITEM_INFO,2);
+        } catch (OperationFailedException e) {
+            fail("Exception should not have been thrown, " +
+                    e.getMessage());
+            throw new RuntimeException(e);
+        }
         boolean expResult = true;
         boolean result =  a.equals(b);
         assertEquals(expResult,result,"Objects not equal");

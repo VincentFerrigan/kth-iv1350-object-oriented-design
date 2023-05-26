@@ -1,6 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.model.VAT;
 import se.kth.iv1350.model.Amount;
 
 import java.util.Objects;
@@ -16,7 +15,7 @@ public class ItemDTO {
     private final String name;
     private final String description;
     private final Amount price;
-    private final VAT vat;
+    private final int vatGroupCode;
 
     /**
      * Creates a new instance representing a particular item.
@@ -25,14 +24,14 @@ public class ItemDTO {
      * @param name              ShoppingCartItem's name
      * @param description       ShoppingCartItem description
      * @param price             Price incl. VAT in {@link Amount}
-     * @param vat               {@link VAT} (with rate based on VAT Rate Group)
+     * @param vatGroupCode      VAT Group Code
      */
-    public ItemDTO(int itemID, String name, String description, Amount price, VAT vat) {
+    public ItemDTO(int itemID, String name, String description, Amount price, int vatGroupCode) {
         this.itemID = itemID;
         this.name = name;
         this.description = description;
         this.price = new Amount(price);
-        this.vat = vat;
+        this.vatGroupCode = vatGroupCode;
     }
 
     /**
@@ -66,15 +65,12 @@ public class ItemDTO {
         return price;
     }
 
-
-    // returnera VAT istället för double?
-
     /**
-     * Get the items VAT Rate
-     * @return the VAT Rate
+     * Get the items VAT Group Code
+     * @return the VAT Group Code
      */
-    public double getVATRate() {
-        return vat.getVATRate();
+    public int getVATGroupCode() {
+        return vatGroupCode;
     }
 
     @Override
@@ -88,6 +84,6 @@ public class ItemDTO {
         if (!(name.equals(itemDTO.name))) return false;
         if (!(description.equals(itemDTO.description))) return false;
         if (!(price.equals(itemDTO.price))) return false;
-        return vat.equals(itemDTO.vat);
+        return vatGroupCode == itemDTO.vatGroupCode;
     }
 }

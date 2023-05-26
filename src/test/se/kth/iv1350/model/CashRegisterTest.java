@@ -28,9 +28,15 @@ class CashRegisterTest {
             ex.printStackTrace();
         }
         itemInfo = new ItemDTO(1, "Product name", "Product Description",
-                new Amount(80), new VAT(1));
+                new Amount(80), 1);
         itemPrice = itemInfo.getUnitPrice().multiply(1.25);
-        sale.addItem(itemInfo, 1);
+        try {
+            sale.addItem(itemInfo, 1);
+        } catch (OperationFailedException e) {
+            fail("Exception should not have been thrown, " +
+                    e.getMessage());
+            throw new RuntimeException(e);
+        }
         sale.pay(payment);
     }
 

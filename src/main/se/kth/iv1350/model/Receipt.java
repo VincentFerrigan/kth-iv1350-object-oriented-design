@@ -39,7 +39,7 @@ public class Receipt {
         for (ShoppingCartItem item : listOfShoppingCartItems) {
             saleItemsInfoBuilder.append("%-40s%s".formatted(item.getName(), item.getTotalSubPrice()));
             saleItemsInfoBuilder.append("%n".formatted());
-            saleItemsInfoBuilder.append("(%d * %s)".formatted(item.getQuantity(), item.getUnitPriceIncVAT()));
+            saleItemsInfoBuilder.append("(%d * %s)".formatted(item.getQuantity(), item.getUnitPriceWithVAT()));
             saleItemsInfoBuilder.append("%n".formatted());
         }
         saleItemsInfoBuilder.append("%n".formatted());

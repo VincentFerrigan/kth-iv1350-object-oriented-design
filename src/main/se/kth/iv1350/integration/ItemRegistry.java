@@ -95,7 +95,7 @@ public class ItemRegistry {
         } else if (inventoryTable.containsKey(itemID)) {
             ItemData item = this.inventoryTable.get(itemID);
             return new ItemDTO(
-                    item.articleNo, item.name, item.description, item.price, item.vat);
+                    item.articleNo, item.name, item.description, item.price, item.vatGroupCode);
         } else {
             throw new ItemNotFoundInItemRegistryException(itemID);
         }
@@ -142,7 +142,7 @@ public class ItemRegistry {
         private String name;
         private String description;
         private Amount price;
-        private VAT vat;
+        private int vatGroupCode;
         private int inStore;
         private int sold;
 
@@ -151,7 +151,7 @@ public class ItemRegistry {
          * @param name              Article name
          * @param description       Article description
          * @param price             Price incl. VAT
-         * @param vatRateGroupCode  The code for the VAT rate group, such as 0, 1, 2 or 3. Where currently
+         * @param vatGroupCode      The code for the VAT rate group, such as 0, 1, 2 or 3. Where currently
          *                          0 is VAT Exempt e.g. Mus,
          *                          1 is 25 %,
          *                          2 is 12 % and
@@ -159,12 +159,12 @@ public class ItemRegistry {
          * @param inStore           The quantity of items in stock
          * @param sold              The amount of items sold
          */
-        public ItemData(int articleNo, String name, String description, double price, int vatRateGroupCode, int inStore, int sold) {
+        public ItemData(int articleNo, String name, String description, double price, int vatGroupCode, int inStore, int sold) {
             this.articleNo = articleNo;
             this.name = name;
             this.description = description;
             this.price = new Amount(price);
-            this.vat = new VAT(vatRateGroupCode);
+            this.vatGroupCode = vatGroupCode;
             this.inStore = inStore;
             this.sold = sold;
         }
@@ -180,7 +180,7 @@ public class ItemRegistry {
             builder.append(ItemRegistry.CSV_DELIMITER);
             builder.append(price.getAmount());
             builder.append(ItemRegistry.CSV_DELIMITER);
-            builder.append(vat.getVATRateGroupCode());
+            builder.append(vatGroupCode);
             builder.append(ItemRegistry.CSV_DELIMITER);
             builder.append(inStore);
             builder.append(ItemRegistry.CSV_DELIMITER);

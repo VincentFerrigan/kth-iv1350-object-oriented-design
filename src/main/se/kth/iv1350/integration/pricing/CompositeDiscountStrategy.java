@@ -9,15 +9,16 @@ import java.util.List;
 
 /**
  * A <code>DiscountStrategy</code>, which performs multiple discount and promotion algorithms.
- * All these algorithms are added to this composite are executed,
+ * All these algorithms that are added to this composite are executed,
  * and the lowest total price is found.
  */
 public class CompositeDiscountStrategy implements DiscountStrategy {
     private List<DiscountStrategy> discountStrategies;
+    private DiscountStrategy usedDiscountStrategy;
+
     CompositeDiscountStrategy(){
         discountStrategies = new ArrayList<>();
     }
-    private DiscountStrategy usedDiscountStrategy;
 
     /**
      * Invokes all discount and promotion algorithms added to this composite.
