@@ -36,10 +36,6 @@ public class VATFactory {
      Returns a <code>VATStrategy</code> performing the default VAT algorithm.
      The class name of the default <code>VATStrategy</code> implementation
      is read from the system property <code>se.kth.iv1350.vatstrategy.classname</code>.
-     It is possible to specify more than
-     one matcher, by setting this system property to a comma-separated string with class names of
-     all desired matchers. When this is the case, all specified VAT algorithms
-     are executed and the appropriate VAT algorithms are applied.
      </p>
      *
      * @return The default matcher
@@ -49,20 +45,11 @@ public class VATFactory {
      * @throws java.lang.NoSuchMethodException If unable to instantiate the default matcher class.
      * @throws java.lang.reflect.InvocationTargetException If unable to instantiate the default matcher class.
      */
-    public VATStrategy getVATStrategy()
+    public VATStrategy getDefaultVATStrategy()
             throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
-        String[] classNames = System.getProperty(VAT_CLASS_NAME_KEY).split(",");
-        return createComposite(classNames);
-    }
-    private VATStrategy createComposite(String[] classNames)
-            throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
-            InstantiationException, IllegalAccessException {
-        CompositeVATStrategy composite = new CompositeVATStrategy();
-        for (String className : classNames) {
-            composite.addVATStrategy(instantiateVATStrategy(className));
-        }
-        return composite;
+        String className = System.getProperty(VAT_CLASS_NAME_KEY);
+        return instantiateVATStrategy(className);
     }
 
     private VATStrategy instantiateVATStrategy(String className)

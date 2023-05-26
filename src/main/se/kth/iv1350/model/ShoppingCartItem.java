@@ -30,7 +30,7 @@ public class ShoppingCartItem {
         this.quantity = quantity;
         try {
             VATFactory vatFactory = VATFactory.getInstance();
-            vatCalculation = vatFactory.getVATStrategy();
+            vatCalculation = vatFactory.getDefaultVATStrategy();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException | InvocationTargetException ex) {
             throw new OperationFailedException("Unable to instantiate vat algorithms", ex);
