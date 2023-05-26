@@ -9,7 +9,7 @@ skinparam package {
 'top to bottom direction
 left to right direction
 skinparam ClassAttributeIconSize 0
-interface "<<interface>>\nComparable " as Comparable{
+interface Comparable <<interface>> {
     + compareTo(Object o) : int
     }
 
@@ -26,11 +26,44 @@ package startup {
             - contr: Controller
             + <<create>> View(contr : Controller) : View
         }
-        class EndOfSaleView {}
-        class RunningSaleView {}
-        abstract class SaleView {}
-        abstract class TotalRevenue {}
-        class TotalRevenueView {}
+        abstract class SaleView {
+            - listOfShoppingCartItems : List<ShoppingCartItem>
+            - sale :LimitedSaleView
+            # SaleView()
+            # createSaleItemsInfoString() : String
+            # addNewSaleInfoDetails(sale : LimitedSaleView)) : void
+
+'TODO: abstract and static members should have {abstract} {static}
+            # {abstract} printCurrentState(sale : LimitedSaleView) : void
+            # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            # {abstract} shouldUpdate(isComplete : boolean) : boolean
+
+        }
+        abstract class TotalRevenue {
+            # TotalRevenue
+            # {abstract} doShowTotalRevenue(totalRevenue : Amount)
+            # {abstract} handleErrors(e : Exception) : void
+        }
+
+        class TotalRevenueView {
+            # doShowTotalRevenue(totalRevenue : Amount)
+            # handleErrors(e : Exception) : void
+            }
+        class EndOfSaleView {
+            - totalPricePreDiscount : Amount
+            - totalPriceAfterDiscount : Amount
+            - discount : Amount
+            - discountInfo : String
+            # printCurrentState(sale : LimitedSaleView) : void
+            # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            # shouldUpdate(isComplete : boolean) : boolean
+            - createDiscountInfoString
+        }
+        class RunningSaleView {
+            # printCurrentState(sale : LimitedSaleView) : void
+            # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            # shouldUpdate(isComplete : boolean) : boolean
+        }
     }
     package controller {
         class Controller{
@@ -182,10 +215,10 @@ package startup {
         interface SaleObserver <<interface>> {
             + updateSale(sale : LimitedSaleView)
         }
-        interface "<<interface>>\nCashRegisterObserver" as CashRegisterObserver {
+        interface CashRegisterObserver <<interface>> {
             + updateRevenue(totalRevenue : Amount) : void
         }
-        interface "<<interface>>\n: LimitedSaleView" as LimitedSaleView {
+        interface LimitedSaleView <<interface>> {
             + isComplete() : boolean
             + getTotalPricePaid() : Amount
             + getTotalPrice() : Amount
@@ -241,16 +274,77 @@ package startup {
             + printReceipt(receipt : Receipt) : void
 '            + printSaleLog(saleLog : SaleLog) : void
         }
+        class TotalRevenueFileOutput {
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - FILE_NAME : String
+            - locale : Locale
+            - formatter : DateTimeFormatter
+            - revenueLogger : PrintWriter
+            - logger : ErrorFileLogHandler
+            + <<create>>TotalRevenueFileOutput() : TotalRevenueFileOutput {exception IOException}
+            # doShowTotalRevenue(totalRevenue : Amount)
+            # handleErrors(e : Exception) : void
+            - createTime() : String
+            }
     }
     package util{
-        enum Event {}
-        class Logger <<interface>> {}
+        class DBParameters <<singleton>> {
+        - FILE_SEPARATOR : String
+        - FILE_PATH : String
+        - REGISTRY_FILE : String
+        - CSV_DELIMITER : String
+        - inventoryFlatFileDb : String
+        - customerFlatFileDb : String
+        - accountingFlatFileDb : String
+        - logger : ErrorFileLogHandler
+        + getCSV>DELIMITER() : String
+        + getInventoryFlatFileDb : File
+        + getCustomerFlatFileDb : File
+        + getAccountingFlatFileDb : File
+        - readParasFromFile() : String[] {exception IOException}
+    }
+        class ErrorFileLogHandler {
+        - FILE_SEPARATOR  : String
+        - FILE_PATH : String
+        - LOG_FILE_NAME : String
+        - LINE_SEPARATOR  : String
+        - locale : Locale
+        - formatter : DateTimeFormatter
+        - logFile : PrintWriter
+        - createTime() : String
+        }
+
+        interface Logger <T><<interface>> {
+            log(message : T) : void
+        }
     }
 
 'interfaces
-Comparable <|-[dashed]- Amount
+CashRegisterObserver <|-[dashed]- TotalRevenue
+TotalRevenue <|- TotalRevenueView
+TotalRevenue <|- TotalRevenueFileOutput
+
+SaleObserver <|-[dashed]- SaleView
+SaleView <|- EndOfSaleView
+SaleView <|- RunningSaleView
+
+DiscountStrategy <|-[dashed]- CompositeDiscountStrategy
+DiscountStrategy <|-[dashed]- StaffDiscount
+DiscountStrategy <|-[dashed]- Promotion
+DiscountStrategy <|-[dashed]- MemberDiscount
+
+Logger <|-[dashed]- ErrorFileLogHandler
+Logger <|-[dashed]- ErrorMessageHandler
+
+VATStrategy <|-[dashed]- CompositeVATStrategy
+VATStrategy <|-[dashed]- SwedishVAT
+
 LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
 
+Comparable <|-[dashed]- Amount
+
+'Dependencies
 Main --> View
 Main -left-> Controller
 Main ---> Printer
