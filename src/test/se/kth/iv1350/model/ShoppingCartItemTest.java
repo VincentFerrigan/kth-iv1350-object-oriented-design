@@ -17,9 +17,9 @@ class ShoppingCartItemTest {
     private static final String TEST_DESCRIPTION = "test description";
     private static final Amount TEST_UNIT_PRICE = new Amount(10);
     private static final Amount TEST_UNIT_PRICE_EX_VAT = TEST_UNIT_PRICE.multiply(1/1.25);
-    private static final VAT TEST_VAT = new VAT(1);
+    private static final int TEST_VAT_GROUP_CODE = 1;
     private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
-            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT);
+            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT_GROUP_CODE);
 
     @BeforeEach
     void setUp() {
