@@ -48,13 +48,12 @@ public class Receipt {
 
     private String createDiscountInfoString(){
         StringBuilder discountInfoBuilder = new StringBuilder();
-        if (!totalPricePaid.equals(totalPricePreDiscount)) {
-            discountInfoBuilder.append("%-40s-%s".formatted("Total discount:", sale.getDiscount()));
-            discountInfoBuilder.append("%n".formatted());
-            discountInfoBuilder.append("(%s)".formatted(sale.createStringDiscountInfo()));
-            discountInfoBuilder.append("%n".formatted());
-            discountInfoBuilder.append("%n".formatted());
-        }
+        discountInfoBuilder.append("%-40s-%s".formatted("Total discount:", sale.getDiscount()));
+        discountInfoBuilder.append("%n".formatted());
+        discountInfoBuilder.append("(%s)".formatted(sale.createStringDiscountInfo()));
+        discountInfoBuilder.append("%n".formatted());
+        discountInfoBuilder.append("%n".formatted());
+
         return discountInfoBuilder.toString();
     }
 
@@ -76,7 +75,9 @@ public class Receipt {
         receiptBuilder.append("%n".formatted());
 
         receiptBuilder.append(createSaleItemsInfoString());
-        receiptBuilder.append(createDiscountInfoString());
+        if (!totalPricePaid.equals(totalPricePreDiscount)) {
+            receiptBuilder.append(createDiscountInfoString());
+        }
 
         receiptBuilder.append("%-40s%s".formatted("Total Cost:", totalPricePaid));
         receiptBuilder.append("%n".formatted());
