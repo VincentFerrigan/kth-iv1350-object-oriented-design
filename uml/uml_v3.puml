@@ -26,38 +26,31 @@ package startup {
             - contr: Controller
             + <<create>> View(contr : Controller) : View
         }
-        abstract class SaleView {
-            - listOfShoppingCartItems : List<ShoppingCartItem>
-            - sale :LimitedSaleView
-            # SaleView()
-            # createSaleItemsInfoString() : String
-            # addNewSaleInfoDetails(sale : LimitedSaleView)) : void
-
 'TODO: abstract and static members should have {abstract} {static}
-            # {abstract} printCurrentState(sale : LimitedSaleView) : void
-            # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-            # {abstract} shouldUpdate(isComplete : boolean) : boolean
-
-        }
         abstract class TotalRevenue {
             # TotalRevenue
             # {abstract} doShowTotalRevenue(totalRevenue : Amount)
             # {abstract} handleErrors(e : Exception) : void
         }
-
         class TotalRevenueView {
             # doShowTotalRevenue(totalRevenue : Amount)
             # handleErrors(e : Exception) : void
-            }
+        }
+        abstract class SaleView {
+            - listOfShoppingCartItems : List<ShoppingCartItem>
+            - sale :LimitedSaleView
+            # SaleView()
+            # createSaleItemsInfoString() : String
+            # addNewSaleInfoDetails(sale : LimitedSaleView) : void
+            # {abstract} printCurrentState(sale : LimitedSaleView) : void
+            # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            # {abstract} shouldUpdate(isComplete : boolean) : boolean
+        }
         class EndOfSaleView {
-            - totalPricePreDiscount : Amount
-            - totalPriceAfterDiscount : Amount
-            - discount : Amount
-            - discountInfo : String
             # printCurrentState(sale : LimitedSaleView) : void
             # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
             # shouldUpdate(isComplete : boolean) : boolean
-            - createDiscountInfoString
+            - createDiscountInfoString(discount : Amount, discountInfo : String) : void
         }
         class RunningSaleView {
             # printCurrentState(sale : LimitedSaleView) : void
