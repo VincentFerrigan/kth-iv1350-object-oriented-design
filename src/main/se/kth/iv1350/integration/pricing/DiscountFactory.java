@@ -42,7 +42,7 @@ public class DiscountFactory {
        It is possible to specify more than
        one matcher, by setting this system property to a comma-separated string with class names of
        all desired matchers. When this is the case, all specified discount and promotion algorithms
-       are executed and the lowest total price is found.,
+       are executed and the lowest total price is found.
      </p>
      *
      * @return The default matcher

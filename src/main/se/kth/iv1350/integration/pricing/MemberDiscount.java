@@ -5,7 +5,7 @@ import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Sale;
 
 /**
- * A <code>Discount Strategy</code> that applies member discounts
+ * A <code>DiscountStrategy</code> that applies member discounts
  */
 public class MemberDiscount implements DiscountStrategy{
     private double discountRate = 0.05;
