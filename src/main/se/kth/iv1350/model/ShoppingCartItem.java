@@ -1,7 +1,11 @@
 package se.kth.iv1350.model;
 
+import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.ItemDTO;
+import se.kth.iv1350.integration.vat.VATFactory;
+import se.kth.iv1350.integration.vat.VATStrategy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
 /**
@@ -12,22 +16,32 @@ public class ShoppingCartItem {
     private final ItemDTO itemInfo;
     private LocalDateTime timeOfUpdate;
     private int quantity;
+    private VATStrategy vatCalculation;
 
     /**
      * Creates a new instance representing the added item.
      * @param item ShoppingCartItem information as a {@link ItemDTO}
      * @param quantity The quantity
+     * @throws OperationFailedException when unable to set up VAT.
      */
-    public ShoppingCartItem(ItemDTO item, int quantity){
+    public ShoppingCartItem(ItemDTO item, int quantity) throws OperationFailedException {
         this.timeOfUpdate = LocalDateTime.now();
         this.itemInfo = item;
         this.quantity = quantity;
+        try {
+            VATFactory vatFactory = VATFactory.getInstance();
+            vatCalculation = vatFactory.getVATStrategy();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | NoSuchMethodException | InvocationTargetException ex) {
+            throw new OperationFailedException("Unable to instantiate vat algorithms", ex);
+        }
     }
     /**
      * Creates a new instance representing the added item.
      * @param item ShoppingCartItem information as a {@link ItemDTO}
+     * @throws OperationFailedException when unable to set up VAT.
      */
-    public ShoppingCartItem(ItemDTO item){
+    public ShoppingCartItem(ItemDTO item) throws OperationFailedException {
         this(item, 1);
     }
 
@@ -45,7 +59,7 @@ public class ShoppingCartItem {
      * @return the total price for all the same items.
      */
     public Amount getTotalSubPrice() {
-        return getUnitPriceIncVAT().multiply(quantity);
+        return getUnitPriceWithVAT().multiply(quantity);
     }
 
     /**
@@ -57,8 +71,14 @@ public class ShoppingCartItem {
     }
 
     private Amount calculateUnitVATCost() {
-        double vatRate = itemInfo.getVATRate();
-        return itemInfo.getUnitPrice().multiply(vatRate);
+        return vatCalculation.calculateVATForItem(this);
+    }
+
+    Amount addVAT(VATStrategy vat) {
+        return vat.calculateVATForItem(this);
+    }
+    public int getVATGroupCode() {
+        return itemInfo.getVATGroupCode();
     }
 
     /**
@@ -96,10 +116,17 @@ public class ShoppingCartItem {
     }
 
     /**
-     * Get the unit price
+     * Get the unit price with taxes
      * @return the unit price
      */
-    public Amount getUnitPriceIncVAT() {return itemInfo.getUnitPrice().plus(calculateUnitVATCost());}
+    public Amount getUnitPriceWithVAT() {
+        return getUnitPrice().plus(calculateUnitVATCost());}
+
+    /**
+     * Get the unit price without VAT
+     * @return the unit price
+     */
+    public Amount getUnitPrice() { return itemInfo.getUnitPrice(); }
 
     /**
      * Get the name of the item

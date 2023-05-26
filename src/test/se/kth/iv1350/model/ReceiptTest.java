@@ -39,7 +39,13 @@ class ReceiptTest {
         itemInfo = new ItemDTO(1, "Product name", "Product Description",
                 new Amount(100), new VAT(1));
         itemPrice = itemInfo.getUnitPrice();
-        sale.addItem(itemInfo, 1);
+        try {
+            sale.addItem(itemInfo, 1);
+        } catch (OperationFailedException e) {
+            fail("Exception should not have been thrown, " +
+                    e.getMessage());
+            throw new RuntimeException(e);
+        }
         sale.pay(payment);
     }
 

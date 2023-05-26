@@ -66,8 +66,9 @@ public class Sale {
     /**
      * Adds an item to the shopping cart.
      * @param itemInfo item information as {@link ItemDTO}
+     * @throws OperationFailedException when unable to set up VAT for item.
      */
-    public void addItem(ItemDTO itemInfo, int quantity) {
+    public void addItem(ItemDTO itemInfo, int quantity) throws OperationFailedException {
         ShoppingCartItem newShoppingCartItem = new ShoppingCartItem(itemInfo, quantity);
         ShoppingCartItem alreadyExistedShoppingCartItem = shoppingCart.put(
                 itemInfo.getItemID(),
@@ -196,6 +197,7 @@ public class Sale {
     public String createStringDiscountInfo() {
         return pricing.toString();
     }
+
 
     /**
      * Pay sale with specified payment.
