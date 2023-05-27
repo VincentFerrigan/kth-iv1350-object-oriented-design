@@ -285,6 +285,7 @@ package startup {
                 - getVATRate(vatGroupCode : int): double
             }
         }
+'        TODO: Go through all the dB singletons. Are they correct? Is the UML updated?
         class RegisterCreator{
             - saleLog : SaleLog
             - itemRegistry:ItemRegistry
@@ -313,7 +314,8 @@ package startup {
             + logSale(sale : Sale) : void
             + findSaleByTotalAmount(totalAmount : Amount) : List<Sale>
         }
-        class AccountingSystem{
+'        TODO Se över hela upplägget. Records och dylikt
+        class AccountingSystem <<singleton>>{
             + updateAccounting(closedSale : Sale) : void
             ~ <<create>> Accounting() : Accounting
         }
