@@ -6,11 +6,11 @@ import java.io.*;
 
 // TODO use the System.getProperty?
 public class DBParameters {
-    private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private static final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);
-    private static final String REGISTRY_FILE = "registry.csv";
-    private final String CSV_DELIMITER = ";";
     private static volatile DBParameters instance;
+    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
+    private final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);
+    private final String REGISTRY_FILE = "registry.csv";
+    private final String CSV_DELIMITER = ";";
     private String inventoryFlatFileDb;
     private String customerFlatFileDb;
     private String accountingFlatFileDb;
