@@ -71,11 +71,9 @@ public class ItemRegistry {
                 this.inventoryTable.put(item.articleNo, item);
             }
         } catch (FileNotFoundException ex){
-            // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
             logger.log(ex);
             throw ex;
         } catch (IOException ex){
-            // TODO ska addItemData loggas här?
             logger.log(ex);
             throw ex;
         }
