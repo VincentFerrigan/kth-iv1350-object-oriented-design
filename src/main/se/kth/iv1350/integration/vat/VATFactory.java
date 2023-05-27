@@ -8,8 +8,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class VATFactory {
     private static volatile VATFactory instance;
-
     private static final String VAT_CLASS_NAME_KEY = "se.kth.iv1350.vatstrategy.classname";
+
     private VATFactory() {
         // -Dse.kth.iv1350.vatstrategy.classname=se.kth.iv1350.integration.vat.SwedishVAT
         System.setProperty(VAT_CLASS_NAME_KEY,
