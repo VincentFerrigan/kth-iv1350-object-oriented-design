@@ -57,7 +57,6 @@ public class VATFactory {
             InstantiationException, IllegalAccessException {
 
         Class matcherClass = Class.forName(className);
-        VATStrategy vatStrategy = (VATStrategy) matcherClass.getDeclaredConstructor().newInstance();
-        return vatStrategy;
+        return (VATStrategy) matcherClass.getDeclaredConstructor().newInstance();
     }
 }

@@ -73,7 +73,6 @@ public class DiscountFactory {
             InstantiationException, IllegalAccessException {
 
         Class matcherClass = Class.forName(className);
-        DiscountStrategy discountStrategy = (DiscountStrategy) matcherClass.getDeclaredConstructor().newInstance();
-        return discountStrategy;
+        return (DiscountStrategy) matcherClass.getDeclaredConstructor().newInstance();
     }
 }
