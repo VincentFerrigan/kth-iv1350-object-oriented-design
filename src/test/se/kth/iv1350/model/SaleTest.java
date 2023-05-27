@@ -154,7 +154,7 @@ class SaleTest {
                     e.getMessage());
             throw new RuntimeException(e);
         }
-        instance.addCustomerToSale(new CustomerDTO(1, CustomerType.STAFF, 0));
+        instance.addCustomerToSale(new CustomerDTO(1, CustomerType.STUDENT, 0));
         Amount discount = instance.getDiscount();
         Amount expResult = TEST_UNIT_PRICE.multiply(TEST_QUANTITY).minus(discount);
         Amount result = instance.calculateRunningTotal();

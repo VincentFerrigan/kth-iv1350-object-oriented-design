@@ -15,7 +15,7 @@ public class DiscountFactory {
         // -Dse.kth.iv1350.discountstrategy.classname=se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StaffDiscount
         System.setProperty(DISCOUNT_CLASS_NAME_KEY,
                 "se.kth.iv1350.integration.pricing.MemberDiscount," +
-                "se.kth.iv1350.integration.pricing.StaffDiscount," +
+                "se.kth.iv1350.integration.pricing.StudentDiscount," +
                 "se.kth.iv1350.integration.pricing.Promotion");
     }
     /**

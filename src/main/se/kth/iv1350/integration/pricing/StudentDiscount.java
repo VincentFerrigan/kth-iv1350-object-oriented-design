@@ -7,16 +7,16 @@ import se.kth.iv1350.model.Sale;
 /**
  * A <code>Discount Strategy</code> that applies staff discounts.
  */
-public class StaffDiscount implements DiscountStrategy{
+public class StudentDiscount implements DiscountStrategy{
     private double discountRate = 0.1;
     private Amount discountAmount;
-    StaffDiscount() {}
+    StudentDiscount() {}
 
     @Override
     public Amount getTotal(Sale sale) {
         Customer customer = sale.getCustomer();
         Amount totalPrice = sale.calculateRunningTotal();
-        Amount newPrice = (customer != null && customer.getCustomerType() == CustomerType.STAFF)
+        Amount newPrice = (customer != null && customer.getCustomerType() == CustomerType.STUDENT)
                 ? totalPrice.multiply(1 - discountRate)
                 : totalPrice;
         discountAmount = totalPrice.minus(newPrice);
