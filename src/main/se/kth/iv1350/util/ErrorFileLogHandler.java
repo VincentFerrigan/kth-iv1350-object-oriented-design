@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 public class ErrorFileLogHandler implements Logger {
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private static final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);
+    private static final String FILE_PATH = "data";
     private static final String LOG_FILE_NAME = "pos-log.txt";
     private static final String LINE_SEPARATOR  = System.getProperty("line.separator");
     private Locale locale = new Locale("sv", "SE");

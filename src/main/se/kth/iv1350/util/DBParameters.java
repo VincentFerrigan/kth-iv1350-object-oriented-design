@@ -3,12 +3,14 @@ package se.kth.iv1350.util;
 import se.kth.iv1350.integration.ItemRegistry;
 
 import java.io.*;
+import java.util.Properties;
 
 // TODO use the System.getProperty?
 public class DBParameters {
     private static volatile DBParameters instance;
+    private static final String DATABASE_FILE_PATH_KEY = "se.kth.iv1350.database.file.location";
     private final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);
+    private final String FILE_PATH = System.getProperty(DATABASE_FILE_PATH_KEY);
     private final String REGISTRY_FILE = "registry.csv";
     private final String CSV_DELIMITER = ";";
     private String inventoryFlatFileDb;

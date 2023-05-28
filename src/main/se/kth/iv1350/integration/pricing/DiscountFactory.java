@@ -9,10 +9,10 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class DiscountFactory {
     private static volatile DiscountFactory instance;
-    private static final String DISCOUNT_CLASS_NAME_KEY = "se.kth.iv1350.discountstrategy.classname";
+    private static final String DISCOUNT_CLASS_NAME_KEY = "se.kth.iv1350.discount_strategy_classname";
 
     private DiscountFactory() {
-        // -Dse.kth.iv1350.discountstrategy.classname=se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StaffDiscount
+        // -Dse.kth.iv1350.discount_strategy_classname=se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StaffDiscount
         System.setProperty(DISCOUNT_CLASS_NAME_KEY,
                 "se.kth.iv1350.integration.pricing.MemberDiscount," +
                 "se.kth.iv1350.integration.pricing.StudentDiscount," +

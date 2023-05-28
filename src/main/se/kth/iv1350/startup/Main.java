@@ -4,7 +4,10 @@ import se.kth.iv1350.integration.RegisterCreator;
 import se.kth.iv1350.view.View;
 import se.kth.iv1350.integration.Printer;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Contains the <code>main</code> method. Performs all startup
@@ -16,7 +19,15 @@ public class Main {
      * @param args The application does not take any command line parameters.
      */
     public static void main (String[] args) {
-        //TODO look at these things: they are not in the UML CD
+        Properties properties = new Properties();
+        try {
+            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
+            properties.load(inputStream);
+            System.setProperty("se.kth.iv1350.database.file.location",
+                    properties.getProperty("se.kth.iv1350.database.file.location"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         try {
             Printer printer = new Printer();
             RegisterCreator registerCreator = new RegisterCreator();
