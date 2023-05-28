@@ -54,5 +54,11 @@ public abstract class SaleView implements SaleObserver {
      */
     protected abstract void sortShoppingCart(List<ShoppingCartItem> listOfShoppingCartItems);
 
+    /**
+     * Should the observer act on the update?
+     * Certain observers will act if the sale is complete, others will not.
+     * @param isComplete
+     * @return <code>True</code> if the observer should act otherwise false
+     */
     protected abstract boolean shouldUpdate(boolean isComplete);
 }
