@@ -21,6 +21,8 @@ class CashPaymentTest {
     void setUp() {
         paidAmount = new Amount(PAID);
         instance = new CashPayment(paidAmount);
+        System.setProperty("se.kth.iv1350.discount_strategy_classname","se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StudentDiscount,se.kth.iv1350.integration.pricing.Promotion");
+        System.setProperty("se.kth.iv1350.vat_strategy.classname","se.kth.iv1350.integration.vat.SwedishVAT");
         try {
             sale = new Sale();
         } catch (OperationFailedException ex) {

@@ -19,6 +19,8 @@ class CashRegisterTest {
 
     @BeforeEach
     void setUp() {
+        System.setProperty("se.kth.iv1350.discount_strategy_classname","se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StudentDiscount,se.kth.iv1350.integration.pricing.Promotion");
+        System.setProperty("se.kth.iv1350.vat_strategy.classname","se.kth.iv1350.integration.vat.SwedishVAT");
         instance = new CashRegister(INITIAL_BALANCE);
         payment = new CashPayment(PAID_AMOUNT);
         try {

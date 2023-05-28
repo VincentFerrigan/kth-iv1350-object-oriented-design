@@ -11,9 +11,6 @@ public class VATFactory {
     private static final String VAT_CLASS_NAME_KEY = "se.kth.iv1350.vat_strategy.classname";
 
     private VATFactory() {
-        // -Dse.kth.iv1350.vat_strategy.classname=se.kth.iv1350.integration.vat.SwedishVAT
-        System.setProperty(VAT_CLASS_NAME_KEY,
-                "se.kth.iv1350.integration.vat.SwedishVAT");
     }
     /**
      * @return The only instance of this singleton.

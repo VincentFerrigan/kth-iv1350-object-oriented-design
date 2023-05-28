@@ -12,11 +12,6 @@ public class DiscountFactory {
     private static final String DISCOUNT_CLASS_NAME_KEY = "se.kth.iv1350.discount_strategy_classname";
 
     private DiscountFactory() {
-        // -Dse.kth.iv1350.discount_strategy_classname=se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StaffDiscount
-        System.setProperty(DISCOUNT_CLASS_NAME_KEY,
-                "se.kth.iv1350.integration.pricing.MemberDiscount," +
-                "se.kth.iv1350.integration.pricing.StudentDiscount," +
-                "se.kth.iv1350.integration.pricing.Promotion");
     }
     /**
      * @return The only instance of this singleton.

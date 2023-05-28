@@ -11,7 +11,6 @@ class CustomerTest {
 
     Customer instance;
     CustomerDTO customerInfo;
-
     int INITAIL_BONUS_POINTS = 100;
 
     @BeforeEach
