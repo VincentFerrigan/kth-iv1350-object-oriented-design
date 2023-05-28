@@ -19,14 +19,14 @@ public class Main {
      * @param args The application does not take any command line parameters.
      */
     public static void main (String[] args) {
-        Properties properties = new Properties();
+        Properties properties = new Properties(System.getProperties());
         try {
             InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
             properties.load(inputStream);
-            System.setProperty("se.kth.iv1350.database.file.location",
-                    properties.getProperty("se.kth.iv1350.database.file.location"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.setProperties(properties);
+        } catch (IOException ex) {
+            System.out.println("Unable to start the application");
+            ex.printStackTrace();
         }
         try {
             Printer printer = new Printer();

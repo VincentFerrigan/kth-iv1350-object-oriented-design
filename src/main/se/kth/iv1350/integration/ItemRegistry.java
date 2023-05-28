@@ -1,7 +1,6 @@
 package se.kth.iv1350.integration;
 
 import se.kth.iv1350.model.*;
-import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
@@ -19,8 +18,11 @@ import java.util.Map;
  */
 public class ItemRegistry {
     private static volatile ItemRegistry instance;
-    private static final String CSV_DELIMITER = ";";
-    private static final int DATABASE_NOT_FOUND = 404;
+    private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
+    private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
+    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
+    private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.inventory_db");
+    private final int DATABASE_NOT_FOUND = 404;
     private File flatFileDb;
     private String recordHeader;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
@@ -28,8 +30,7 @@ public class ItemRegistry {
 
     private ItemRegistry() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
-        DBParameters dBParams = DBParameters.getInstance();
-        flatFileDb = dBParams.getInventoryFlatFileDb();
+        flatFileDb = new File(FILE_PATH + FILE_SEPARATOR+ FLAT_FILE_DB_NAME);
 
         addItemData();
     }

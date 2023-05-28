@@ -289,19 +289,36 @@ package startup {
         class RegisterCreator{
             - saleLog : SaleLog
             - itemRegistry:ItemRegistry
-            - discountRegister : DiscountRegister
+            - customerRegister : CustomerRegister
             - accountingSystem : AccountingSystem
             + getSaleLog() : SaleLog
             + getInventorySystem() : ItemRegistry
-            + getDiscountRegister() : DiscountRegister
+            + getCustomerRegister() : CustomerRegister
             + getAccountingSystem() : AccountingSystem
             + <<create>> RegisterCreator() : RegisterCreator
         }
-        class DiscountRegister <<singleton>> {
-            + getDiscountInfo(customerID : int) : DiscountDTO
+        class CustomerRegister <<singleton>> {
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - FLAT_FILE_DB_NAME : String
+            - {static} CSV_DELIMITER : String
+            - flatFileDb : File
+            - customerTable : Map<Integer, CustomerData>
+            - logger : ErrorFileLogHandler
+            - addCustomerData() : void {exception IOException}
+            + updateCustomerDatabase(closedSale : Sale) : void
+            - updateDatabase() :void
+            + getCustomerInfo((customerID : int) : CustomerDTO {exception CustomerNotFoundInCustomerRegistryException}
         }
         class ItemRegistry <<singleton>> {
-'            - flatFileDb : String
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - FLAT_FILE_DB_NAME : String
+            - {static} CSV_DELIMITER : String
+            - flatFileDb : File
+            - inventoryTable : Map<Integer, ItemData>
+            - logger : ErrorFileLogHandler
+            - flatFileDb : File
 '            - inventoryTable : HashMap<Integer, ItemData>
 '            - addItemData() : void
             + getItemInfo(itemID : int) : ItemDTO {exception=(ItemNotFoundInItemRegistryException, ItemRegistryException)}
@@ -316,6 +333,11 @@ package startup {
         }
 '        TODO Se över hela upplägget. Records och dylikt
         class AccountingSystem <<singleton>>{
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - FLAT_FILE_DB_NAME : String
+            - {static} CSV_DELIMITER : String
+            - flatFileDb : File
             + updateAccounting(closedSale : Sale) : void
             ~ <<create>> Accounting() : Accounting
         }
@@ -327,7 +349,7 @@ package startup {
         class TotalRevenueFileOutput {
             - FILE_SEPARATOR  : String
             - FILE_PATH : String
-            - FILE_NAME : String
+            - LOG_FILE_NAME : String
             - locale : Locale
             - formatter : DateTimeFormatter
             - revenueLogger : PrintWriter
@@ -339,21 +361,6 @@ package startup {
             }
     }
     package util{
-        class DBParameters <<singleton>> {
-        - FILE_SEPARATOR : String
-        - FILE_PATH : String
-        - REGISTRY_FILE : String
-        - CSV_DELIMITER : String
-        - inventoryFlatFileDb : String
-        - customerFlatFileDb : String
-        - accountingFlatFileDb : String
-        - logger : ErrorFileLogHandler
-        + getCSV_DELIMITER() : String
-        + getInventoryFlatFileDb : File
-        + getCustomerFlatFileDb : File
-        + getAccountingFlatFileDb : File
-        - readParasFromFile() : String[] {exception IOException}
-    }
         class ErrorFileLogHandler {
             - FILE_SEPARATOR  : String
             - FILE_PATH : String
@@ -401,11 +408,11 @@ Main ---> Printer
 Main ---> RegisterCreator
 Controller -up-> CashRegister
 Controller --> SaleLog
-Controller --> DiscountRegister
+Controller --> CustomerRegister
 Controller --> AccountingSystem
 Controller --> ItemRegistry
 Controller --> RegisterCreator
-RegisterCreator --> DiscountRegister
+RegisterCreator --> CustomerRegister
 RegisterCreator --> AccountingSystem
 RegisterCreator --> ItemRegistry
 RegisterCreator --> SaleLog

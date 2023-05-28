@@ -2,7 +2,6 @@ package se.kth.iv1350.integration;
 
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Sale;
-import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
@@ -22,7 +21,10 @@ import java.util.Map;
  */
 public class AccountingSystem {
     private static volatile AccountingSystem instance;
-    private static final String CSV_DELIMITER = ";";
+    private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
+    private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
+    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
+    private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.accounting_db");
     private File flatFileDb;
     private String recordHeader;
     private ErrorFileLogHandler logger;
@@ -36,8 +38,7 @@ public class AccountingSystem {
 
     private AccountingSystem() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
-        DBParameters dBParams = DBParameters.getInstance();
-        flatFileDb = dBParams.getAccountingFlatFileDb();
+        flatFileDb = new File(FILE_PATH+FILE_SEPARATOR+FLAT_FILE_DB_NAME);
         records = new ArrayList<>();
 
         addRecordDataFromDb();

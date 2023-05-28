@@ -1,17 +1,21 @@
 package se.kth.iv1350.controller;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
+import se.kth.iv1350.startup.Main;
 import se.kth.iv1350.view.EndOfSaleView;
 import se.kth.iv1350.view.RunningSaleView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +43,14 @@ class ControllerTest {
     @BeforeEach
     void setUp() {
         try {
+            System.setProperty("se.kth.iv1350.database.file.location","data/db");
+            System.setProperty("se.kth.iv1350.database.file.accounting_db","accounting.csv");
+            System.setProperty("se.kth.iv1350.database.file.customer_db","customers.csv");
+            System.setProperty("se.kth.iv1350.database.file.inventory_db","inventory_items.csv");
+            System.setProperty("se.kth.iv1350.log.file.revenue_log","=revenue-log.txt");
+            System.setProperty("se.kth.iv1350.log.file.location","data/log");
+            System.setProperty("se.kth.iv1350.log.file.error_log","error-log.txt");
+            System.setProperty("se.kth.iv1350.database.file.csv_delimiter",";");
             originalSysOut = System.out;
             outContent = new ByteArrayOutputStream();
             System.setOut(new PrintStream(outContent));

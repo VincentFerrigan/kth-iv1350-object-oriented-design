@@ -2,7 +2,6 @@ package se.kth.iv1350.integration;
 
 import se.kth.iv1350.integration.pricing.CustomerType;
 import se.kth.iv1350.model.Sale;
-import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
@@ -16,7 +15,10 @@ import java.util.Map;
  */
 public class CustomerRegistry {
     private static volatile CustomerRegistry instance;
-    private static final String CSV_DELIMITER = ";" ;
+    private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
+    private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
+    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
+    private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.customer_db");
     private static final int DATABASE_NOT_FOUND = 404;
     private File flatFileDb;
     private String recordHeader;
@@ -25,8 +27,7 @@ public class CustomerRegistry {
 
     private CustomerRegistry() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
-        DBParameters dBParams = DBParameters.getInstance();
-        flatFileDb = dBParams.getCustomerFlatFileDb();
+        flatFileDb = new File(FILE_PATH+FILE_SEPARATOR+FLAT_FILE_DB_NAME);
 
         addCustomerData();
     }
