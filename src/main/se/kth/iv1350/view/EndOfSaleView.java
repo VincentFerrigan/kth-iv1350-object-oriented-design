@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-// TODO UML:a och skriva JavaDocs
 /**
  * Shows the checked out sale details including the shopping cart, total price,
  * discounts, promotions and total VAT costs.
@@ -48,6 +47,8 @@ public class EndOfSaleView extends SaleView {
         System.out.println("");
     }
     /**
+     * Should the observer act on the update?
+     * Certain observers will act if the sale is complete, others will not.
      *
      * @param isComplete is the sale complete?
      * @return if sale is complete, the view should update and therefore return true

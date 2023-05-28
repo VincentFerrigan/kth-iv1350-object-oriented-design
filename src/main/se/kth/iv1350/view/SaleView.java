@@ -57,7 +57,7 @@ public abstract class SaleView implements SaleObserver {
     /**
      * Should the observer act on the update?
      * Certain observers will act if the sale is complete, others will not.
-     * @param isComplete
+     * @param isComplete is the sale complete?
      * @return <code>True</code> if the observer should act otherwise false
      */
     protected abstract boolean shouldUpdate(boolean isComplete);

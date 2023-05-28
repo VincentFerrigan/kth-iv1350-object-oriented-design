@@ -29,7 +29,8 @@ public class RunningSaleView extends SaleView {
         System.out.println("");
     }
 
-    /**
+     /**
+     * Should the observer act on the update?
      *
      * @param isComplete is the sale complete?
      * @return if sale is not complete, the view should update and therefore return true
