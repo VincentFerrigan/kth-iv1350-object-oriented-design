@@ -32,7 +32,7 @@ public class VATFactory {
      <p>
      Returns a <code>VATStrategy</code> performing the default VAT algorithm.
      The class name of the default <code>VATStrategy</code> implementation
-     is read from the system property <code>se.kth.iv1350.vatstrategy.classname</code>.
+     is read from the system property <code>se.kth.iv1350.vat_strategy.classname</code>.
      </p>
      *
      * @return The default matcher
@@ -53,7 +53,7 @@ public class VATFactory {
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
 
-        Class matcherClass = Class.forName(className);
-        return (VATStrategy) matcherClass.getDeclaredConstructor().newInstance();
+        Class vatClass = Class.forName(className);
+        return (VATStrategy) vatClass.getDeclaredConstructor().newInstance();
     }
 }

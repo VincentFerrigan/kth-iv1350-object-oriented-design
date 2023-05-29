@@ -67,7 +67,7 @@ public class DiscountFactory {
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
 
-        Class matcherClass = Class.forName(className);
-        return (DiscountStrategy) matcherClass.getDeclaredConstructor().newInstance();
+        Class discountClass = Class.forName(className);
+        return (DiscountStrategy) discountClass.getDeclaredConstructor().newInstance();
     }
 }
