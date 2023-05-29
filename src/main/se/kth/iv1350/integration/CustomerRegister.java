@@ -13,8 +13,8 @@ import java.util.Map;
  * A Singleton that creates an instance representing an external discount database
  * This class is a placeholder for a future external discount database.
  */
-public class CustomerRegistry {
-    private static volatile CustomerRegistry instance;
+public class CustomerRegister implements IRegistry<CustomerDTO, Integer> {
+    private static volatile CustomerRegister instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
     private final String FILE_SEPARATOR  = System.getProperty("file.separator");
@@ -25,7 +25,7 @@ public class CustomerRegistry {
     private Map<Integer, CustomerData> customerTable = new HashMap<>();
     private ErrorFileLogHandler logger;
 
-    private CustomerRegistry() throws IOException {
+    private CustomerRegister() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
         flatFileDb = new File(FILE_PATH+FILE_SEPARATOR+FLAT_FILE_DB_NAME);
 
@@ -36,13 +36,13 @@ public class CustomerRegistry {
      * @return The only instance of this singleton.
      * @throws IOException
      */
-    public static CustomerRegistry getInstance() throws IOException {
-        CustomerRegistry result = instance;
+    public static CustomerRegister getInstance() throws IOException {
+        CustomerRegister result = instance;
         if (result == null) {
-            synchronized (CustomerRegistry.class) {
+            synchronized (CustomerRegister.class) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new CustomerRegistry();
+                    instance = result = new CustomerRegister();
                 }
             }
         }
@@ -80,7 +80,7 @@ public class CustomerRegistry {
      * Updates the customer database.
      * @param closedSale contains the sale details
      */
-    public void updateCustomerDatabase(Sale closedSale){
+    public void updateRegister(Sale closedSale){
         if (closedSale.getCustomer() !=null) {
             int bonusPoints = closedSale.getCustomer().getBonusPoints();
             int key = closedSale.getCustomer().getCustomerID();
@@ -97,7 +97,7 @@ public class CustomerRegistry {
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
-            for (CustomerRegistry.CustomerData customerData : customerTable.values()) {
+            for (CustomerRegister.CustomerData customerData : customerTable.values()) {
                 bufferedWriter.write(customerData.toString());
                 bufferedWriter.newLine();
             }
@@ -119,7 +119,7 @@ public class CustomerRegistry {
      * @throws CustomerRegistryException when database call failed.
      */
     //TODO Are we supposed to throw ItemRegistryException as well with method?
-    public CustomerDTO getCustomerInfo(int customerID) throws CustomerNotFoundInCustomerRegistryException {
+    public CustomerDTO getDataInfo(Integer customerID) throws CustomerNotFoundInCustomerRegistryException {
         if (customerID == DATABASE_NOT_FOUND) {
             throw new CustomerRegistryException("Detailed message about database fail");
         } else if (customerTable.containsKey(customerID)) {
@@ -146,9 +146,9 @@ public class CustomerRegistry {
         public String toString() {
             StringBuilder builder = new StringBuilder();
             builder.append(customerID);
-            builder.append(CustomerRegistry.CSV_DELIMITER);
+            builder.append(CustomerRegister.CSV_DELIMITER);
             builder.append(customerType);
-            builder.append(CustomerRegistry.CSV_DELIMITER);
+            builder.append(CustomerRegister.CSV_DELIMITER);
             builder.append(bonusPoints);
             return builder.toString();
         }

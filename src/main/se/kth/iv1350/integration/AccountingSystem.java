@@ -6,10 +6,10 @@ import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -19,7 +19,7 @@ import java.util.Map;
  * A Singleton that creates an instance representing an external accounting system.
  * This Singleton is a placeholder for a future external accounting system.
  */
-public class AccountingSystem {
+public class AccountingSystem implements IRegistry<RecordDTO, LocalDateTime> {
     private static volatile AccountingSystem instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
@@ -28,7 +28,7 @@ public class AccountingSystem {
     private File flatFileDb;
     private String recordHeader;
     private ErrorFileLogHandler logger;
-    private ArrayList<Record> records;
+    private Map<LocalDateTime, Record> records = new HashMap<>();
     private Locale locale = new Locale("sv", "SE");
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
     private LocalTime timeOfUpdate;
@@ -39,7 +39,6 @@ public class AccountingSystem {
     private AccountingSystem() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
         flatFileDb = new File(FILE_PATH+FILE_SEPARATOR+FLAT_FILE_DB_NAME);
-        records = new ArrayList<>();
 
         addRecordDataFromDb();
     }
@@ -102,7 +101,7 @@ public class AccountingSystem {
                 totalRevenue = new Amount(Double.parseDouble(splitArray[1]));
                 totalVATCosts = new Amount(Double.parseDouble(splitArray[2]));
                 totalDiscounts = new Amount(Double.parseDouble(splitArray[3]));
-                records.add(new Record(LocalTime.now(), totalRevenue, totalVATCosts, totalDiscounts));
+                records.put(LocalDateTime.of(LocalDate.now(), timeOfUpdate), new Record(LocalTime.now(), totalRevenue, totalVATCosts, totalDiscounts));
             }
         } catch (FileNotFoundException ex){
             // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
@@ -119,18 +118,19 @@ public class AccountingSystem {
      * Updates the accounting system by adding the specified {@link Sale}.
      * @param closedSale The sale to be added to the accounting system.
      */
-    public void updateToAccountingSystem(Sale closedSale){
+    public void updateRegister(Sale closedSale){
         Amount totalPricePreDiscount = closedSale.calculateRunningTotal();
         Amount totalPricePaid = closedSale.getTotalPricePaid();
         Amount discount = totalPricePreDiscount.minus(totalPricePaid);
         Amount vat = closedSale.getTotalVATCosts();
+        LocalDateTime timeOfSale = closedSale.getTimeOfSale();
 
         totalRevenue = totalRevenue.plus(totalPricePaid);
         totalVATCosts = totalVATCosts.plus(vat);
         totalDiscounts = totalDiscounts.plus(discount);
 
-        Record record = new Record(LocalTime.now(), totalRevenue, totalVATCosts, totalDiscounts);
-        records.add(record);
+        Record record = (new Record(timeOfSale.toLocalTime(), totalRevenue, totalVATCosts, totalDiscounts));
+        records.put(timeOfSale, record);
         updateDatabase();
     }
 
@@ -142,7 +142,7 @@ public class AccountingSystem {
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
-            for (Record record : records) {
+            for (Record record : records.values()) {
                 bufferedWriter.write(record.toString());
                 bufferedWriter.newLine();
             }
@@ -153,6 +153,25 @@ public class AccountingSystem {
         } catch (IOException ex){
             logger.log(ex);
             throw new ItemRegistryException("Detailed message about database fail");
+        }
+    }
+    /**
+     * Searches for customer in the customer database with specified ID.
+     * @param timeOfSale The time of sale
+     * @return Record information as a {@link RecordDTO}.
+     * @throws RecordNotFoundInRegisterException when time of sale does not exist in accounting register/system.
+     * @throws AccountingSystemException when database call failed.
+     */
+    //TODO Are we supposed to throw ItemRegistryException as well with method?
+    public RecordDTO getDataInfo(LocalDateTime timeOfSale) throws RecordNotFoundInRegisterException {
+        if (timeOfSale == null) {
+            throw new AccountingSystemException("Detailed message about database fail");
+        } else if (records.containsKey(timeOfSale)) {
+            AccountingSystem.Record record = this.records.get(timeOfSale);
+            return new RecordDTO(
+                    record.timeOfUpdate, record.totalAmount, record.totalVATAmount, record.discounts);
+        } else {
+            throw new RecordNotFoundInRegisterException(timeOfSale);
         }
     }
     private static class Record {

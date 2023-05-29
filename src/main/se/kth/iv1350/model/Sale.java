@@ -191,6 +191,14 @@ public class Sale {
     }
 
     /**
+     * Get time of sale
+     * @return time of sale
+     */
+    public LocalDateTime getTimeOfSale() {
+        return timeOfSale;
+    }
+
+    /**
      * Gets the discount information, if any.
      * @return the discount information as string. Returns empty discount if no discount was applied
      */

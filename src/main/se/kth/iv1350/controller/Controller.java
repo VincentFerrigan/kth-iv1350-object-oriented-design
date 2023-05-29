@@ -21,8 +21,8 @@ public class Controller {
     private List<SaleObserver> saleObservers;
     private Printer printer;
     private SaleLog saleLog;
-    private ItemRegistry itemRegistry;
-    private CustomerRegistry customerRegistry;
+    private ItemRegister itemRegister;
+    private CustomerRegister customerRegister;
     private AccountingSystem accountingSystem;
     private CashRegister cashRegister;
     private Sale currentSale;
@@ -37,8 +37,8 @@ public class Controller {
         this.printer = printer;
         saleLog = registerCreator.getSaleLog();
         accountingSystem = registerCreator.getAccountingSystem();
-        customerRegistry = registerCreator.getCustomerRegistry();
-        itemRegistry = registerCreator.getInventorySystem();
+        customerRegister = registerCreator.getCustomerRegistry();
+        itemRegister = registerCreator.getInventorySystem();
         cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
         logger = ErrorFileLogHandler.getInstance();
         saleObservers = new ArrayList<>();
@@ -100,7 +100,7 @@ public class Controller {
             currentSale.addItem(itemID, quantity);
         } catch (ItemNotFoundInShoppingCartException ex) {
             try {
-                ItemDTO itemInfo = itemRegistry.getItemInfo(ex.getItemIDNotFound());
+                ItemDTO itemInfo = itemRegister.getDataInfo(ex.getItemIDNotFound());
                 currentSale.addItem(itemInfo, quantity);
             } catch (ItemRegistryException itmRegExc) {
                 logger.log(itmRegExc);
@@ -135,7 +135,7 @@ public class Controller {
                     "Call to registerCustomerToSale before initiating a new sale and registering items.");
         }
         try {
-            CustomerDTO customerInfo = customerRegistry.getCustomerInfo(customerID);
+            CustomerDTO customerInfo = customerRegister.getDataInfo(customerID);
             currentSale.addCustomerToSale(customerInfo);
         } catch (CustomerRegistryException custRegExc) {
             logger.log(custRegExc);
@@ -160,9 +160,9 @@ public class Controller {
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
         saleLog.logSale(currentSale);
-        accountingSystem.updateToAccountingSystem(currentSale);
-        customerRegistry.updateCustomerDatabase(currentSale);
-        itemRegistry.updateInventory(currentSale);
+        accountingSystem.updateRegister(currentSale);
+        customerRegister.updateRegister(currentSale);
+        itemRegister.updateRegister(currentSale);
         currentSale.printReceipt(printer);
         currentSale = null; // Är du säker?
     }
