@@ -49,7 +49,7 @@ class ControllerTest {
             System.setProperty("se.kth.iv1350.database.file.inventory_db","inventory_items.csv");
             System.setProperty("se.kth.iv1350.log.file.revenue_log","=revenue-log.txt");
             System.setProperty("se.kth.iv1350.log.file.location","data/log");
-            System.setProperty("se.kth.iv1350.log.file.error_log","error-log.txt");
+            System.setProperty("se.kth.iv1350.log.file.error_log","test_error-log.txt");
             System.setProperty("se.kth.iv1350.database.file.csv_delimiter",";");
             System.setProperty("se.kth.iv1350.discount_strategy_classname","se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StudentDiscount,se.kth.iv1350.integration.pricing.Promotion");
             System.setProperty("se.kth.iv1350.vat_strategy.classname","se.kth.iv1350.integration.vat.SwedishVAT");
