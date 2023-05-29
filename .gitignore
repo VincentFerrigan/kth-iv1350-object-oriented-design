@@ -34,3 +34,17 @@ replay_pid*
 
 #Java output
 out/
+
+# LaTeX
+*minted*/
+
+# certain csv and txt
+*_*.csv
+*log*.txt
+
+# notes
+notes*.*
+*reflection*.*
+
+# prev folders
+uml/prev-uml/
