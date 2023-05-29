@@ -15,6 +15,7 @@ import java.util.Locale;
 // TODO UML:a
 // TODO use the System.getProperty?
 public class TotalRevenueFileOutput extends TotalRevenue {
+    private static volatile TotalRevenueFileOutput instance;
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.log.file.location");
     private static final String LOG_FILE_NAME = System.getProperty("se.kth.iv1350.log.file.revenue_log");
@@ -23,9 +24,25 @@ public class TotalRevenueFileOutput extends TotalRevenue {
     private PrintWriter revenueLogger;
     private ErrorFileLogHandler logger;
 
-    public TotalRevenueFileOutput() throws IOException {
+    private TotalRevenueFileOutput() throws IOException {
         revenueLogger = new PrintWriter(new FileWriter(FILE_PATH + FILE_SEPARATOR + LOG_FILE_NAME, true), true);
         this.logger = ErrorFileLogHandler.getInstance();
+    }
+    /**
+     * @return The only instance of this singleton.
+     * @throws IOException
+     */
+    public static TotalRevenueFileOutput getInstance() throws IOException{
+        TotalRevenueFileOutput result = instance;
+        if (result == null) {
+            synchronized (TotalRevenueFileOutput.class) {
+                result = instance;
+                if (result == null) {
+                    instance = result = new TotalRevenueFileOutput();
+                }
+            }
+        }
+        return result;
     }
     @Override
     protected void doShowTotalRevenue(Amount totalRevenue) {

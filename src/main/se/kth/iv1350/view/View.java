@@ -26,7 +26,7 @@ public class View {
         contr.addSaleObserver(new RunningSaleView());
         contr.addSaleObserver(new EndOfSaleView());
         contr.addCashRegisterObserver(new TotalRevenueView());
-        contr.addCashRegisterObserver(new TotalRevenueFileOutput());
+        contr.addCashRegisterObserver(TotalRevenueFileOutput.getInstance());
         logger = ErrorFileLogHandler.getInstance();
         errorMessageHandler = ErrorMessageHandler.getInstance();
     }
