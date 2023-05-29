@@ -1,25 +1,40 @@
 package se.kth.iv1350.integration;
 
+import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.model.Sale;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
+
+// Singleton facade.
 // TODO JavaDocs
-public class RegistryHandler {
+// Testa först med att köra factory. Frågan sen om du ska köra abstract to nedan gäller enbart flat file databases.
+public class RegistryHandler { // Rename RegistryFacade?
     private static volatile RegistryHandler instance;
-    private SaleLog saleLog; // Should this be here?
     private ItemRegister itemRegister;
-    private CustomerRegister customerRegister;
+//    private CustomerRegister customerRegister;
     private AccountingSystem accountingSystem;
 
+//    private IRegistry itemRegister;
+    private IRegistry customerRegister;
+//    private IRegistry accountingSystem;
     /**
-     * Creates an instance of {@link RegisterCreator}.
+     * Creates an instance of {@link RegistryHandler}.
      */
-    private RegistryHandler() throws IOException {
-        this.saleLog = new SaleLog();
+    private RegistryHandler() throws IOException, OperationFailedException {
+        try {
+            RegistryFactory registryFactory = RegistryFactory.getInstance();
+//            accountingSystem = registryFactory.getDefaultAccountingRegister();
+            customerRegister = registryFactory.getDefaultCustomerRegister();
+//            itemRegister = registryFactory.getDefaultItemRegister();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | NoSuchMethodException | InvocationTargetException ex) {
+        throw new OperationFailedException("Unable to instantiate registries", ex);
+    }
         this.accountingSystem = AccountingSystem.getInstance();
-        this.customerRegister = CustomerRegister.getInstance();
+//        this.customerRegister = CustomerRegister.getInstance();
         this.itemRegister = ItemRegister.getInstance();
     }
 
@@ -27,7 +42,7 @@ public class RegistryHandler {
      * @return The only instance of this singleton.
      * @throws IOException
      */
-    public static RegistryHandler getInstance() throws IOException {
+    public static RegistryHandler getInstance() throws IOException, OperationFailedException {
         RegistryHandler result = instance;
         if (result == null) {
             synchronized (RegistryHandler.class) {
@@ -65,8 +80,8 @@ public class RegistryHandler {
      * @throws CustomerNotFoundInCustomerRegistryException
      * @throws CustomerRegistryException
      */
-    public CustomerDTO getCustomerInfo(int customerID) throws CustomerNotFoundInCustomerRegistryException {
-        return customerRegister.getDataInfo(customerID);
+    public CustomerDTO getCustomerInfo(int customerID) throws Exception {
+        return (CustomerDTO) customerRegister.getDataInfo(customerID);
     }
 
     /**
@@ -91,5 +106,4 @@ public class RegistryHandler {
         return accountingSystem.getDataInfo(timeOfSale);
 
     }
-
 }
