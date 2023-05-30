@@ -1,6 +1,6 @@
 package se.kth.iv1350.model;
 
-import se.kth.iv1350.integration.CustomerDTO;
+import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.pricing.CustomerType;
 
 /**

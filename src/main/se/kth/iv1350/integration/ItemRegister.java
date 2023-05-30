@@ -1,5 +1,6 @@
 package se.kth.iv1350.integration;
 
+import se.kth.iv1350.integration.dto.ItemDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
@@ -16,7 +17,8 @@ import java.util.Map;
  * Contains all the item data that are stored in the store.
  * This Singleton is a placeholder for a future external inventory system.
  */
-public class ItemRegister implements IRegistry<ItemDTO, Integer> {
+public class ItemRegister {
+//public class ItemRegister implements IRegistry<ItemDTO, Integer> {
     private static volatile ItemRegister instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
@@ -88,7 +90,7 @@ public class ItemRegister implements IRegistry<ItemDTO, Integer> {
      * @throws ItemRegistryException when database call failed.
      */
     //TODO Are we supposed to throw ItemRegistryException as well with method?
-    @Override
+//    @Override
     public ItemDTO getDataInfo(Integer itemID) throws ItemNotFoundInItemRegistryException {
         if (itemID == DATABASE_NOT_FOUND) {
             throw new ItemRegistryException("Detailed message about database fail");
