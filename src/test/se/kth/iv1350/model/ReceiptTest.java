@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.startup.Main;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,14 +49,13 @@ class ReceiptTest {
     }
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         originalSysOut = System.out;
         outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
         payment = new CashPayment(PAID_AMOUNT);
-        ItemRegister itemRegister = new ItemRegister();
         try {
-            sale = new Sale(itemRegister);
+            sale = new Sale();
         } catch (OperationFailedException ex) {
             fail("Failed to setUp CashPaymentTest");
             ex.printStackTrace();

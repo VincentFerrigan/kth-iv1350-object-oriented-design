@@ -14,9 +14,9 @@ import java.util.Map;
  * A Singleton that creates an instance representing an external discount database
  * This class is a placeholder for a future external discount database.
  */
-public class CustomerRegister {
-//public class CustomerRegister implements IRegistry<CustomerDTO, Integer> {
-    private static volatile CustomerRegister instance;
+public class CustomerRegistryFlatFileDB implements CustomerRegistry {
+//public class CustomerRegistryFlatFileDB implements IRegistry<CustomerDTO, Integer> {
+    private static volatile CustomerRegistryFlatFileDB instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
     private final String FILE_SEPARATOR  = System.getProperty("file.separator");
@@ -27,7 +27,7 @@ public class CustomerRegister {
     private Map<Integer, CustomerData> customerTable = new HashMap<>();
     private ErrorFileLogHandler logger;
 
-    private CustomerRegister() throws IOException {
+    private CustomerRegistryFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
         flatFileDb = new File(FILE_PATH+FILE_SEPARATOR+FLAT_FILE_DB_NAME);
 
@@ -38,13 +38,13 @@ public class CustomerRegister {
      * @return The only instance of this singleton.
      * @throws IOException
      */
-    public static CustomerRegister getInstance() throws IOException {
-        CustomerRegister result = instance;
+    public static CustomerRegistryFlatFileDB getInstance() throws IOException {
+        CustomerRegistryFlatFileDB result = instance;
         if (result == null) {
-            synchronized (CustomerRegister.class) {
+            synchronized (CustomerRegistryFlatFileDB.class) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new CustomerRegister();
+                    instance = result = new CustomerRegistryFlatFileDB();
                 }
             }
         }
@@ -82,7 +82,8 @@ public class CustomerRegister {
      * Updates the customer database.
      * @param closedSale contains the sale details
      */
-    public void updateRegister(Sale closedSale){
+    @Override
+    public void updateRegistry(Sale closedSale){
         if (closedSale.getCustomer() !=null) {
             int bonusPoints = closedSale.getCustomer().getBonusPoints();
             int key = closedSale.getCustomer().getCustomerID();
@@ -99,7 +100,7 @@ public class CustomerRegister {
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
-            for (CustomerRegister.CustomerData customerData : customerTable.values()) {
+            for (CustomerRegistryFlatFileDB.CustomerData customerData : customerTable.values()) {
                 bufferedWriter.write(customerData.toString());
                 bufferedWriter.newLine();
             }
@@ -115,13 +116,15 @@ public class CustomerRegister {
 
     /**
      * Searches for customer in the customer database with specified ID.
-     * @param customerID The customer identification
+     * @param dataID The customer identification
      * @return Customer information as a {@link CustomerDTO}.
      * @throws CustomerNotFoundInCustomerRegistryException when customer ID does not exist in customer registry.
      * @throws CustomerRegistryException when database call failed.
      */
     //TODO Are we supposed to throw ItemRegistryException as well with method?
-    public CustomerDTO getDataInfo(Integer customerID) throws CustomerNotFoundInCustomerRegistryException {
+    @Override
+    public CustomerDTO getDataInfo(Object dataID ) throws CustomerNotFoundInCustomerRegistryException {
+        Integer customerID = (Integer) dataID;
         if (customerID == DATABASE_NOT_FOUND) {
             throw new CustomerRegistryException("Detailed message about database fail");
         } else if (customerTable.containsKey(customerID)) {
@@ -148,9 +151,9 @@ public class CustomerRegister {
         public String toString() {
             StringBuilder builder = new StringBuilder();
             builder.append(customerID);
-            builder.append(CustomerRegister.CSV_DELIMITER);
+            builder.append(CustomerRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(customerType);
-            builder.append(CustomerRegister.CSV_DELIMITER);
+            builder.append(CustomerRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(bonusPoints);
             return builder.toString();
         }

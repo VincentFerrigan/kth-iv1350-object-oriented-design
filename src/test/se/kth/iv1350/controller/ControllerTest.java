@@ -65,8 +65,7 @@ class ControllerTest {
             outContent = new ByteArrayOutputStream();
             System.setOut(new PrintStream(outContent));
             Printer printer = new Printer();
-            registerCreator = new RegisterCreator();
-            instance = new Controller(printer, registerCreator);
+            instance = new Controller(printer);
             instance.addSaleObserver(new RunningSaleView());
             instance.addSaleObserver(new EndOfSaleView());
 

@@ -14,43 +14,44 @@ import java.time.LocalDateTime;
 // Singleton facade.
 // TODO JavaDocs
 // Testa först med att köra factory. Frågan sen om du ska köra abstract to nedan gäller enbart flat file databases.
+/**
+ * A service container as a Facade implemented as Singleton.
+// * It provides a simpler interface with functionality limited to necessity  for the client.
+ * It provides a unified and simplified interface.
+ * This service container is responsible for instantiating all registers (external systems/databases) and provide
+ * a unified and simplified interface.
+ */
 public class RegistryHandler { // Rename RegistryFacade?
     private static volatile RegistryHandler instance;
-    private ItemRegister itemRegister;
-//    private CustomerRegister customerRegister;
     private AccountingSystem accountingSystem;
-
-//    private IRegistry itemRegister;
-    private IRegistry customerRegister;
-//    private IRegistry accountingSystem;
-
+    private CustomerRegistry customerRegistry;
+    private ItemRegistry itemRegistry;
     private SaleLog saleLog;
+
     /**
      * Creates an instance of {@link RegistryHandler}.
+     *
      */
-    private RegistryHandler() throws IOException, OperationFailedException {
+    private RegistryHandler() {
         try {
-            FlatFileDatabaseFactory flatFileDatabaseFactory = FlatFileDatabaseFactory.getInstance();
-//            accountingSystem = flatFileDatabaseFactory.getDefaultAccountingRegister();
-            customerRegister = flatFileDatabaseFactory.getDefaultCustomerRegister();
-//            itemRegister = flatFileDatabaseFactory.getDefaultItemRegister();
+            IRegistryFactory  registryFactory = FlatFileDatabaseFactory.getInstance();
+            accountingSystem = registryFactory.getDefaultAccountingRegister();
+            customerRegistry = registryFactory.getDefaultCustomerRegister();
+            itemRegistry = registryFactory.getDefaultItemRegister();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException | InvocationTargetException ex) {
-        throw new OperationFailedException("Unable to instantiate registries", ex);
-    }
-        accountingSystem = AccountingSystem.getInstance();
-//        this.customerRegister = CustomerRegister.getInstance();
-        itemRegister = ItemRegister.getInstance();
+            //TODO osäker om try catch ska vara här
+        throw new RegistryHandlerException("Unable to instantiate registries", ex);
+        }
         saleLog = new SaleLog();
-
-
     }
 
     /**
      * @return The only instance of this singleton.
      * @throws IOException
+     * @throws RegistryHandlerException when database call failed.
      */
-    public static RegistryHandler getInstance() throws IOException, OperationFailedException {
+    public static RegistryHandler getInstance() throws RegistryHandlerException {
         RegistryHandler result = instance;
         if (result == null) {
             synchronized (RegistryHandler.class) {
@@ -63,6 +64,9 @@ public class RegistryHandler { // Rename RegistryFacade?
         return result;
     }
 
+    public ItemRegistry getItemRegistry() {
+        return itemRegistry;
+    }
 
     public void updateRegisters(Sale closedSale) {
         updateAccountingSystem(closedSale);
@@ -73,14 +77,14 @@ public class RegistryHandler { // Rename RegistryFacade?
 
     public void logSale(Sale closedSale) {saleLog.logSale(closedSale);}
     public void updateAccountingSystem(Sale closedSale) {
-        accountingSystem.updateRegister(closedSale);
+        accountingSystem.updateRegistry(closedSale);
     }
 
     public void updateCustomerRegister(Sale closedSale) {
-        customerRegister.updateRegister(closedSale);
+        customerRegistry.updateRegistry(closedSale);
     }
     public void updateItemRegister(Sale closedSale) {
-        itemRegister.updateRegister(closedSale);
+        itemRegistry.updateRegistry(closedSale);
     }
 
     /**
@@ -90,12 +94,8 @@ public class RegistryHandler { // Rename RegistryFacade?
      * @throws CustomerNotFoundInCustomerRegistryException
      * @throws CustomerRegistryException
      */
-    public CustomerDTO getCustomerInfo(int customerID) {
-        try {
-            return (CustomerDTO) customerRegister.getDataInfo(customerID);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public CustomerDTO getCustomerInfo(int customerID) throws CustomerNotFoundInCustomerRegistryException {
+        return customerRegistry.getDataInfo(customerID);
     }
 
     /**
@@ -106,7 +106,7 @@ public class RegistryHandler { // Rename RegistryFacade?
      * @throws ItemRegistryException
      */
     public ItemDTO getItemInfo(int itemID) throws ItemNotFoundInItemRegistryException {
-        return itemRegister.getDataInfo(itemID);
+        return itemRegistry.getDataInfo(itemID);
     }
 
     /**

@@ -17,9 +17,9 @@ import java.util.Map;
  * Contains all the item data that are stored in the store.
  * This Singleton is a placeholder for a future external inventory system.
  */
-public class ItemRegister {
-//public class ItemRegister implements IRegistry<ItemDTO, Integer> {
-    private static volatile ItemRegister instance;
+public class ItemRegistryFlatFileDB implements ItemRegistry {
+//public class ItemRegistryFlatFileDB implements IRegistry<ItemDTO, Integer> {
+    private static volatile ItemRegistryFlatFileDB instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
     private final String FILE_SEPARATOR  = System.getProperty("file.separator");
@@ -30,7 +30,7 @@ public class ItemRegister {
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
     private ErrorFileLogHandler logger;
 
-    private ItemRegister() throws IOException {
+    private ItemRegistryFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
         flatFileDb = new File(FILE_PATH + FILE_SEPARATOR+ FLAT_FILE_DB_NAME);
 
@@ -40,13 +40,13 @@ public class ItemRegister {
      * @return The only instance of this singleton.
      * @throws IOException
      */
-    public static ItemRegister getInstance() throws IOException {
-        ItemRegister result = instance;
+    public static ItemRegistryFlatFileDB getInstance() throws IOException {
+        ItemRegistryFlatFileDB result = instance;
         if (result == null) {
-            synchronized (ItemRegister.class) {
+            synchronized (ItemRegistryFlatFileDB.class) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new ItemRegister();
+                    instance = result = new ItemRegistryFlatFileDB();
                 }
             }
         }
@@ -91,7 +91,8 @@ public class ItemRegister {
      */
     //TODO Are we supposed to throw ItemRegistryException as well with method?
 //    @Override
-    public ItemDTO getDataInfo(Integer itemID) throws ItemNotFoundInItemRegistryException {
+    public ItemDTO getDataInfo(Object dataID) throws ItemNotFoundInItemRegistryException {
+        Integer itemID = (Integer) dataID;
         if (itemID == DATABASE_NOT_FOUND) {
             throw new ItemRegistryException("Detailed message about database fail");
         } else if (inventoryTable.containsKey(itemID)) {
@@ -107,7 +108,7 @@ public class ItemRegister {
      * Updates the inventory system.
      * @param closedSale contains the sale details
      */
-    public void updateRegister(Sale closedSale){
+    public void updateRegistry(Sale closedSale){
         List<ShoppingCartItem> listOfShoppingCartItems = new ArrayList<>(closedSale.getCollectionOfItems());
         for (ShoppingCartItem shoppingCartItem : listOfShoppingCartItems) {
             int key = shoppingCartItem.getItemID();
@@ -175,17 +176,17 @@ public class ItemRegister {
         public String toString() {
             StringBuilder builder = new StringBuilder();
             builder.append(articleNo);
-            builder.append(ItemRegister.CSV_DELIMITER);
+            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(name);
-            builder.append(ItemRegister.CSV_DELIMITER);
+            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(description);
-            builder.append(ItemRegister.CSV_DELIMITER);
+            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(price.getAmount());
-            builder.append(ItemRegister.CSV_DELIMITER);
+            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(vatGroupCode);
-            builder.append(ItemRegister.CSV_DELIMITER);
+            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(inStore);
-            builder.append(ItemRegister.CSV_DELIMITER);
+            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
             builder.append(sold);
 
             return builder.toString();

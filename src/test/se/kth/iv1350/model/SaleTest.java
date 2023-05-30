@@ -63,9 +63,8 @@ class SaleTest {
         }
     }
     @BeforeEach
-    void setUp() throws OperationFailedException, IOException {
-        ItemRegister itemRegister = new ItemRegister();
-        instance = new Sale(itemRegister);
+    void setUp() throws OperationFailedException {
+        instance = new Sale();
         originalSysOut = System.out;
         outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
