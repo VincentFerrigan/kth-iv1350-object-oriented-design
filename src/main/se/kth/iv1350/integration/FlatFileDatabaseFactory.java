@@ -31,8 +31,7 @@ public class FlatFileDatabaseFactory implements IRegistryFactory{
 
     @Override
     public ItemRegistry getDefaultItemRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        String className = System.getProperty(INVENTORY_REGISTER_CLASS_NAME_KEY);
-        String className = "se.kth.iv1350.integration.ItemRegistryFlatFileDB";
+        String className = System.getProperty(INVENTORY_CLASS_NAME_KEY);
         Class c = Class.forName(className);
         Method factoryMethod = c.getDeclaredMethod("getInstance");
         Object singleton = factoryMethod.invoke(null, null);
@@ -40,8 +39,7 @@ public class FlatFileDatabaseFactory implements IRegistryFactory{
     }
     @Override
     public CustomerRegistry getDefaultCustomerRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        String className = System.getProperty(CUSTOMER_REGISTER_CLASS_NAME_KEY);
-        String className = "se.kth.iv1350.integration.CustomerRegistryFlatFileDB";
+        String className = System.getProperty(CUSTOMER_CLASS_NAME_KEY);
         Class c = Class.forName(className);
         Method factoryMethod = c.getDeclaredMethod("getInstance");
         Object singleton = factoryMethod.invoke(null, null);
@@ -49,8 +47,7 @@ public class FlatFileDatabaseFactory implements IRegistryFactory{
     }
     @Override
     public AccountingSystem getDefaultAccountingRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        String className = System.getProperty(ACCOUNTING_REGISTER_CLASS_NAME_KEY);
-        String className = "se.kth.iv1350.integration.AccountingSystemFlatFileDB";
+        String className = System.getProperty(ACCOUNTING_CLASS_NAME_KEY);
         Class c = Class.forName(className);
         Method factoryMethod = c.getDeclaredMethod("getInstance");
         Object singleton = factoryMethod.invoke(null, null);
