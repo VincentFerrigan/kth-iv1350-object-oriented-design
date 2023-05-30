@@ -32,27 +32,35 @@ class ControllerTest {
     private static final int TEST_VAT_GROUP_CODE = 1;
     private static final Amount PAID_AMOUNT = new Amount(100);
     private static final String TEST_DESCRIPTION = "test description";
-    private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
-            TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT_GROUP_CODE);
     private static final int CUSTOMER_ID = 880822;
     private Controller instance;
     private RegisterCreator registerCreator;
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
 
+    /**
+     * Properties set up base on:
+     * <a href=https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html>The Java™ Tutorials - System Properties</a>.
+     * If you're having trouble loading the resource file <code>config.properties></code>,
+     * first check that <code>src/test/resources</code>
+     * is correctly configured as a resources directory in your IDE.
+     */
+    @BeforeAll
+    static void setup() {
+        Properties properties = new Properties(System.getProperties());
+        try {
+            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
+            properties.load(inputStream);
+            System.setProperties(properties);
+        } catch (IOException ex) {
+            System.out.println("Unable to set up configuration");
+            ex.printStackTrace();
+        }
+    }
+
     @BeforeEach
     void setUp() {
         try {
-            System.setProperty("se.kth.iv1350.database.file.location","data/db");
-            System.setProperty("se.kth.iv1350.database.file.accounting_db","accounting.csv");
-            System.setProperty("se.kth.iv1350.database.file.customer_db","customers.csv");
-            System.setProperty("se.kth.iv1350.database.file.inventory_db","inventory_items.csv");
-            System.setProperty("se.kth.iv1350.log.file.revenue_log","=revenue-log.txt");
-            System.setProperty("se.kth.iv1350.log.file.location","data/log");
-            System.setProperty("se.kth.iv1350.log.file.error_log","test_error-log.txt");
-            System.setProperty("se.kth.iv1350.database.file.csv_delimiter",";");
-            System.setProperty("se.kth.iv1350.discount_strategy_classname","se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StudentDiscount,se.kth.iv1350.integration.pricing.Promotion");
-            System.setProperty("se.kth.iv1350.vat_strategy.classname","se.kth.iv1350.integration.vat.SwedishVAT");
             originalSysOut = System.out;
             outContent = new ByteArrayOutputStream();
             System.setOut(new PrintStream(outContent));

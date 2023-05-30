@@ -1,0 +1,5 @@
+VAT Rate Group Code; VAT Rate; Description
+0;0;Vat exempt
+1;0.25;The 25% VAT rate applies to most of the goods and services you are likely to sell in Sweden.
+2;0.12;VAT is normally 12% on foodstuffs. This refers to all processed or unprocessed substances or goods intended for human consumption. Except for spirits, wine and beer with an alcohol content above 3.5 % by volume, tobacco and tobacco goods etc.
+3;0.06;A VAT rate of 6% normally applies to newspapers, magazines, books, passenger transport (taxis, buses, flights and trains) in Sweden and concerts.
