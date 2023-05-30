@@ -1,5 +1,6 @@
 package se.kth.iv1350.integration;
 
+import se.kth.iv1350.integration.dto.RecordDTO;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Sale;
 import se.kth.iv1350.util.ErrorFileLogHandler;
@@ -19,7 +20,8 @@ import java.util.Map;
  * A Singleton that creates an instance representing an external accounting system.
  * This Singleton is a placeholder for a future external accounting system.
  */
-public class AccountingSystem implements IRegistry<RecordDTO, LocalDateTime> {
+public class AccountingSystem {
+//public class AccountingSystem implements IRegistry<RecordDTO, LocalDateTime> {
     private static volatile AccountingSystem instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
@@ -159,11 +161,11 @@ public class AccountingSystem implements IRegistry<RecordDTO, LocalDateTime> {
      * Searches for customer in the customer database with specified ID.
      * @param timeOfSale The time of sale
      * @return Record information as a {@link RecordDTO}.
-     * @throws RecordNotFoundInRegisterException when time of sale does not exist in accounting register/system.
+     * @throws AccountRecordNotFoundInAccountingSystemException when time of sale does not exist in accounting register/system.
      * @throws AccountingSystemException when database call failed.
      */
     //TODO Are we supposed to throw ItemRegistryException as well with method?
-    public RecordDTO getDataInfo(LocalDateTime timeOfSale) throws RecordNotFoundInRegisterException {
+    public RecordDTO getDataInfo(LocalDateTime timeOfSale) throws AccountRecordNotFoundInAccountingSystemException {
         if (timeOfSale == null) {
             throw new AccountingSystemException("Detailed message about database fail");
         } else if (records.containsKey(timeOfSale)) {
@@ -171,7 +173,7 @@ public class AccountingSystem implements IRegistry<RecordDTO, LocalDateTime> {
             return new RecordDTO(
                     record.timeOfUpdate, record.totalAmount, record.totalVATAmount, record.discounts);
         } else {
-            throw new RecordNotFoundInRegisterException(timeOfSale);
+            throw new AccountRecordNotFoundInAccountingSystemException(timeOfSale);
         }
     }
     private static class Record {

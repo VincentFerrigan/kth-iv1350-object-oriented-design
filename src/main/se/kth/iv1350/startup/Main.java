@@ -1,6 +1,8 @@
 package se.kth.iv1350.startup;
 import se.kth.iv1350.controller.Controller;
+import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.RegisterCreator;
+import se.kth.iv1350.integration.RegistryHandler;
 import se.kth.iv1350.view.View;
 import se.kth.iv1350.integration.Printer;
 
@@ -20,9 +22,10 @@ import java.util.Properties;
 public class Main {
     /**
      * Starts the application.
+     *
      * @param args The application does not take any command line parameters.
      */
-    public static void main (String[] args) {
+    public static void main(String[] args) {
         Properties properties = new Properties(System.getProperties());
         try {
             InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
@@ -36,6 +39,9 @@ public class Main {
             Printer printer = new Printer();
             RegisterCreator registerCreator = new RegisterCreator();
             Controller contr = new Controller(printer, registerCreator);
+            // TODO: should it not just be "created" in the Controller layer
+//            RegistryHandler registryHandler = RegistryHandler.getInstance();
+//            Controller contr = new Controller(printer, registryHandler);
 
             View view = new View(contr);
             view.basicFlow();

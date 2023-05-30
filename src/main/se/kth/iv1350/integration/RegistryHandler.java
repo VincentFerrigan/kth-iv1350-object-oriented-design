@@ -1,6 +1,9 @@
 package se.kth.iv1350.integration;
 
 import se.kth.iv1350.controller.OperationFailedException;
+import se.kth.iv1350.integration.dto.CustomerDTO;
+import se.kth.iv1350.integration.dto.ItemDTO;
+import se.kth.iv1350.integration.dto.RecordDTO;
 import se.kth.iv1350.model.Sale;
 
 import java.io.IOException;
@@ -20,22 +23,27 @@ public class RegistryHandler { // Rename RegistryFacade?
 //    private IRegistry itemRegister;
     private IRegistry customerRegister;
 //    private IRegistry accountingSystem;
+
+    private SaleLog saleLog;
     /**
      * Creates an instance of {@link RegistryHandler}.
      */
     private RegistryHandler() throws IOException, OperationFailedException {
         try {
-            RegistryFactory registryFactory = RegistryFactory.getInstance();
-//            accountingSystem = registryFactory.getDefaultAccountingRegister();
-            customerRegister = registryFactory.getDefaultCustomerRegister();
-//            itemRegister = registryFactory.getDefaultItemRegister();
+            FlatFileDatabaseFactory flatFileDatabaseFactory = FlatFileDatabaseFactory.getInstance();
+//            accountingSystem = flatFileDatabaseFactory.getDefaultAccountingRegister();
+            customerRegister = flatFileDatabaseFactory.getDefaultCustomerRegister();
+//            itemRegister = flatFileDatabaseFactory.getDefaultItemRegister();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException | InvocationTargetException ex) {
         throw new OperationFailedException("Unable to instantiate registries", ex);
     }
-        this.accountingSystem = AccountingSystem.getInstance();
+        accountingSystem = AccountingSystem.getInstance();
 //        this.customerRegister = CustomerRegister.getInstance();
-        this.itemRegister = ItemRegister.getInstance();
+        itemRegister = ItemRegister.getInstance();
+        saleLog = new SaleLog();
+
+
     }
 
     /**
@@ -56,11 +64,14 @@ public class RegistryHandler { // Rename RegistryFacade?
     }
 
 
-    public void updateRegistries(Sale closedSale) {
+    public void updateRegisters(Sale closedSale) {
         updateAccountingSystem(closedSale);
         updateCustomerRegister(closedSale);
         updateItemRegister(closedSale);
+        logSale(closedSale);
     }
+
+    public void logSale(Sale closedSale) {saleLog.logSale(closedSale);}
     public void updateAccountingSystem(Sale closedSale) {
         accountingSystem.updateRegister(closedSale);
     }
@@ -72,7 +83,6 @@ public class RegistryHandler { // Rename RegistryFacade?
         itemRegister.updateRegister(closedSale);
     }
 
-
     /**
      *
      * @param customerID
@@ -80,8 +90,12 @@ public class RegistryHandler { // Rename RegistryFacade?
      * @throws CustomerNotFoundInCustomerRegistryException
      * @throws CustomerRegistryException
      */
-    public CustomerDTO getCustomerInfo(int customerID) throws Exception {
-        return (CustomerDTO) customerRegister.getDataInfo(customerID);
+    public CustomerDTO getCustomerInfo(int customerID) {
+        try {
+            return (CustomerDTO) customerRegister.getDataInfo(customerID);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -99,10 +113,10 @@ public class RegistryHandler { // Rename RegistryFacade?
      *
      * @param timeOfSale
      * @return
-     * @throws RecordNotFoundInRegisterException
+     * @throws AccountRecordNotFoundInAccountingSystemException
      * @throws AccountingSystemException
      */
-    public RecordDTO getRecordInfo(LocalDateTime timeOfSale) throws RecordNotFoundInRegisterException {
+    public RecordDTO getRecordInfo(LocalDateTime timeOfSale) throws AccountRecordNotFoundInAccountingSystemException {
         return accountingSystem.getDataInfo(timeOfSale);
 
     }

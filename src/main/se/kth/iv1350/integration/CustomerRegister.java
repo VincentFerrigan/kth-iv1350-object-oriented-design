@@ -1,5 +1,6 @@
 package se.kth.iv1350.integration;
 
+import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.pricing.CustomerType;
 import se.kth.iv1350.model.Sale;
 import se.kth.iv1350.util.ErrorFileLogHandler;
@@ -13,7 +14,8 @@ import java.util.Map;
  * A Singleton that creates an instance representing an external discount database
  * This class is a placeholder for a future external discount database.
  */
-public class CustomerRegister implements IRegistry<CustomerDTO, Integer> {
+public class CustomerRegister {
+//public class CustomerRegister implements IRegistry<CustomerDTO, Integer> {
     private static volatile CustomerRegister instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");

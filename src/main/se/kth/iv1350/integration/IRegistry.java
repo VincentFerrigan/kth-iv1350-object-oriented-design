@@ -3,7 +3,7 @@ package se.kth.iv1350.integration;
 import se.kth.iv1350.model.Sale;
 
 public interface IRegistry<T, U> {
-    T getDataInfo(U dataID) throws Exception;
+    T getDataInfo(U dataID);
     void updateRegister(Sale closedSale);
 
 }
