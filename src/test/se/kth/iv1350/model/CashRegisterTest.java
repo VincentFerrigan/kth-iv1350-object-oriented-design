@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.ItemNotFoundInItemRegistryException;
-import se.kth.iv1350.integration.ItemRegister;
+import se.kth.iv1350.integration.ItemRegistryFlatFileDB;
 import se.kth.iv1350.integration.ItemRegistryException;
 import se.kth.iv1350.startup.Main;
 
@@ -48,9 +48,8 @@ class CashRegisterTest {
     void setUp() throws IOException {
         instance = new CashRegister(INITIAL_BALANCE);
         payment = new CashPayment(PAID_AMOUNT);
-        ItemRegister itemRegister = new ItemRegister();
         try {
-            sale = new Sale(itemRegister);
+            sale = new Sale();
         } catch (OperationFailedException ex) {
             fail("Failed to setUp CashPaymentTest");
             ex.printStackTrace();

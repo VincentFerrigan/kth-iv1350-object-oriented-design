@@ -21,12 +21,6 @@ import java.util.*;
 public class Controller {
     private List<SaleObserver> saleObservers;
     private Printer printer;
-
-    private RegistryHandler registryHandler;
-    private SaleLog saleLog;
-    private ItemRegister itemRegister;
-    private CustomerRegister customerRegister;
-    private AccountingSystem accountingSystem;
     private CashRegister cashRegister;
     private Sale currentSale;
     private ErrorFileLogHandler logger;
@@ -34,16 +28,10 @@ public class Controller {
     /**
      * Creates a new instance.
      * @param printer Interface to printer (prints receipts and display)
-     * @param registerCreator Used to get all classes that handle database calls.
+     * @throws IOException
      */
-    public Controller (Printer printer, RegisterCreator registerCreator) throws IOException {
-//    public Controller (Printer printer, RegistryHandler registryHandler) throws IOException {
+    public Controller (Printer printer) throws IOException {
         this.printer = printer;
-        this.registryHandler = registryHandler;
-        saleLog = registerCreator.getSaleLog();
-        accountingSystem = registerCreator.getAccountingSystem();
-        customerRegister = registerCreator.getCustomerRegistry();
-        itemRegister = registerCreator.getInventorySystem();
         cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
         logger = ErrorFileLogHandler.getInstance();
         saleObservers = new ArrayList<>();
@@ -67,14 +55,10 @@ public class Controller {
 
     /**
      * Start a new sale. This method must be called before doing anything else during a sale.
+     * @throws OperationFailedException when unable to set up pricing.
      */
     public void startSale() throws OperationFailedException {
-        try {
-            this.currentSale = new Sale(itemRegister);
-        } catch (OperationFailedException ex) {
-            logger.log(ex);
-            throw new OperationFailedException("Unable to start sale", ex);
-        }
+        this.currentSale = new Sale();
         currentSale.addAllSaleObservers(saleObservers);
     }
 
@@ -109,7 +93,6 @@ public class Controller {
         } catch (OperationFailedException vatRegExc) {
             logger.log(vatRegExc);
             throw new OperationFailedException("Unable to set up VAT, unable to register items", vatRegExc);
-
         }
     }
 
@@ -139,8 +122,7 @@ public class Controller {
                     "Call to registerCustomerToSale before initiating a new sale and registering items.");
         }
         try {
-            CustomerDTO customerInfo = customerRegister.getDataInfo(customerID);
-//            CustomerDTO customerInfo = registryHandler.getCustomerInfo(customerID);
+            CustomerDTO customerInfo = RegistryHandler.getInstance().getCustomerInfo(customerID);
             currentSale.addCustomerToSale(customerInfo);
         } catch (CustomerRegistryException custRegExc) {
             logger.log(custRegExc);
@@ -155,8 +137,9 @@ public class Controller {
      * Loggs sale. Updates inventory and accounting system.
      * @param paidAmt The paid amount.
      * @throws IllegalStateException if this method is called before calling newSale and registerItem.
+     * @throws OperationFailedException it unable to update External Inventory System, External Accounting System and log sale
      */
-    public void pay(Amount paidAmt) {
+    public void pay(Amount paidAmt) throws OperationFailedException {
         if (currentSale == null || currentSale.isComplete() == false) {
             throw new IllegalStateException(
                     "Call to pay before initiating a new sale and registering items.");
@@ -164,10 +147,7 @@ public class Controller {
         CashPayment payment = new CashPayment(paidAmt);
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
-        saleLog.logSale(currentSale);
-        accountingSystem.updateRegister(currentSale);
-        customerRegister.updateRegister(currentSale);
-        itemRegister.updateRegister(currentSale);
+        RegistryHandler.getInstance().updateRegisters(currentSale);
         currentSale.printReceipt(printer);
         currentSale = null; // Är du säker?
     }

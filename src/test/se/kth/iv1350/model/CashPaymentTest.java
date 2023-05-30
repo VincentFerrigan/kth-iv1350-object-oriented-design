@@ -47,9 +47,8 @@ class CashPaymentTest {
     void setUp() throws IOException {
         paidAmount = new Amount(PAID);
         instance = new CashPayment(paidAmount);
-        ItemRegister itemRegister = new ItemRegister();
         try {
-            sale = new Sale(itemRegister);
+            sale = new Sale();
         } catch (OperationFailedException ex) {
             fail("Failed to setUp CashPaymentTest");
             ex.printStackTrace();
