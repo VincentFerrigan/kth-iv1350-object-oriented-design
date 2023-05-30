@@ -1,8 +1,5 @@
 package se.kth.iv1350.startup;
 import se.kth.iv1350.controller.Controller;
-import se.kth.iv1350.controller.OperationFailedException;
-import se.kth.iv1350.integration.RegisterCreator;
-import se.kth.iv1350.integration.RegistryHandler;
 import se.kth.iv1350.integration.TotalRevenueFileOutput;
 import se.kth.iv1350.view.View;
 import se.kth.iv1350.integration.Printer;
@@ -38,7 +35,6 @@ public class Main {
         }
         try {
             Printer printer = new Printer();
-            RegisterCreator registerCreator = new RegisterCreator();
             Controller contr = new Controller(printer);
             contr.addCashRegisterObserver(TotalRevenueFileOutput.getInstance());
             View view = new View(contr);

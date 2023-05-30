@@ -34,7 +34,6 @@ class ControllerTest {
     private static final String TEST_DESCRIPTION = "test description";
     private static final int CUSTOMER_ID = 880822;
     private Controller instance;
-    private RegisterCreator registerCreator;
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
 
@@ -80,7 +79,6 @@ class ControllerTest {
         outContent = null;
         System.setOut(originalSysOut);
         instance = null;
-        registerCreator = null;
     }
 
     @Test

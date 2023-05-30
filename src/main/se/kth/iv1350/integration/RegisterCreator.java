@@ -3,15 +3,15 @@ package se.kth.iv1350.integration;
 
 import java.io.IOException;
 
-// TODO: Move file path and names to the registers. Make all registers into singletons. Should the template method design also be used? Interface Database -> FlatFileDatabase -> Singleton AccountingSystem/DiscountRegistry/ItemRegistry?
+// TODO: Move file path and names to the registers. Make all registers into singletons. Should the template method design also be used? Interface Database -> FlatFileDatabase -> Singleton AccountingSystemFlatFileDB/DiscountRegistry/ItemRegistry?
 // TODO: What to do about SaleLog? Does it have anything todo with TotalRevenueFileOutput? Does TotalRevenueFileOutput have anything to do with AccountSystem. Whats the difference between all three of them. Make it clear.
 /**
  * The class is responsible for instantiating all registers (external systems/databases)
  */
 public class RegisterCreator {
     private SaleLog saleLog;
-    private ItemRegister itemRegister;
-    private CustomerRegister customerRegister;
+    private ItemRegistry itemRegistry;
+    private CustomerRegistry customerRegistry;
     private AccountingSystem accountingSystem;
 
     /**
@@ -19,9 +19,9 @@ public class RegisterCreator {
      */
     public RegisterCreator() throws IOException {
         this.saleLog = new SaleLog();
-        this.accountingSystem = AccountingSystem.getInstance();
-        this.customerRegister = CustomerRegister.getInstance();
-        this.itemRegister = ItemRegister.getInstance();
+        this.accountingSystem = AccountingSystemFlatFileDB.getInstance();
+        this.customerRegistry = CustomerRegistryFlatFileDB.getInstance();
+        this.itemRegistry = ItemRegistryFlatFileDB.getInstance();
     }
 
     /**
@@ -33,23 +33,23 @@ public class RegisterCreator {
     }
 
     /**
-     * Get the item registry as {@link ItemRegister}
+     * Get the item registry as {@link ItemRegistryFlatFileDB}
      * @return the itemRegistry
      */
-    public ItemRegister getInventorySystem() {
-        return itemRegister;
+    public ItemRegistry getInventorySystem() {
+        return itemRegistry;
     }
 
     /**
-     * Get the cash register as {@link CustomerRegister}
+     * Get the cash register as {@link CustomerRegistryFlatFileDB}
      * @return the discount register
      */
-    public CustomerRegister getCustomerRegistry() {
-        return customerRegister;
+    public CustomerRegistry getCustomerRegistry() {
+        return customerRegistry;
     }
 
     /**
-     * Get the accounting system as {@link AccountingSystem}
+     * Get the accounting system as {@link AccountingSystemFlatFileDB}
      * @return the accounting system
      */
     public AccountingSystem getAccountingSystem() {
