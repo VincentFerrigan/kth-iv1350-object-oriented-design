@@ -122,6 +122,7 @@ public class Controller {
                     "Call to registerCustomerToSale before initiating a new sale and registering items.");
         }
         try {
+            // TODO Eller ska nedan göras från Sale?
             CustomerDTO customerInfo = RegistryHandler.getInstance().getCustomerInfo(customerID);
             currentSale.addCustomerToSale(customerInfo);
         } catch (CustomerRegistryException custRegExc) {
