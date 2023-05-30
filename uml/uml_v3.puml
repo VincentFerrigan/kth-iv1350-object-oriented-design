@@ -881,7 +881,7 @@ Log sale and update external systems
 'deactivate customerRegistry
 '
 'autonumber 1.7
-'contr -> itemRegistry : updateInventory(currentSale : Sale)
+'contr -> itemRegistry : updateRegister(currentSale : Sale)
 'activate itemRegistry
 'autonumber 1.7.1
 'itemRegistry -> itemRegistry : updateDatabase() :void
