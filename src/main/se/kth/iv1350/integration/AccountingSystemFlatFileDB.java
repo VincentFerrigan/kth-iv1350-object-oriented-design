@@ -29,7 +29,6 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
     private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.accounting_db");
     private File flatFileDb;
     private String recordHeader;
-    private ErrorFileLogHandler logger;
     private Map<LocalDateTime, Record> records = new HashMap<>();
     private Locale locale = new Locale("sv", "SE");
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
@@ -37,6 +36,7 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
     private Amount totalRevenue = new Amount(0);
     private Amount totalVATCosts = new Amount(0);
     private Amount totalDiscounts = new Amount(0);
+    private ErrorFileLogHandler logger;
 
     private AccountingSystemFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
@@ -63,33 +63,33 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
     }
 
     // TODO: EVENTUELL. Beror på vilken lösning jag väljer.
-    public Map getData(String FILE_TO_LOAD) throws IOException {
-        Map<LocalDate, Record> accountingTable = new HashMap<>();
-        try (FileReader reader = new FileReader(flatFileDb);
-             BufferedReader bufferedReader = new BufferedReader(reader)) {
-            String line = "";
-            recordHeader = bufferedReader.readLine();
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] splitArray = line.split(CSV_DELIMITER);
-                accountingTable.put(
-                        LocalDate.parse(splitArray[0], formatter),
-                        new Record(
-                                LocalTime.parse(splitArray[1], formatter),
-                                Double.parseDouble(splitArray[2]),
-                                Double.parseDouble(splitArray[3]),
-                                Double.parseDouble(splitArray[4])));
-            }
-        } catch (FileNotFoundException ex){
-            // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
-            logger.log(ex);
-            throw ex;
-        } catch (IOException ex){
-            // TODO ska addItemData loggas här?
-            logger.log(ex);
-            throw ex;
-        }
-        return accountingTable;
-    }
+//    public Map getData(String FILE_TO_LOAD) throws IOException {
+//        Map<LocalDate, Record> accountingTable = new HashMap<>();
+//        try (FileReader reader = new FileReader(flatFileDb);
+//             BufferedReader bufferedReader = new BufferedReader(reader)) {
+//            String line = "";
+//            recordHeader = bufferedReader.readLine();
+//            while ((line = bufferedReader.readLine()) != null) {
+//                String[] splitArray = line.split(CSV_DELIMITER);
+//                accountingTable.put(
+//                        LocalDate.parse(splitArray[0], formatter),
+//                        new Record(
+//                                LocalTime.parse(splitArray[1], formatter),
+//                                Double.parseDouble(splitArray[2]),
+//                                Double.parseDouble(splitArray[3]),
+//                                Double.parseDouble(splitArray[4])));
+//            }
+//        } catch (FileNotFoundException ex){
+//            // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
+//            logger.log(ex);
+//            throw ex;
+//        } catch (IOException ex){
+//            // TODO ska addItemData loggas här?
+//            logger.log(ex);
+//            throw ex;
+//        }
+//        return accountingTable;
+//    }
 
 
     private void addRecordDataFromDb() throws IOException {
@@ -119,6 +119,7 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
     /**
      * Updates the accounting system by adding the specified {@link Sale}.
      * @param closedSale The sale to be added to the accounting system.
+     * @throws AccountingSystemException
      */
     @Override
     public void updateRegistry(Sale closedSale){
@@ -139,8 +140,9 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
 
     /**
      * Update database by writing to the flat file database
+     * @throws AccountingSystemException
      */
-    private void updateDatabase() {
+    private void updateDatabase() throws AccountingSystemException {
         try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
@@ -152,10 +154,10 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
             bufferedWriter.flush();
         } catch (FileNotFoundException ex){
             logger.log(ex);
-            throw new ItemRegistryException("Detailed message about database fail");
+            throw new AccountingSystemException("Detailed message about database fail");
         } catch (IOException ex){
             logger.log(ex);
-            throw new ItemRegistryException("Detailed message about database fail");
+            throw new AccountingSystemException("Detailed message about database fail");
         }
     }
     /**

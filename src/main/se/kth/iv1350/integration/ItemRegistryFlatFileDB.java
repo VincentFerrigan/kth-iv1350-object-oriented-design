@@ -84,7 +84,7 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
 
     /**
      * Searches for item in the inventory system with specified ID.
-     * @param  itemID The items unique article number a.k.a item identifier.
+     * @param  dataID The items unique article number a.k.a item identifier.
      * @return ShoppingCartItem information as a {@link ItemDTO}.
      * @throws ItemNotFoundInItemRegistryException when item ID does not exist in inventory.
      * @throws ItemRegistryException when database call failed.
@@ -107,6 +107,7 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
     /**
      * Updates the inventory system.
      * @param closedSale contains the sale details
+     * @throws ItemRegistryException when database call failed.
      */
     public void updateRegistry(Sale closedSale){
         List<ShoppingCartItem> listOfShoppingCartItems = new ArrayList<>(closedSale.getCollectionOfItems());
@@ -120,6 +121,7 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
 
     /**
      * Update database by writing to the flat file database
+     * @throws ItemRegistryException
      */
     private void updateDatabase() {
         try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));

@@ -147,7 +147,7 @@ public class Controller {
         CashPayment payment = new CashPayment(paidAmt);
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
-        RegistryHandler.getInstance().updateRegisters(currentSale);
+        RegistryHandler.getInstance().updateRegistries(currentSale);
         currentSale.printReceipt(printer);
         currentSale = null; // Är du säker?
     }

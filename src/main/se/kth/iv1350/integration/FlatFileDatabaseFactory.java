@@ -46,7 +46,7 @@ public class FlatFileDatabaseFactory implements IRegistryFactory{
         return (CustomerRegistry) singleton;
     }
     @Override
-    public AccountingSystem getDefaultAccountingRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public AccountingSystem getDefaultAccountingSystem() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         String className = System.getProperty(ACCOUNTING_CLASS_NAME_KEY);
         Class c = Class.forName(className);
         Method factoryMethod = c.getDeclaredMethod("getInstance");

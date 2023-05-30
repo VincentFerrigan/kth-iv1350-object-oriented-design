@@ -1,6 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.dto.ItemDTO;
 import se.kth.iv1350.integration.dto.RecordDTO;
@@ -35,7 +34,7 @@ public class RegistryHandler { // Rename RegistryFacade?
     private RegistryHandler() {
         try {
             IRegistryFactory  registryFactory = FlatFileDatabaseFactory.getInstance();
-            accountingSystem = registryFactory.getDefaultAccountingRegister();
+            accountingSystem = registryFactory.getDefaultAccountingSystem();
             customerRegistry = registryFactory.getDefaultCustomerRegister();
             itemRegistry = registryFactory.getDefaultItemRegister();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
@@ -64,14 +63,10 @@ public class RegistryHandler { // Rename RegistryFacade?
         return result;
     }
 
-    public ItemRegistry getItemRegistry() {
-        return itemRegistry;
-    }
-
-    public void updateRegisters(Sale closedSale) {
+    public void updateRegistries(Sale closedSale) {
         updateAccountingSystem(closedSale);
-        updateCustomerRegister(closedSale);
-        updateItemRegister(closedSale);
+        updateCustomerRegistry(closedSale);
+        updateItemRegistry(closedSale);
         logSale(closedSale);
     }
 
@@ -79,11 +74,10 @@ public class RegistryHandler { // Rename RegistryFacade?
     public void updateAccountingSystem(Sale closedSale) {
         accountingSystem.updateRegistry(closedSale);
     }
-
-    public void updateCustomerRegister(Sale closedSale) {
+    public void updateCustomerRegistry(Sale closedSale) {
         customerRegistry.updateRegistry(closedSale);
     }
-    public void updateItemRegister(Sale closedSale) {
+    public void updateItemRegistry(Sale closedSale) {
         itemRegistry.updateRegistry(closedSale);
     }
 
@@ -118,6 +112,5 @@ public class RegistryHandler { // Rename RegistryFacade?
      */
     public RecordDTO getRecordInfo(LocalDateTime timeOfSale) throws AccountRecordNotFoundInAccountingSystemException {
         return accountingSystem.getDataInfo(timeOfSale);
-
     }
 }

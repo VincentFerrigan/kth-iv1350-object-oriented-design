@@ -81,9 +81,10 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
     /**
      * Updates the customer database.
      * @param closedSale contains the sale details
+     * @throws CustomerRegistryException
      */
     @Override
-    public void updateRegistry(Sale closedSale){
+    public void updateRegistry(Sale closedSale) {
         if (closedSale.getCustomer() !=null) {
             int bonusPoints = closedSale.getCustomer().getBonusPoints();
             int key = closedSale.getCustomer().getCustomerID();
@@ -94,8 +95,9 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
 
     /**
      * Update database by writing to the flat file database
+     * @throws CustomerRegistryException
      */
-    private void updateDatabase() {
+    private void updateDatabase() throws CustomerRegistryException{
         try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
@@ -107,10 +109,10 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
             bufferedWriter.flush();
         } catch (FileNotFoundException ex){
             logger.log(ex);
-            throw new ItemRegistryException("Detailed message about database fail");
+            throw new CustomerRegistryException("Detailed message about database fail");
         } catch (IOException ex){
             logger.log(ex);
-            throw new ItemRegistryException("Detailed message about database fail");
+            throw new CustomerRegistryException("Detailed message about database fail");
         }
     }
 
