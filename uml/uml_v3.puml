@@ -1,5 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
+'TODO: abstract and static members should have {abstract} {static}
+'TODO pricing and vat package
 title CD
 hide circle
 skinparam linetype ortho
@@ -9,7 +11,7 @@ skinparam package {
 'top to bottom direction
 left to right direction
 skinparam ClassAttributeIconSize 0
-interface "<<interface>>\nComparable " as Comparable{
+interface Comparable <<interface>> {
     + compareTo(Object o) : int
     }
 
@@ -26,11 +28,36 @@ package startup {
             - contr: Controller
             + <<create>> View(contr : Controller) : View
         }
-        class EndOfSaleView {}
-        class RunningSaleView {}
-        abstract class SaleView {}
-        abstract class TotalRevenue {}
-        class TotalRevenueView {}
+        abstract class TotalRevenue {
+            # TotalRevenue
+            # {abstract} doShowTotalRevenue(totalRevenue : Amount)
+            # {abstract} handleErrors(e : Exception) : void
+        }
+        class TotalRevenueView {
+            # doShowTotalRevenue(totalRevenue : Amount)
+            # handleErrors(e : Exception) : void
+        }
+        abstract class SaleView {
+            - listOfShoppingCartItems : List<ShoppingCartItem>
+            - sale :LimitedSaleView
+            # SaleView()
+            # createSaleItemsInfoString() : String
+            # addNewSaleInfoDetails(sale : LimitedSaleView) : void
+            # {abstract} printCurrentState(sale : LimitedSaleView) : void
+            # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            # {abstract} shouldUpdate(isComplete : boolean) : boolean
+        }
+        class EndOfSaleView {
+            # printCurrentState(sale : LimitedSaleView) : void
+            # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            # shouldUpdate(isComplete : boolean) : boolean
+            - createDiscountInfoString(discount : Amount, discountInfo : String) : void
+        }
+        class RunningSaleView {
+            # printCurrentState(sale : LimitedSaleView) : void
+            # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+            # shouldUpdate(isComplete : boolean) : boolean
+        }
     }
     package controller {
         class Controller{
@@ -182,10 +209,10 @@ package startup {
         interface SaleObserver <<interface>> {
             + updateSale(sale : LimitedSaleView)
         }
-        interface "<<interface>>\nCashRegisterObserver" as CashRegisterObserver {
+        interface CashRegisterObserver <<interface>> {
             + updateRevenue(totalRevenue : Amount) : void
         }
-        interface "<<interface>>\n: LimitedSaleView" as LimitedSaleView {
+        interface LimitedSaleView <<interface>> {
             + isComplete() : boolean
             + getTotalPricePaid() : Amount
             + getTotalPrice() : Amount
@@ -198,28 +225,100 @@ package startup {
         class LimitedSaleViewWrapper {
             - sale : Sale
             + <<create>> LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
-
         }
     }
 }
     package integration {
+        package pricing {
+            enum "//<<enumeration>>//\nCustomerType" as CustomerType {
+                STUDENT,
+                MEMBER
+            }
+            class DiscountFactory <<singleton>> {
+                - {static} DISCOUNT_CLASS_NAME_KEY : String
+                + getDiscountStrategy() : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
+                - createComposite(classNames : String[] {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
+                - instantiateDiscountStrategy(className : String) : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
+            }
+
+            interface DiscountStrategy <<interface>>{
+                + getTotal(sale : Sale) : Amount
+                + getDiscount() : Amount
+            }
+
+            class CompositeDiscountStrategy {
+                - discountStrategies : List<DiscountStrategy>
+                - usedDiscountStrategy : DiscountStrategy
+                ~ <<create>> CompositeDiscountStrategy() : CompositeDiscountStrategy
+                + addDiscountStrategy(discountStrategy : DiscountStrategy)
+                + toString()
+            }
+
+            class MemberDiscount {
+                - discountRate : double
+                - discountAmount : Amount
+                + toString() : String
+            }
+            class StudentDiscount {
+                - discountRate : double
+                - discountAmount : Amount
+                + toString() : String
+            }
+            class Promotion {
+                - threshold : Amount
+                - bonusCheck : Amount
+                - discountAmount : Amount
+                - toString() : String
+            }
+
+        }
+        package vat {
+            class VATFactory <<singleton>> {
+                - {static} VAT_CLASS_NAME_KEY : String
+                + getDefaultVATStrategy() : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
+                - instantiateVATStrategy(className : String) : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
+            }
+            interface VATStrategy <<interface>> {
+                + calculateVATForItem(item : ShoppingCartItem) : Amount
+            }
+            class SwedishVAT {
+                - getVATRate(vatGroupCode : int): double
+            }
+        }
+'        TODO: Go through all the dB singletons. Are they correct? Is the UML updated?
         class RegisterCreator{
             - saleLog : SaleLog
             - itemRegistry:ItemRegistry
-            - discountRegister : DiscountRegister
+            - customerRegister : CustomerRegister
             - accountingSystem : AccountingSystem
             + getSaleLog() : SaleLog
             + getInventorySystem() : ItemRegistry
-            + getDiscountRegister() : DiscountRegister
+            + getCustomerRegister() : CustomerRegister
             + getAccountingSystem() : AccountingSystem
             + <<create>> RegisterCreator() : RegisterCreator
-
         }
-        class DiscountRegister <<singleton>> {
-            +getDiscountInfo(customerID : int) : DiscountDTO
+        class CustomerRegister <<singleton>> {
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - FLAT_FILE_DB_NAME : String
+            - {static} CSV_DELIMITER : String
+            - flatFileDb : File
+            - customerTable : Map<Integer, CustomerData>
+            - logger : ErrorFileLogHandler
+            - addCustomerData() : void {exception IOException}
+            + updateCustomerDatabase(closedSale : Sale) : void
+            - updateDatabase() :void
+            + getCustomerInfo((customerID : int) : CustomerDTO {exception CustomerNotFoundInCustomerRegistryException}
         }
         class ItemRegistry <<singleton>> {
-'            - flatFileDb : String
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - FLAT_FILE_DB_NAME : String
+            - {static} CSV_DELIMITER : String
+            - flatFileDb : File
+            - inventoryTable : Map<Integer, ItemData>
+            - logger : ErrorFileLogHandler
+            - flatFileDb : File
 '            - inventoryTable : HashMap<Integer, ItemData>
 '            - addItemData() : void
             + getItemInfo(itemID : int) : ItemDTO {exception=(ItemNotFoundInItemRegistryException, ItemRegistryException)}
@@ -232,7 +331,13 @@ package startup {
             + logSale(sale : Sale) : void
             + findSaleByTotalAmount(totalAmount : Amount) : List<Sale>
         }
-        class AccountingSystem{
+'        TODO Se över hela upplägget. Records och dylikt
+        class AccountingSystem <<singleton>>{
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - FLAT_FILE_DB_NAME : String
+            - {static} CSV_DELIMITER : String
+            - flatFileDb : File
             + updateAccounting(closedSale : Sale) : void
             ~ <<create>> Accounting() : Accounting
         }
@@ -241,27 +346,73 @@ package startup {
             + printReceipt(receipt : Receipt) : void
 '            + printSaleLog(saleLog : SaleLog) : void
         }
+        class TotalRevenueFileOutput {
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - LOG_FILE_NAME : String
+            - locale : Locale
+            - formatter : DateTimeFormatter
+            - revenueLogger : PrintWriter
+            - logger : ErrorFileLogHandler
+            + <<create>>TotalRevenueFileOutput() : TotalRevenueFileOutput {exception IOException}
+            # doShowTotalRevenue(totalRevenue : Amount)
+            # handleErrors(e : Exception) : void
+            - createTime() : String
+            }
     }
     package util{
-        enum Event {}
-        class Logger <<interface>> {}
+        class ErrorFileLogHandler {
+            - FILE_SEPARATOR  : String
+            - FILE_PATH : String
+            - LOG_FILE_NAME : String
+            - LINE_SEPARATOR  : String
+            - locale : Locale
+            - formatter : DateTimeFormatter
+            - logFile : PrintWriter
+            - createTime() : String
+        }
+
+        interface Logger <T><<interface>> {
+            + log(message : T) : void
+        }
     }
 
 'interfaces
-Comparable <|-[dashed]- Amount
+CashRegisterObserver <|-[dashed]- TotalRevenue
+TotalRevenue <|- TotalRevenueView
+TotalRevenue <|- TotalRevenueFileOutput
+
+SaleObserver <|-[dashed]- SaleView
+SaleView <|- EndOfSaleView
+SaleView <|- RunningSaleView
+
+DiscountStrategy <|-[dashed]- CompositeDiscountStrategy
+DiscountStrategy <|-[dashed]- StudentDiscount
+DiscountStrategy <|-[dashed]- Promotion
+DiscountStrategy <|-[dashed]- MemberDiscount
+
+Logger <|-[dashed]- ErrorFileLogHandler
+Logger <|-[dashed]- ErrorMessageHandler
+
+VATStrategy <|-[dashed]- CompositeVATStrategy
+VATStrategy <|-[dashed]- SwedishVAT
+
 LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
 
+Comparable <|-[dashed]- Amount
+
+'Dependencies
 Main --> View
 Main -left-> Controller
 Main ---> Printer
 Main ---> RegisterCreator
 Controller -up-> CashRegister
 Controller --> SaleLog
-Controller --> DiscountRegister
+Controller --> CustomerRegister
 Controller --> AccountingSystem
 Controller --> ItemRegistry
 Controller --> RegisterCreator
-RegisterCreator --> DiscountRegister
+RegisterCreator --> CustomerRegister
 RegisterCreator --> AccountingSystem
 RegisterCreator --> ItemRegistry
 RegisterCreator --> SaleLog
@@ -730,7 +881,7 @@ Log sale and update external systems
 'deactivate customerRegistry
 '
 'autonumber 1.7
-'contr -> itemRegistry : updateInventory(currentSale : Sale)
+'contr -> itemRegistry : updateRegister(currentSale : Sale)
 'activate itemRegistry
 'autonumber 1.7.1
 'itemRegistry -> itemRegistry : updateDatabase() :void

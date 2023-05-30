@@ -16,14 +16,14 @@ import java.util.Locale;
  * logging errors to a specific file.
  */
 public class ErrorFileLogHandler implements Logger {
+    private static volatile ErrorFileLogHandler instance;
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private static final String FILE_PATH = "src.main.se.kth.iv1350.data".replace(".", FILE_SEPARATOR);
-    private static final String LOG_FILE_NAME = "pos-log.txt";
+    private final String FILE_PATH = System.getProperty("se.kth.iv1350.log.file.location");
+    private static final String LOG_FILE_NAME = System.getProperty("se.kth.iv1350.log.file.error_log");
     private static final String LINE_SEPARATOR  = System.getProperty("line.separator");
     private Locale locale = new Locale("sv", "SE");
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
     private PrintWriter logFile;
-    private static volatile ErrorFileLogHandler instance;
 
     private ErrorFileLogHandler() throws IOException {
         logFile = new PrintWriter(new FileWriter(FILE_PATH + FILE_SEPARATOR + LOG_FILE_NAME, true), true);

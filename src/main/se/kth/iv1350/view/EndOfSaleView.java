@@ -6,17 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-// TODO UML:a och skriva JavaDocs
 /**
  * Shows the checked out sale details including the shopping cart, total price,
  * discounts, promotions and total VAT costs.
  */
 public class EndOfSaleView extends SaleView {
-    private Amount totalPricePreDiscount;
-    private Amount totalPriceAfterDiscount;
-    private Amount discount;
-    private String discountInfo;
-
     @Override
     protected void sortShoppingCart(List<ShoppingCartItem> listOfShoppingCartItems) {
         Collections.sort(listOfShoppingCartItems, Comparator.comparing(ShoppingCartItem::getName));
@@ -32,16 +26,18 @@ public class EndOfSaleView extends SaleView {
      */
     @Override
     protected void printCurrentState(LimitedSaleView sale) {
-        totalPricePreDiscount = sale.calculateRunningTotal();
-        totalPriceAfterDiscount = sale.getTotalPrice();
-        discount = sale.getDiscount();
-        discountInfo = sale.createStringDiscountInfo();
+        Amount totalPricePreDiscount = sale.calculateRunningTotal();
+        Amount totalPriceAfterDiscount = sale.getTotalPrice();
+        Amount discount = sale.getDiscount();
+        String discountInfo = sale.createStringDiscountInfo();
 
         System.out.println("");
         System.out.println("---------------- End of Sale follows ---------------");
         StringBuilder builder = new StringBuilder();
         builder.append(createSaleItemsInfoString());
-        builder.append(createDiscountInfoString());
+        if (!totalPriceAfterDiscount.equals(totalPricePreDiscount)) {
+            builder.append(createDiscountInfoString(discount, discountInfo));
+        }
         builder.append("%-40s%s".formatted("Total Price:", totalPriceAfterDiscount));
         builder.append("%n".formatted());
         builder.append("%-40s%s".formatted("Including VAT:", sale.getTotalVATCosts()));
@@ -51,6 +47,8 @@ public class EndOfSaleView extends SaleView {
         System.out.println("");
     }
     /**
+     * Should the observer act on the update?
+     * Certain observers will act if the sale is complete, others will not.
      *
      * @param isComplete is the sale complete?
      * @return if sale is complete, the view should update and therefore return true
@@ -61,15 +59,14 @@ public class EndOfSaleView extends SaleView {
         else {return false;}
     }
 
-    private String createDiscountInfoString(){
+    private String createDiscountInfoString(Amount discount, String discountInfo){
         StringBuilder discountInfoBuilder = new StringBuilder();
-        if (!totalPriceAfterDiscount.equals(totalPricePreDiscount)) {
-            discountInfoBuilder.append("%-40s-%s".formatted("Total discount:", discount));
-            discountInfoBuilder.append("%n".formatted());
-            discountInfoBuilder.append("(%s)".formatted(discountInfo));
-            discountInfoBuilder.append("%n".formatted());
-            discountInfoBuilder.append("%n".formatted());
-        }
+        discountInfoBuilder.append("%-40s-%s".formatted("Total discount:", discount));
+        discountInfoBuilder.append("%n".formatted());
+        discountInfoBuilder.append("(%s)".formatted(discountInfo));
+        discountInfoBuilder.append("%n".formatted());
+        discountInfoBuilder.append("%n".formatted());
+
         return discountInfoBuilder.toString();
     }
 }

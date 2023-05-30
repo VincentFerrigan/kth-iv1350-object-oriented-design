@@ -1,9 +1,17 @@
 package se.kth.iv1350.model;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.controller.OperationFailedException;
-import se.kth.iv1350.integration.ItemDTO;
+import se.kth.iv1350.integration.ItemNotFoundInItemRegistryException;
+import se.kth.iv1350.integration.ItemRegister;
+import se.kth.iv1350.integration.ItemRegistryException;
+import se.kth.iv1350.startup.Main;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,25 +22,42 @@ class CashRegisterTest {
     private CashPayment payment;
     private final Amount PAID_AMOUNT = new Amount(500);
     private Sale sale;
-    private ItemDTO itemInfo;
-    private Amount itemPrice;
+    private Amount itemPrice = new Amount(10);
+    private final int ITEM_ID = 0;
 
+    /**
+     * Properties set up base on:
+     * <a href=https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html>The Java™ Tutorials - System Properties</a>.
+     * If you're having trouble loading the resource file <code>config.properties></code>,
+     * first check that <code>src/test/resources</code>
+     * is correctly configured as a resources directory in your IDE.
+     */
+    @BeforeAll
+    static void setup() {
+        Properties properties = new Properties(System.getProperties());
+        try {
+            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
+            properties.load(inputStream);
+            System.setProperties(properties);
+        } catch (IOException ex) {
+            System.out.println("Unable to set up configuration");
+            ex.printStackTrace();
+        }
+    }
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         instance = new CashRegister(INITIAL_BALANCE);
         payment = new CashPayment(PAID_AMOUNT);
+        ItemRegister itemRegister = new ItemRegister();
         try {
-            sale = new Sale();
+            sale = new Sale(itemRegister);
         } catch (OperationFailedException ex) {
             fail("Failed to setUp CashPaymentTest");
             ex.printStackTrace();
         }
-        itemInfo = new ItemDTO(1, "Product name", "Product Description",
-                new Amount(80), 1);
-        itemPrice = itemInfo.getUnitPrice().multiply(1.25);
         try {
-            sale.addItem(itemInfo, 1);
-        } catch (OperationFailedException e) {
+            sale.addItem(ITEM_ID, 1);
+        } catch (ItemRegistryException | ItemNotFoundInItemRegistryException | OperationFailedException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
             throw new RuntimeException(e);

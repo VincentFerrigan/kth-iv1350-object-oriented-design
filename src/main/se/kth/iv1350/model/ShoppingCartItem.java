@@ -1,10 +1,11 @@
 package se.kth.iv1350.model;
 
 import se.kth.iv1350.controller.OperationFailedException;
-import se.kth.iv1350.integration.ItemDTO;
+import se.kth.iv1350.integration.dto.ItemDTO;
 import se.kth.iv1350.integration.vat.VATFactory;
 import se.kth.iv1350.integration.vat.VATStrategy;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
@@ -30,7 +31,7 @@ public class ShoppingCartItem {
         this.quantity = quantity;
         try {
             VATFactory vatFactory = VATFactory.getInstance();
-            vatCalculation = vatFactory.getVATStrategy();
+            vatCalculation = vatFactory.getDefaultVATStrategy();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException | InvocationTargetException ex) {
             throw new OperationFailedException("Unable to instantiate vat algorithms", ex);

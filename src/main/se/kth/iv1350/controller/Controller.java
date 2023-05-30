@@ -1,4 +1,5 @@
 package se.kth.iv1350.controller;
+import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.util.ErrorFileLogHandler;
@@ -20,9 +21,11 @@ import java.util.*;
 public class Controller {
     private List<SaleObserver> saleObservers;
     private Printer printer;
+
+    private RegistryHandler registryHandler;
     private SaleLog saleLog;
-    private ItemRegistry itemRegistry;
-    private CustomerRegistry customerRegistry;
+    private ItemRegister itemRegister;
+    private CustomerRegister customerRegister;
     private AccountingSystem accountingSystem;
     private CashRegister cashRegister;
     private Sale currentSale;
@@ -34,11 +37,13 @@ public class Controller {
      * @param registerCreator Used to get all classes that handle database calls.
      */
     public Controller (Printer printer, RegisterCreator registerCreator) throws IOException {
+//    public Controller (Printer printer, RegistryHandler registryHandler) throws IOException {
         this.printer = printer;
+        this.registryHandler = registryHandler;
         saleLog = registerCreator.getSaleLog();
         accountingSystem = registerCreator.getAccountingSystem();
-        customerRegistry = registerCreator.getCustomerRegistry();
-        itemRegistry = registerCreator.getInventorySystem();
+        customerRegister = registerCreator.getCustomerRegistry();
+        itemRegister = registerCreator.getInventorySystem();
         cashRegister = new CashRegister(CashRegister.INITIAL_BALANCE);
         logger = ErrorFileLogHandler.getInstance();
         saleObservers = new ArrayList<>();
@@ -65,7 +70,7 @@ public class Controller {
      */
     public void startSale() throws OperationFailedException {
         try {
-            this.currentSale = new Sale();
+            this.currentSale = new Sale(itemRegister);
         } catch (OperationFailedException ex) {
             logger.log(ex);
             throw new OperationFailedException("Unable to start sale", ex);
@@ -98,14 +103,13 @@ public class Controller {
         }
         try {
             currentSale.addItem(itemID, quantity);
-        } catch (ItemNotFoundInShoppingCartException ex) {
-            try {
-                ItemDTO itemInfo = itemRegistry.getItemInfo(ex.getItemIDNotFound());
-                currentSale.addItem(itemInfo, quantity);
-            } catch (ItemRegistryException itmRegExc) {
-                logger.log(itmRegExc);
-                throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
-            }
+        } catch (ItemRegistryException itmRegExc) {
+            logger.log(itmRegExc);
+            throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
+        } catch (OperationFailedException vatRegExc) {
+            logger.log(vatRegExc);
+            throw new OperationFailedException("Unable to set up VAT, unable to register items", vatRegExc);
+
         }
     }
 
@@ -135,7 +139,8 @@ public class Controller {
                     "Call to registerCustomerToSale before initiating a new sale and registering items.");
         }
         try {
-            CustomerDTO customerInfo = customerRegistry.getCustomerInfo(customerID);
+            CustomerDTO customerInfo = customerRegister.getDataInfo(customerID);
+//            CustomerDTO customerInfo = registryHandler.getCustomerInfo(customerID);
             currentSale.addCustomerToSale(customerInfo);
         } catch (CustomerRegistryException custRegExc) {
             logger.log(custRegExc);
@@ -160,9 +165,9 @@ public class Controller {
         currentSale.pay(payment);
         cashRegister.addPayment(payment);
         saleLog.logSale(currentSale);
-        accountingSystem.updateToAccountingSystem(currentSale);
-        customerRegistry.updateCustomerDatabase(currentSale);
-        itemRegistry.updateInventory(currentSale);
+        accountingSystem.updateRegister(currentSale);
+        customerRegister.updateRegister(currentSale);
+        itemRegister.updateRegister(currentSale);
         currentSale.printReceipt(printer);
         currentSale = null; // Är du säker?
     }

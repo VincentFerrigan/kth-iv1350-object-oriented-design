@@ -9,14 +9,9 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class DiscountFactory {
     private static volatile DiscountFactory instance;
-    private static final String DISCOUNT_CLASS_NAME_KEY = "se.kth.iv1350.discountstrategy.classname";
+    private static final String DISCOUNT_CLASS_NAME_KEY = "se.kth.iv1350.discount_strategy_classname";
 
     private DiscountFactory() {
-        // -Dse.kth.iv1350.discountstrategy.classname=se.kth.iv1350.integration.pricing.MemberDiscount,se.kth.iv1350.integration.pricing.StaffDiscount
-        System.setProperty(DISCOUNT_CLASS_NAME_KEY,
-                "se.kth.iv1350.integration.pricing.MemberDiscount," +
-                "se.kth.iv1350.integration.pricing.StaffDiscount," +
-                "se.kth.iv1350.integration.pricing.Promotion");
     }
     /**
      * @return The only instance of this singleton.
@@ -72,8 +67,7 @@ public class DiscountFactory {
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
 
-        Class matcherClass = Class.forName(className);
-        DiscountStrategy discountStrategy = (DiscountStrategy) matcherClass.getDeclaredConstructor().newInstance();
-        return discountStrategy;
+        Class discountClass = Class.forName(className);
+        return (DiscountStrategy) discountClass.getDeclaredConstructor().newInstance();
     }
 }

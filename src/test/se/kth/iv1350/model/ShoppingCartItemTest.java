@@ -1,26 +1,51 @@
 package se.kth.iv1350.model;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.controller.OperationFailedException;
-import se.kth.iv1350.integration.ItemDTO;
+import se.kth.iv1350.integration.dto.ItemDTO;
+import se.kth.iv1350.startup.Main;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class ShoppingCartItemTest {
     private ShoppingCartItem instance;
-    private static final int TEST_ITEM_ID = 0;
+    private final int TEST_ITEM_ID = 0;
     private final int TEST_QUANTITY = 5;
-    private static final String TEST_NAME = "test name";
-    private static final String TEST_DESCRIPTION = "test description";
-    private static final Amount TEST_UNIT_PRICE = new Amount(10);
-    private static final Amount TEST_UNIT_PRICE_EX_VAT = TEST_UNIT_PRICE.multiply(1/1.25);
-    private static final int TEST_VAT_GROUP_CODE = 1;
+    private final String TEST_NAME = "test name";
+    private final String TEST_DESCRIPTION = "test description";
+    private final Amount TEST_UNIT_PRICE = new Amount(10);
+    private final Amount TEST_UNIT_PRICE_EX_VAT = TEST_UNIT_PRICE.multiply(1/1.25);
+    private final int TEST_VAT_GROUP_CODE = 1;
     private final ItemDTO TEST_ITEM_INFO = new ItemDTO(TEST_ITEM_ID,
             TEST_NAME, TEST_DESCRIPTION, TEST_UNIT_PRICE_EX_VAT, TEST_VAT_GROUP_CODE);
 
+    /**
+     * Properties set up base on:
+     * <a href=https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html>The Java™ Tutorials - System Properties</a>.
+     * If you're having trouble loading the resource file <code>config.properties></code>,
+     * first check that <code>src/test/resources</code>
+     * is correctly configured as a resources directory in your IDE.
+     */
+    @BeforeAll
+    static void setup() {
+        Properties properties = new Properties(System.getProperties());
+        try {
+            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
+            properties.load(inputStream);
+            System.setProperties(properties);
+        } catch (IOException ex) {
+            System.out.println("Unable to set up configuration");
+            ex.printStackTrace();
+        }
+    }
     @BeforeEach
     void setUp() {
         try {

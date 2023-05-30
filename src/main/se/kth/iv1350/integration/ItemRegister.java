@@ -1,7 +1,7 @@
 package se.kth.iv1350.integration;
 
+import se.kth.iv1350.integration.dto.ItemDTO;
 import se.kth.iv1350.model.*;
-import se.kth.iv1350.util.DBParameters;
 import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
@@ -17,19 +17,22 @@ import java.util.Map;
  * Contains all the item data that are stored in the store.
  * This Singleton is a placeholder for a future external inventory system.
  */
-public class ItemRegistry {
-    private static volatile ItemRegistry instance;
-    private static final String CSV_DELIMITER = ";";
-    private static final int DATABASE_NOT_FOUND = 404;
+public class ItemRegister {
+//public class ItemRegister implements IRegistry<ItemDTO, Integer> {
+    private static volatile ItemRegister instance;
+    private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
+    private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
+    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
+    private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.inventory_db");
+    private final int DATABASE_NOT_FOUND = 404;
     private File flatFileDb;
     private String recordHeader;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
     private ErrorFileLogHandler logger;
 
-    private ItemRegistry() throws IOException {
+    private ItemRegister() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
-        DBParameters dBParams = DBParameters.getInstance();
-        flatFileDb = dBParams.getInventoryFlatFileDb();
+        flatFileDb = new File(FILE_PATH + FILE_SEPARATOR+ FLAT_FILE_DB_NAME);
 
         addItemData();
     }
@@ -37,13 +40,13 @@ public class ItemRegistry {
      * @return The only instance of this singleton.
      * @throws IOException
      */
-    public static ItemRegistry getInstance() throws IOException {
-        ItemRegistry result = instance;
+    public static ItemRegister getInstance() throws IOException {
+        ItemRegister result = instance;
         if (result == null) {
-            synchronized (ItemRegistry.class) {
+            synchronized (ItemRegister.class) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new ItemRegistry();
+                    instance = result = new ItemRegister();
                 }
             }
         }
@@ -71,11 +74,9 @@ public class ItemRegistry {
                 this.inventoryTable.put(item.articleNo, item);
             }
         } catch (FileNotFoundException ex){
-            // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
             logger.log(ex);
             throw ex;
         } catch (IOException ex){
-            // TODO ska addItemData loggas här?
             logger.log(ex);
             throw ex;
         }
@@ -89,7 +90,8 @@ public class ItemRegistry {
      * @throws ItemRegistryException when database call failed.
      */
     //TODO Are we supposed to throw ItemRegistryException as well with method?
-    public ItemDTO getItemInfo(int itemID) throws ItemNotFoundInItemRegistryException {
+//    @Override
+    public ItemDTO getDataInfo(Integer itemID) throws ItemNotFoundInItemRegistryException {
         if (itemID == DATABASE_NOT_FOUND) {
             throw new ItemRegistryException("Detailed message about database fail");
         } else if (inventoryTable.containsKey(itemID)) {
@@ -105,7 +107,7 @@ public class ItemRegistry {
      * Updates the inventory system.
      * @param closedSale contains the sale details
      */
-    public void updateInventory(Sale closedSale){
+    public void updateRegister(Sale closedSale){
         List<ShoppingCartItem> listOfShoppingCartItems = new ArrayList<>(closedSale.getCollectionOfItems());
         for (ShoppingCartItem shoppingCartItem : listOfShoppingCartItems) {
             int key = shoppingCartItem.getItemID();
@@ -173,17 +175,17 @@ public class ItemRegistry {
         public String toString() {
             StringBuilder builder = new StringBuilder();
             builder.append(articleNo);
-            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(ItemRegister.CSV_DELIMITER);
             builder.append(name);
-            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(ItemRegister.CSV_DELIMITER);
             builder.append(description);
-            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(ItemRegister.CSV_DELIMITER);
             builder.append(price.getAmount());
-            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(ItemRegister.CSV_DELIMITER);
             builder.append(vatGroupCode);
-            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(ItemRegister.CSV_DELIMITER);
             builder.append(inStore);
-            builder.append(ItemRegistry.CSV_DELIMITER);
+            builder.append(ItemRegister.CSV_DELIMITER);
             builder.append(sold);
 
             return builder.toString();

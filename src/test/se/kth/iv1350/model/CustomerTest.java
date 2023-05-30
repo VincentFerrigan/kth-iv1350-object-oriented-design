@@ -2,7 +2,7 @@ package se.kth.iv1350.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import se.kth.iv1350.integration.CustomerDTO;
+import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.pricing.CustomerType;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,7 +11,6 @@ class CustomerTest {
 
     Customer instance;
     CustomerDTO customerInfo;
-
     int INITAIL_BONUS_POINTS = 100;
 
     @BeforeEach
