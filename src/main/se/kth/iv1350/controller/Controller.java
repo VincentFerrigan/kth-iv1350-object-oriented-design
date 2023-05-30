@@ -1,4 +1,5 @@
 package se.kth.iv1350.controller;
+import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.model.*;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.util.ErrorFileLogHandler;
@@ -20,6 +21,8 @@ import java.util.*;
 public class Controller {
     private List<SaleObserver> saleObservers;
     private Printer printer;
+
+    private RegistryHandler registryHandler;
     private SaleLog saleLog;
     private ItemRegister itemRegister;
     private CustomerRegister customerRegister;
@@ -34,7 +37,9 @@ public class Controller {
      * @param registerCreator Used to get all classes that handle database calls.
      */
     public Controller (Printer printer, RegisterCreator registerCreator) throws IOException {
+//    public Controller (Printer printer, RegistryHandler registryHandler) throws IOException {
         this.printer = printer;
+        this.registryHandler = registryHandler;
         saleLog = registerCreator.getSaleLog();
         accountingSystem = registerCreator.getAccountingSystem();
         customerRegister = registerCreator.getCustomerRegistry();
@@ -65,7 +70,7 @@ public class Controller {
      */
     public void startSale() throws OperationFailedException {
         try {
-            this.currentSale = new Sale();
+            this.currentSale = new Sale(itemRegister);
         } catch (OperationFailedException ex) {
             logger.log(ex);
             throw new OperationFailedException("Unable to start sale", ex);
@@ -98,14 +103,13 @@ public class Controller {
         }
         try {
             currentSale.addItem(itemID, quantity);
-        } catch (ItemNotFoundInShoppingCartException ex) {
-            try {
-                ItemDTO itemInfo = itemRegister.getDataInfo(ex.getItemIDNotFound());
-                currentSale.addItem(itemInfo, quantity);
-            } catch (ItemRegistryException itmRegExc) {
-                logger.log(itmRegExc);
-                throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
-            }
+        } catch (ItemRegistryException itmRegExc) {
+            logger.log(itmRegExc);
+            throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
+        } catch (OperationFailedException vatRegExc) {
+            logger.log(vatRegExc);
+            throw new OperationFailedException("Unable to set up VAT, unable to register items", vatRegExc);
+
         }
     }
 
@@ -136,6 +140,7 @@ public class Controller {
         }
         try {
             CustomerDTO customerInfo = customerRegister.getDataInfo(customerID);
+//            CustomerDTO customerInfo = registryHandler.getCustomerInfo(customerID);
             currentSale.addCustomerToSale(customerInfo);
         } catch (CustomerRegistryException custRegExc) {
             logger.log(custRegExc);
