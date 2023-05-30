@@ -26,7 +26,6 @@ public class View {
         contr.addSaleObserver(new RunningSaleView());
         contr.addSaleObserver(new EndOfSaleView());
         contr.addCashRegisterObserver(new TotalRevenueView());
-        contr.addCashRegisterObserver(TotalRevenueFileOutput.getInstance());
         logger = ErrorFileLogHandler.getInstance();
         errorMessageHandler = ErrorMessageHandler.getInstance();
     }
@@ -289,10 +288,6 @@ public class View {
         }
     }
 
-    private void payAndWriteCheckoutToUI(Amount paidAmount) {
-        System.out.println("Paying " + paidAmount);
-        contr.pay(paidAmount);
-    }
     private void writeToLogAndUI(String uiMsg, Exception exc) {
         errorMessageHandler.log(uiMsg);
         logger.log(exc);
