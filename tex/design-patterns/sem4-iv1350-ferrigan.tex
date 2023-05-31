@@ -1,0 +1,430 @@
+\documentclass[a4paper]{scrreprt}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage{fancyvrb}
+
+%\usepackage[style=ieee]{biblatex} % om du vill köra ieee (tror leif kör den)
+\usepackage[backend=biber,style=vancouver]{biblatex}
+\addbibresource{bibfile.bib}
+%Alternativt med natbib
+%\usepackage[numbers]{natbib} %referenser vancouver
+%\usepackage[numbers,round]{natbib} %referenser vancouver
+%\usepackage{hyperref}
+
+\usepackage{pdflscape}
+% \usepackage{lscape}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+\usepackage{caption}
+\usepackage{hyperref}
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+
+\usepackage{paralist} %Inline lists
+
+% Create header and footer
+\headheight 27pt
+\pagestyle{fancyplain}
+\lhead{\footnotesize{Object-Oriented Design, IV1350}}
+\chead{\footnotesize{Seminar 3 Implementation}}
+\rhead{}
+\lfoot{}
+\cfoot{\thepage\ (\pageref{LastPage})}
+\rfoot{}
+
+% Create title page
+\title{Seminar 4, Exceptions and Design Patterns}
+\subtitle{Object-Oriented Design, IV1350}
+\author{Vincent Ferrigan ferrigan@kth.se}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents %Generates the TOC
+
+\chapter{Introduction}
+The purpose of this report is to discuss the implementation of exception handling
+and design patterns.
+The aim of the fourth seminar was on practicing the design
+and coding of exception handling, polymorphism, and design patterns,
+specifically as outlined in chapters eight and nine of the course book.
+
+The seminar consisted of two tasks.
+The first task was to use both checked and
+unchecked exception handling.
+The former to manage the alternative flow of $3-4a$
+in the Process Sale, and the latter to indicate database failure (such as a
+database server not running or database connectivity lost).
+The latter had to
+be simulated.
+
+Additional exception handling were implemented;
+\begin{enumerate}
+    \item Exceptions thrown by reflective operations (issues related to the Factory Design Pattern see ****%TODO),
+    \item I/O exceptions (related to reading and writing to the flat file databases and creating and writing to the revenue and error logs),
+    \item \mintinline{java}{IllegalStateException}, which is thrown if system operations are called in a wrong order.
+    For example when registering an item before initializing a sale or calling the pay operation before ending sale
+    when methods are called in wrong order.
+\end{enumerate}
+
+The second task consisted of two parts.
+The first part, \emph{task 2a}, revolved
+around employing the Observer Design Pattern to introduce a new functionality:
+displaying the total revenue from the start of the program, each time it was
+updated.
+This functionality was implemented through the creation of two new
+classes.
+The first called \mintinline{java}{TotalRevenueView}, responsible for displaying the
+total income and a second class called \mintinline{java}{TotalRevenueFileOutput} for logging the
+income to a file.
+
+The second part of the second task, \emph{task 2b}, involved refactoring other parts of
+the code to two more GoF patterns.
+Here the author chose to implement
+\begin{enumerate}
+\item \textbf{The Creational Patterns}
+\begin{enumerate}
+    \item \emph{Singleton},
+    \item \emph{Abstract Factory} and
+    \item \emph{Factory method}.
+\end{enumerate}
+\item \textbf{The Structural Patterns}
+\begin{enumerate}
+    \setcounter{enumi}{3}
+    \item \emph{Composite} and
+    \item \emph{Facade}.
+\end{enumerate}
+\item \textbf{The Behavioral Patterns}
+\begin{enumerate}
+    \setcounter{enumi}{5}
+    \item \emph{Observer},
+    \item \emph{Strategy} and
+    \item \emph{Template Method}.
+\end{enumerate}
+\end{enumerate}
+
+%\textbf{Creational Patterns}
+%\begin{inparaenum}[1)]
+%\item \emph{Singleton},
+%\item \emph{Abstract Factory} and
+%\item \emph{Factory method},
+%the \textbf{Structural Patterns}
+%\item \emph{Composite} and
+%\item \emph{Facade} and the \textbf{Behavioral Patterns}
+%\item \emph{Observer},
+%\item \emph{Strategy} and
+%\item \emph{Template Method}.
+%\end{inparaenum}
+
+
+
+%TODO Lägg till github konto.
+
+
+\chapter{Method}
+\section*{Tools}
+This project was implemented in \emph{Java}.
+The UML modeling tool used was \emph{PlantUML}.
+PlantUML is an open-source tool for creating UML diagrams using a text-based
+syntax.
+It was chosen to enable version control through git and to avoid using a
+proprietary graphical editor.
+This report was also written in plain text mode -- \LaTeX.
+
+All code was written in \emph{IntelliJ IDEA} and the unit tests were written with the \emph{JUnit 5} test framework.
+Quick-fixes and editing was, however, done in \emph{Vim}.
+
+\section*{The overall Work-flow}
+Incremental refactoring, one feature at a time.
+Automatic tests were run to make sure that the changes didn't break the code.
+
+To improve the design and implement certain design patterns,
+one had to continuously analyze the code-base to identify code smells and
+(re)valuate parts of the code that can be refactored to a
+particular design pattern (or patterns).
+
+As a result, the system design was continuously refined,
+allowing for more clean and maintainable code and a greater ease to add new code.
+
+\section*{The project's resources and the system's configuration and data}
+Instead of hard-coding data in the integration classes,
+flat file databases are used to store records.
+These CSV-files store,
+read and update data for accounting, inventory (a product catalog included), and customer details.
+
+The filenames and their paths are all found in the project's \verb|Config.Properties|
+file under \verb|src/main/resources|.
+The class names of the objects a \emph{Factory} can create, and the filenames of all the loggers are also
+configured in the same file.
+
+The properties are added to the \verb|System Properties| -- a set-up based on
+\href{https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html}{The Java\texttrademark{} Tutorials - System Properties}
+
+If a developer is having trouble loading the resource file \verb|config.properties|,
+they will have to first check that the \verb|src/main/resources|
+is correctly configured as a resource directory in your IDE.
+
+Since the system reads and writes to files, handling exceptions became necessary.
+
+\section*{Tests}
+Tests are created using the JUnit 5 framework and follow best practice, i.e., they
+have the same directory architecture as the program, and are placed outside the source
+folder for the program (the SUT).
+
+Similar to the SUT, the tests have their own Config Properties file, error-log file and flat file databases
+(see listing ~\ref{listing:test-config.properties}) and are added to the \verb|System Properties| with
+a \mintinline{java}{@BeforeAll} method (see listing ~\ref{listing:before-all-tests-setup}).
+
+In this way, the inventory can be changed on the fly, just by manipulating
+the \verb|inventory_items.csv| file which is placed \verb|test-data/db| directory.
+The test can create, compare and manipulate its own database and log-files.
+This enables testing classes in both the integration and util layer package.
+. %TYP TODO men har du gjort så? Lägg till ErrorFileLogHandler test, TotalRevenueFileOutput test.
+
+\begin{longlisting}
+    \inputminted[
+        label=@BeforeAll tests setup,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=1,
+        lastline=25,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../src/test/resources/config.properties}
+    \caption{The Config Properties file for the JUnit tests.}
+    \label{listing:test-config.properties}
+\end{longlisting}
+
+\begin{longlisting}
+    \inputminted[
+        label=@BeforeAll tests setup,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=10,
+        lastline=34,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../src/test/se/kth/iv1350/POSTestSuperClass.java}
+    \caption{The Config Properties are added to the System Properties in a @BeforeAll setup method.
+    This method is placed in a superclass, which is extended in all test that require a pre-configruation}
+    \label{listing:before-all-tests-setup}
+\end{longlisting}
+
+\section*{Refactoring to Patterns}
+
+\subsubsection{Discount and promotion algorithms}
+Conditional discount logic can be replaced with a combination of the Strategy, Factory and Composite Pattern.
+Here, each discount (or promotion) algorithm
+can be defined in a separate strategy-class, but with a common interface.
+see listing 1 ~\ref{listing:discount-strategy}.
+
+\begin{longlisting}
+    \inputminted[
+        label=The common Discount-Strategy Interface,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=6,
+        lastline=20,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../src/main/se/kth/iv1350/integration/pricing/DiscountStrategy.java}
+    \caption{Caption text av något slag.}
+    \label{listing:discount-strategy}
+\end{longlisting}
+
+Knowing, however, which discount to choose from requires a third pattern.....
+The need to substitute or add discounts at runtime required....
+Creational knowledge is also moved to the factory, since discounts will be substituted or added at runtime (and after deployment )
+
+and some duplicated code was eliminated by using the Template Method Pattern.
+
+
+%a single instance available to all of the program, for example, a single database object shared by different parts of the program.g
+
+\newpage
+\chapter{Result}
+\label{sec:result}
+xxxxx
+
+The entire program can be found here:
+
+\subsubsection*{GitHub-Repo}
+\url{https://github.com/VincentFerrigan/kth-iv1350-point-of-sale}
+
+%\section{The Class Diagram}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{uml/output/CD_Sem1}
+%        \caption{The class diagram after all system operations have been designed.}
+%        \label{fig:CD}
+%    \end{center}
+%\end{figure}
+%The Class Diagram illustrated in figure \ref{fig:CD} emphasizes the links between the objects, i.e.\ the instances of
+%our classes.
+%It also groups the classes into subsystems in accordance with the MVC architectural pattern.
+%
+%All possible attributes and methods that belong to a class (including their parameters) are shown.
+%In other words, all methods (and parameters) that were depicted in the Interaction Diagrams are all
+%collected and grouped here in the Class Diagram.
+%\newpage
+%%\begin{landscape}
+%    \section*{The Refined Design}
+%    \subsection*{Class Diagram}
+%%    \newgeometry{left=0cm,right=0cm,top=0cm,bottom=0cm}
+%
+%    \begin{figure}[h!]
+%        \begin{center}
+%            \includegraphics[width=\textwidth]{../../uml/output/uml_v3}
+%            \caption{The Class Diagram}
+%            \label{fig:CD}
+%        \end{center}
+%    \end{figure}
+%
+%    \begin{figure}[h!]
+%        \begin{center}
+%            \includegraphics[width=\textwidth]{../../uml/output/uml_v3_001}
+%            \caption{The DTOs (Data Transfer Objects)}
+%            \label{fig:DTO}
+%        \end{center}
+%    \end{figure}
+%
+%\newpage
+%\subsection*{System Operations}
+%\subsubsection*{The Start up, Main System Operation}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_002}
+%%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%%        \caption{The Start Up \verb|Main| system operations}
+%        \caption{The Start Up Main system operations}
+%        \label{fig:SD5}
+%    \end{center}
+%\end{figure}
+%
+%\subsubsection*{The StartSale System Operations}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003}
+%%        \includegraphics[trim=0cm 0cm 51cm 0cm ,clip, width=\textwidth]{../uml/output/uml_v3.png}
+%%        \caption{The \verb|startSale| system operation }
+%        \caption{The startSale system operation }
+%        \label{fig:SD}
+%    \end{center}
+%\end{figure}
+%%
+%\newpage
+%\subsubsection*{The registerItem System Operations}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_004}
+%%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%%        \caption{The \verb|registerItem| system operation }
+%        \caption{The registerItem operation }
+%        \label{fig:SD1}
+%    \end{center}
+%\end{figure}
+%
+%\subsection*{Displaying the output of current sale}
+%\begin{longlisting}
+%    \inputminted[
+%        label= Output of a current sale,
+%        linenos=false,
+%%        bgcolor=lightgray,
+%        firstline=1,
+%        lastline=8,
+%%        frame=single,
+%        fontsize=\footnotesize,
+%    ]{bash}{output/outputs.txt}
+%    \caption{The Receipt printed to System.out}
+%    \label{listing:checkoutOutput}
+%\end{longlisting}
+%
+%\subsubsection*{The endSale System Operations}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_005}
+%%        \includegraphics[trim=0cm 0cm 50cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%%        \caption{The \verb|endSale| system operation }
+%        \caption{The endSale system operation }
+%        \label{fig:SD2}
+%    \end{center}
+%\end{figure}
+%
+%\subsubsection*{End of Sale - Displaying the output of a checkout}
+%\begin{longlisting}
+%    \inputminted[
+%        label= Output of a checkout,
+%        linenos=false,
+%%        bgcolor=lightgray,
+%        firstline=61,
+%        lastline=72,
+%%        frame=single,
+%        fontsize=\footnotesize,
+%    ]{bash}{output/outputs.txt}
+%    \caption{The checkout shopping cart printed to System.out}
+%    \label{listing:checkout}
+%\end{longlisting}
+%
+%\subsubsection*{The discountRequest System Operations}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_006}
+%%        \includegraphics[trim=0cm 0cm 30cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The discoutRequest system operation }
+%        \label{fig:SD3}
+%    \end{center}
+%\end{figure}
+%
+%\subsubsection*{The addPayment System Operations}
+%\begin{figure}[h!]
+%    \begin{center}
+%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_007}
+%%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%%        \caption{The \verb|addPayment| system operation }
+%        \caption{The addPayment system operation }
+%        \label{fig:SD4}
+%    \end{center}
+%\end{figure}
+%
+%\subsubsection*{Receipt}
+%\begin{longlisting}
+%    \inputminted[
+%        label= Receipt,
+%        linenos=false,
+%%        bgcolor=lightgray,
+%        firstline=73,
+%        lastline=91,
+%%        frame=single,
+%        fontsize=\footnotesize,
+%    ]{bash}{output/outputs.txt}
+%    \caption{The Receipt printed to System.out}
+%    \label{listing:receipt}
+%\end{longlisting}
+%
+%%    \restoregeometry
+%%\end{landscape}
+%
+
+\chapter{Discussion}
+\label{sec:discussion}
+
+\listoflistings % Now typeset the list
+\printbibliography
+%med natbib
+%\bibliographystyle{unsrtnat} % referenser vancouver
+\end{document}
