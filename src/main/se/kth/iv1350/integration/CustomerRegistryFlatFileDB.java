@@ -24,7 +24,7 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
     private File flatFileDb;
     private String recordHeader;
     private Map<Integer, CustomerData> customerTable = new HashMap<>();
-    private ErrorFileLogHandler logger;
+    private final ErrorFileLogHandler logger;
 
     private CustomerRegistryFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
@@ -140,7 +140,7 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
     }
 
     private static class CustomerData {
-        private int customerID;
+        private final int customerID;
         private CustomerType customerType;
         private int bonusPoints;
 

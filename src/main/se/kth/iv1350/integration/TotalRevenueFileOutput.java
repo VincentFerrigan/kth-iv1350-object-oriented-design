@@ -22,7 +22,7 @@ public class TotalRevenueFileOutput extends TotalRevenue {
     private Locale locale = new Locale("sv", "SE");
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
     private PrintWriter revenueLogger;
-    private ErrorFileLogHandler logger;
+    private final ErrorFileLogHandler logger;
 
     private TotalRevenueFileOutput() throws IOException {
         revenueLogger = new PrintWriter(new FileWriter(FILE_PATH + FILE_SEPARATOR + LOG_FILE_NAME, true), true);

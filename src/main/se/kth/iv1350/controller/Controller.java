@@ -23,7 +23,7 @@ public class Controller {
     private Printer printer;
     private CashRegister cashRegister;
     private Sale currentSale;
-    private ErrorFileLogHandler logger;
+    private final ErrorFileLogHandler logger;
 
     /**
      * Creates a new instance.

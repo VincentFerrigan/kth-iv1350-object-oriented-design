@@ -32,7 +32,7 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
     private Amount totalRevenue = new Amount(0);
     private Amount totalVATCosts = new Amount(0);
     private Amount totalDiscounts = new Amount(0);
-    private ErrorFileLogHandler logger;
+    private final ErrorFileLogHandler logger;
 
     private AccountingSystemFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();

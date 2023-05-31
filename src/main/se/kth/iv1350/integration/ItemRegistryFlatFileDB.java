@@ -27,7 +27,7 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
     private File flatFileDb;
     private String recordHeader;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
-    private ErrorFileLogHandler logger;
+    private final ErrorFileLogHandler logger;
 
     private ItemRegistryFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();

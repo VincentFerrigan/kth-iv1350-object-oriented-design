@@ -6,7 +6,6 @@ import se.kth.iv1350.model.Sale;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDateTime;
 
 
 // Singleton facade.

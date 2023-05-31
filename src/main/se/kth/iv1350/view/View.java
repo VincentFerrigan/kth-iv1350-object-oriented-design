@@ -15,7 +15,7 @@ import java.io.IOException;
 public class View {
     private Controller contr;
     private ErrorMessageHandler errorMessageHandler;
-    private ErrorFileLogHandler logger;
+    private final ErrorFileLogHandler logger;
 
     /**
      * Creates a new instance.
