@@ -1,6 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.integration.dto.RecordDTO;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Sale;
 import se.kth.iv1350.util.ErrorFileLogHandler;
@@ -11,9 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 //TODO : UML:as
 /**
@@ -24,14 +21,13 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
 //public class AccountingSystemFlatFileDB implements IRegistry<RecordDTO, LocalDateTime> {
     private static volatile AccountingSystemFlatFileDB instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
-    private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
-    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.accounting_db");
+    private final String FILE_PATH_KEY = "se.kth.iv1350.database.file.location";
+    private final String FLAT_FILE_DB_NAME_KEY = "se.kth.iv1350.database.file.accounting_db";
     private File flatFileDb;
     private String recordHeader;
     private Map<LocalDateTime, Record> records = new HashMap<>();
     private Locale locale = new Locale("sv", "SE");
-    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).localizedBy(locale);
     private LocalTime timeOfUpdate;
     private Amount totalRevenue = new Amount(0);
     private Amount totalVATCosts = new Amount(0);
@@ -40,7 +36,10 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
 
     private AccountingSystemFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
-        flatFileDb = new File(FILE_PATH+FILE_SEPARATOR+FLAT_FILE_DB_NAME);
+        flatFileDb = new File(
+                System.getProperty(FILE_PATH_KEY) +
+                        System.getProperty("file.separator") +
+                        System.getProperty(FLAT_FILE_DB_NAME_KEY));
 
         addRecordDataFromDb();
     }
@@ -61,36 +60,6 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
         }
         return result;
     }
-
-    // TODO: EVENTUELL. Beror på vilken lösning jag väljer.
-//    public Map getData(String FILE_TO_LOAD) throws IOException {
-//        Map<LocalDate, Record> accountingTable = new HashMap<>();
-//        try (FileReader reader = new FileReader(flatFileDb);
-//             BufferedReader bufferedReader = new BufferedReader(reader)) {
-//            String line = "";
-//            recordHeader = bufferedReader.readLine();
-//            while ((line = bufferedReader.readLine()) != null) {
-//                String[] splitArray = line.split(CSV_DELIMITER);
-//                accountingTable.put(
-//                        LocalDate.parse(splitArray[0], formatter),
-//                        new Record(
-//                                LocalTime.parse(splitArray[1], formatter),
-//                                Double.parseDouble(splitArray[2]),
-//                                Double.parseDouble(splitArray[3]),
-//                                Double.parseDouble(splitArray[4])));
-//            }
-//        } catch (FileNotFoundException ex){
-//            // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
-//            logger.log(ex);
-//            throw ex;
-//        } catch (IOException ex){
-//            // TODO ska addItemData loggas här?
-//            logger.log(ex);
-//            throw ex;
-//        }
-//        return accountingTable;
-//    }
-
 
     private void addRecordDataFromDb() throws IOException {
         try (FileReader reader = new FileReader(flatFileDb);
@@ -123,18 +92,18 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
      */
     @Override
     public void updateRegistry(Sale closedSale){
-        Amount totalPricePreDiscount = closedSale.calculateRunningTotal();
+        timeOfUpdate = LocalTime.now();
         Amount totalPricePaid = closedSale.getTotalPricePaid();
-        Amount discount = totalPricePreDiscount.minus(totalPricePaid);
+        Amount discount = closedSale.getDiscount();
         Amount vat = closedSale.getTotalVATCosts();
-        LocalDateTime timeOfSale = closedSale.getTimeOfSale();
 
         totalRevenue = totalRevenue.plus(totalPricePaid);
         totalVATCosts = totalVATCosts.plus(vat);
         totalDiscounts = totalDiscounts.plus(discount);
-
-        Record record = (new Record(timeOfSale.toLocalTime(), totalRevenue, totalVATCosts, totalDiscounts));
-        records.put(timeOfSale, record);
+        Record record = (new Record(timeOfUpdate, totalRevenue, totalVATCosts, totalDiscounts));
+        records.put(
+                LocalDateTime.of(LocalDate.now(), timeOfUpdate),
+                record);
         updateDatabase();
     }
 
@@ -160,28 +129,7 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
             throw new AccountingSystemException("Detailed message about database fail");
         }
     }
-    /**
-     * Searches for customer in the customer database with specified ID.
-     * @param timeOfSale The time of sale
-     * @return Record information as a {@link RecordDTO}.
-     * @throws AccountRecordNotFoundInAccountingSystemException when time of sale does not exist in accounting register/system.
-     * @throws AccountingSystemException when database call failed.
-     */
-    //TODO Are we supposed to throw ItemRegistryException as well with method?
-    @Override
-    public RecordDTO getDataInfo(Object dataID) throws AccountRecordNotFoundInAccountingSystemException {
-        LocalDateTime timeOfSale = (LocalDateTime) dataID;
-        if (timeOfSale == null) {
-            throw new AccountingSystemException("Detailed message about database fail");
-        } else if (records.containsKey(timeOfSale)) {
-            AccountingSystemFlatFileDB.Record record = this.records.get(timeOfSale);
-            return new RecordDTO(
-                    record.timeOfUpdate, record.totalAmount, record.totalVATAmount, record.discounts);
-        } else {
-            throw new AccountRecordNotFoundInAccountingSystemException(timeOfSale);
-        }
-    }
-    private static class Record {
+    private class Record {
         private LocalTime timeOfUpdate;
         private Amount totalAmount;
         private Amount totalVATAmount;
@@ -202,13 +150,15 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
         }
         @Override
         public String toString() {
+            String csv_delimiter = AccountingSystemFlatFileDB.CSV_DELIMITER;
+
             StringBuilder builder = new StringBuilder();
-            builder.append(timeOfUpdate);
-            builder.append(AccountingSystemFlatFileDB.CSV_DELIMITER);
+            builder.append(timeOfUpdate.format(formatter));
+            builder.append(csv_delimiter);
             builder.append(totalAmount);
-            builder.append(AccountingSystemFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(totalVATAmount);
-            builder.append(AccountingSystemFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(discounts);
             return builder.toString();
         }

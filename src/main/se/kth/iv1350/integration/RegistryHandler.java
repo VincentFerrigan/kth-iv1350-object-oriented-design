@@ -2,7 +2,6 @@ package se.kth.iv1350.integration;
 
 import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.dto.ItemDTO;
-import se.kth.iv1350.integration.dto.RecordDTO;
 import se.kth.iv1350.model.Sale;
 
 import java.io.IOException;
@@ -101,16 +100,5 @@ public class RegistryHandler { // Rename RegistryFacade?
      */
     public ItemDTO getItemInfo(int itemID) throws ItemNotFoundInItemRegistryException {
         return itemRegistry.getDataInfo(itemID);
-    }
-
-    /**
-     *
-     * @param timeOfSale
-     * @return
-     * @throws AccountRecordNotFoundInAccountingSystemException
-     * @throws AccountingSystemException
-     */
-    public RecordDTO getRecordInfo(LocalDateTime timeOfSale) throws AccountRecordNotFoundInAccountingSystemException {
-        return accountingSystem.getDataInfo(timeOfSale);
     }
 }
