@@ -301,12 +301,9 @@ package integration {
         + updateItemRegistry(closedSale : Sale) : void
         + getCustomerInfo(customerID : int) : CustomerDTO {exception CustomerNotFoundInCustomerRegistryException}
         + getItemInfo(itemID : int) : ItemDTO {exception ItemNotFoundInItemRegistryException}
-'        TODO osäker om denna ska vara med:
-        + getRecordInfo(timeOfSale : LocalDateTime) : RecordDTO {exception AccountRecordNotFoundInAccountingSystemException}
     }
 
     interface AccountingSystem<T> <<interface>> {
-        + getDataInfo(dataID T) : RecordDTO {exceptions=(AccountRecordNotFoundInAccountingSystemException, AccountingSystemException)}
         + updateRegistry(closedSale : Sale) : void {exception} {exception AccountingSystemException}
     }
     interface CustomerRegistry<T> <<interface>> {
@@ -321,9 +318,8 @@ package integration {
 '     TODO Se över hela upplägget. Records och dylikt
     class AccountingSystemFlatFileDB <<singleton>>{
         - {static} CSV_DELIMITER : String
-        - FILE_PATH : String
-        - FILE_SEPARATOR  : String
-        - FLAT_FILE_DB_NAME : String
+        - FILE_PATH_KEY : String
+        - FLAT_FILE_DB_NAME _KEY: String
         - flatFileDb : File
         - recordHeader : string
         - records : Map<LocalDateTime, Record>
@@ -348,9 +344,8 @@ package integration {
 
     class CustomerRegistryFlatFileDB <<singleton>> {
         - {static} CSV_DELIMITER : String
-        - FILE_PATH : String
-        - FILE_SEPARATOR  : String
-        - FLAT_FILE_DB_NAME : String
+        - FILE_PATH_KEY : String
+        - FLAT_FILE_DB_NAME _KEY: String
         - DATABASE_NOT_FOUND : int
         - flatFileDb : File
         - recordHeader : string
@@ -371,9 +366,8 @@ package integration {
 
     class ItemRegistryFlatFileDB <<singleton>> {
         - {static} CSV_DELIMITER : String
-        - FILE_PATH : String
-        - FILE_SEPARATOR  : String
-        - FLAT_FILE_DB_NAME : String
+        - FILE_PATH_KEY : String
+        - FLAT_FILE_DB_NAME _KEY: String
         - DATABASE_NOT_FOUND : int
         - flatFileDb : File
         - recordHeader : string
