@@ -1,22 +1,18 @@
 package se.kth.iv1350.model;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import se.kth.iv1350.POSTestSuperClass;
 import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
-import se.kth.iv1350.startup.Main;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
-import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ReceiptTest {
+class ReceiptTest extends POSTestSuperClass {
     private Receipt instance;
     private ByteArrayOutputStream outContent;
     private PrintStream originalSysOut;
@@ -27,26 +23,6 @@ class ReceiptTest {
     private Printer printer = new Printer();
     private final int ITEM_ID = 0;
     private final String ITEM_NAME = "test name";
-
-    /**
-     * Properties set up base on:
-     * <a href=https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html>The Java™ Tutorials - System Properties</a>.
-     * If you're having trouble loading the resource file <code>config.properties></code>,
-     * first check that <code>src/test/resources</code>
-     * is correctly configured as a resources directory in your IDE.
-     */
-    @BeforeAll
-    static void setup() {
-        Properties properties = new Properties(System.getProperties());
-        try {
-            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
-            properties.load(inputStream);
-            System.setProperties(properties);
-        } catch (IOException ex) {
-            System.out.println("Unable to set up configuration");
-            ex.printStackTrace();
-        }
-    }
 
     @BeforeEach
     void setUp() {
