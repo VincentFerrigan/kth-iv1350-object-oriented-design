@@ -21,9 +21,8 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
 //public class ItemRegistryFlatFileDB implements IRegistry<ItemDTO, Integer> {
     private static volatile ItemRegistryFlatFileDB instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
-    private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
-    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.inventory_db");
+    private final String FILE_PATH_KEY = "se.kth.iv1350.database.file.location";
+    private final String FLAT_FILE_DB_NAME_KEY = "se.kth.iv1350.database.file.inventory_db";
     private final int DATABASE_NOT_FOUND = 404;
     private File flatFileDb;
     private String recordHeader;
@@ -32,8 +31,10 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
 
     private ItemRegistryFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
-        flatFileDb = new File(FILE_PATH + FILE_SEPARATOR+ FLAT_FILE_DB_NAME);
-
+        flatFileDb = new File(
+                System.getProperty(FILE_PATH_KEY) +
+                        System.getProperty("file.separator") +
+                        System.getProperty(FLAT_FILE_DB_NAME_KEY));
         addItemData();
     }
     /**
@@ -176,19 +177,21 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
 
         @Override
         public String toString() {
+            String csv_delimiter = ItemRegistryFlatFileDB.CSV_DELIMITER;
+
             StringBuilder builder = new StringBuilder();
             builder.append(articleNo);
-            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(name);
-            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(description);
-            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(price.getAmount());
-            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(vatGroupCode);
-            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(inStore);
-            builder.append(ItemRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(sold);
 
             return builder.toString();

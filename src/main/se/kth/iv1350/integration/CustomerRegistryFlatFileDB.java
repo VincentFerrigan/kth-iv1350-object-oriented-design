@@ -18,9 +18,8 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
 //public class CustomerRegistryFlatFileDB implements IRegistry<CustomerDTO, Integer> {
     private static volatile CustomerRegistryFlatFileDB instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
-    private final String FILE_PATH = System.getProperty("se.kth.iv1350.database.file.location");
-    private final String FILE_SEPARATOR  = System.getProperty("file.separator");
-    private final String FLAT_FILE_DB_NAME = System.getProperty("se.kth.iv1350.database.file.customer_db");
+    private final String FILE_PATH_KEY = "se.kth.iv1350.database.file.location";
+    private final String FLAT_FILE_DB_NAME_KEY = "se.kth.iv1350.database.file.customer_db";
     private static final int DATABASE_NOT_FOUND = 404;
     private File flatFileDb;
     private String recordHeader;
@@ -29,8 +28,10 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
 
     private CustomerRegistryFlatFileDB() throws IOException {
         this.logger = ErrorFileLogHandler.getInstance();
-        flatFileDb = new File(FILE_PATH+FILE_SEPARATOR+FLAT_FILE_DB_NAME);
-
+        flatFileDb = new File(
+                System.getProperty(FILE_PATH_KEY) +
+                        System.getProperty("file.separator") +
+                        System.getProperty(FLAT_FILE_DB_NAME_KEY));
         addCustomerData();
     }
 
@@ -102,7 +103,7 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
             bufferedWriter.newLine();
-            for (CustomerRegistryFlatFileDB.CustomerData customerData : customerTable.values()) {
+            for (CustomerData customerData : customerTable.values()) {
                 bufferedWriter.write(customerData.toString());
                 bufferedWriter.newLine();
             }
@@ -151,11 +152,13 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
 
         @Override
         public String toString() {
+            String csv_delimiter = CustomerRegistryFlatFileDB.CSV_DELIMITER;
+
             StringBuilder builder = new StringBuilder();
             builder.append(customerID);
-            builder.append(CustomerRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(customerType);
-            builder.append(CustomerRegistryFlatFileDB.CSV_DELIMITER);
+            builder.append(csv_delimiter);
             builder.append(bonusPoints);
             return builder.toString();
         }
