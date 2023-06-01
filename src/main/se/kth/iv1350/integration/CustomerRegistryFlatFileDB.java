@@ -3,7 +3,6 @@ package se.kth.iv1350.integration;
 import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.pricing.CustomerType;
 import se.kth.iv1350.model.Sale;
-import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -15,7 +14,6 @@ import java.util.Map;
  * This class is a placeholder for a future external discount database.
  */
 public class CustomerRegistryFlatFileDB implements CustomerRegistry {
-//public class CustomerRegistryFlatFileDB implements IRegistry<CustomerDTO, Integer> {
     private static volatile CustomerRegistryFlatFileDB instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH_KEY = "se.kth.iv1350.database.file.location";
@@ -24,10 +22,8 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
     private File flatFileDb;
     private String recordHeader;
     private Map<Integer, CustomerData> customerTable = new HashMap<>();
-    private final ErrorFileLogHandler logger;
 
-    private CustomerRegistryFlatFileDB() throws IOException {
-        this.logger = ErrorFileLogHandler.getInstance();
+    private CustomerRegistryFlatFileDB() throws CustomerRegistryException {
         flatFileDb = new File(
                 System.getProperty(FILE_PATH_KEY) +
                         System.getProperty("file.separator") +
@@ -37,9 +33,9 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
 
     /**
      * @return The only instance of this singleton.
-     * @throws IOException
+     * @throws CustomerRegistryException database I/O failure
      */
-    public static CustomerRegistryFlatFileDB getInstance() throws IOException {
+    public static CustomerRegistryFlatFileDB getInstance() throws CustomerRegistryException {
         CustomerRegistryFlatFileDB result = instance;
         if (result == null) {
             synchronized (CustomerRegistryFlatFileDB.class) {
@@ -54,8 +50,9 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
 
     /**
      * Adds customer to the hashmap from the flat file database.
+     * @throws CustomerRegistryException database I/O failure
      */
-    private void addCustomerData() throws IOException {
+    private void addCustomerData() throws CustomerRegistryException {
         try (FileReader reader = new FileReader(flatFileDb);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
@@ -69,23 +66,42 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
                 this.customerTable.put(customerData.customerID, customerData);
             }
         } catch (FileNotFoundException ex){
-            // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
-            logger.log(ex);
-            throw ex;
+            throw new CustomerRegistryException("Flat-file db %s not found in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         } catch (IOException ex){
-            // TODO ska addItemData loggas här?
-            logger.log(ex);
-            throw ex;
+            throw new CustomerRegistryException("Unable to read from flat file db %s in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         }
     }
 
     /**
-     * Updates the customer database.
-     * @param closedSale contains the sale details
-     * @throws CustomerRegistryException
+     * Searches for customer in the customer database with specified ID.
+     * @param dataID The customer identification
+     * @return Customer information as a {@link CustomerDTO}.
+     * @throws CustomerNotFoundInCustomerRegistryException when customer ID does not exist in customer registry.
+     * @throws CustomerRegistryException when database call failed.
      */
     @Override
-    public void updateRegistry(Sale closedSale) {
+    public CustomerDTO getDataInfo(Object dataID ) throws CustomerNotFoundInCustomerRegistryException, CustomerRegistryException {
+        Integer customerID = (Integer) dataID;
+        if (customerID == DATABASE_NOT_FOUND) {
+            throw new CustomerRegistryException("Detailed message about database fail");
+        } else if (customerTable.containsKey(customerID)) {
+            CustomerData customerData = this.customerTable.get(customerID);
+            return new CustomerDTO(
+                    customerData.customerID, customerData.customerType, customerData.bonusPoints);
+        } else {
+            throw new CustomerNotFoundInCustomerRegistryException(customerID);
+        }
+    }
+
+    /**
+     * Updates the Customer registry by adding the specified {@link Sale}.
+     * @param closedSale contains the sale details
+     * @throws CustomerRegistryException when database call failed
+     */
+    @Override
+    public void updateRegistry(Sale closedSale) throws CustomerRegistryException{
         if (closedSale.getCustomer() !=null) {
             int bonusPoints = closedSale.getCustomer().getBonusPoints();
             int key = closedSale.getCustomer().getCustomerID();
@@ -96,7 +112,7 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
 
     /**
      * Update database by writing to the flat file database
-     * @throws CustomerRegistryException
+     * @throws CustomerRegistryException database I/O failure
      */
     private void updateDatabase() throws CustomerRegistryException{
         try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));
@@ -109,35 +125,14 @@ public class CustomerRegistryFlatFileDB implements CustomerRegistry {
             }
             bufferedWriter.flush();
         } catch (FileNotFoundException ex){
-            logger.log(ex);
-            throw new CustomerRegistryException("Detailed message about database fail");
+            throw new CustomerRegistryException("Flat-file db %s not found in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         } catch (IOException ex){
-            logger.log(ex);
-            throw new CustomerRegistryException("Detailed message about database fail");
+            throw new CustomerRegistryException("Unable to write to flat file db %s in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         }
     }
 
-    /**
-     * Searches for customer in the customer database with specified ID.
-     * @param dataID The customer identification
-     * @return Customer information as a {@link CustomerDTO}.
-     * @throws CustomerNotFoundInCustomerRegistryException when customer ID does not exist in customer registry.
-     * @throws CustomerRegistryException when database call failed.
-     */
-    //TODO Are we supposed to throw ItemRegistryException as well with method?
-    @Override
-    public CustomerDTO getDataInfo(Object dataID ) throws CustomerNotFoundInCustomerRegistryException {
-        Integer customerID = (Integer) dataID;
-        if (customerID == DATABASE_NOT_FOUND) {
-            throw new CustomerRegistryException("Detailed message about database fail");
-        } else if (customerTable.containsKey(customerID)) {
-            CustomerData customerData = this.customerTable.get(customerID);
-            return new CustomerDTO(
-                    customerData.customerID, customerData.customerType, customerData.bonusPoints);
-        } else {
-            throw new CustomerNotFoundInCustomerRegistryException(customerID);
-        }
-    }
 
     private static class CustomerData {
         private final int customerID;

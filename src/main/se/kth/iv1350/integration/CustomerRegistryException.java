@@ -12,6 +12,7 @@ public class CustomerRegistryException extends RuntimeException{
     CustomerRegistryException(String message) {
         super(message);
     }
+
     /**
      * Creates a new instance with the specified message and root cause.
      *
