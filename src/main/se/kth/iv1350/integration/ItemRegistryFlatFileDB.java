@@ -2,7 +2,6 @@ package se.kth.iv1350.integration;
 
 import se.kth.iv1350.integration.dto.ItemDTO;
 import se.kth.iv1350.model.*;
-import se.kth.iv1350.util.ErrorFileLogHandler;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -18,7 +17,6 @@ import java.util.Map;
  * This Singleton is a placeholder for a future external inventory system.
  */
 public class ItemRegistryFlatFileDB implements ItemRegistry {
-//public class ItemRegistryFlatFileDB implements IRegistry<ItemDTO, Integer> {
     private static volatile ItemRegistryFlatFileDB instance;
     private static final String CSV_DELIMITER = System.getProperty("se.kth.iv1350.database.file.csv_delimiter");
     private final String FILE_PATH_KEY = "se.kth.iv1350.database.file.location";
@@ -27,10 +25,8 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
     private File flatFileDb;
     private String recordHeader;
     private Map<Integer, ItemData> inventoryTable = new HashMap<>();
-    private final ErrorFileLogHandler logger;
 
-    private ItemRegistryFlatFileDB() throws IOException {
-        this.logger = ErrorFileLogHandler.getInstance();
+    private ItemRegistryFlatFileDB() throws ItemRegistryException{
         flatFileDb = new File(
                 System.getProperty(FILE_PATH_KEY) +
                         System.getProperty("file.separator") +
@@ -39,9 +35,9 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
     }
     /**
      * @return The only instance of this singleton.
-     * @throws IOException
+     * @throws ItemRegistryException database I/O failure
      */
-    public static ItemRegistryFlatFileDB getInstance() throws IOException {
+    public static ItemRegistryFlatFileDB getInstance() throws ItemRegistryException{
         ItemRegistryFlatFileDB result = instance;
         if (result == null) {
             synchronized (ItemRegistryFlatFileDB.class) {
@@ -56,8 +52,9 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
 
     /**
      * Adds items to the hashmap from the flat file database.
+     * @throws ItemRegistryException database I/O failure
      */
-    private void addItemData () throws IOException {
+    private void addItemData () throws ItemRegistryException {
         try (FileReader reader = new FileReader(flatFileDb);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
@@ -75,24 +72,23 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
                 this.inventoryTable.put(item.articleNo, item);
             }
         } catch (FileNotFoundException ex){
-            logger.log(ex);
-            throw ex;
+            throw new ItemRegistryException("Flat-file db %s not found in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         } catch (IOException ex){
-            logger.log(ex);
-            throw ex;
+            throw new ItemRegistryException("Unable to read from flat file db %s in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         }
     }
 
     /**
      * Searches for item in the inventory system with specified ID.
      * @param  dataID The items unique article number a.k.a item identifier.
-     * @return ShoppingCartItem information as a {@link ItemDTO}.
+     * @return Item information as a {@link ItemDTO}.
      * @throws ItemNotFoundInItemRegistryException when item ID does not exist in inventory.
      * @throws ItemRegistryException when database call failed.
      */
-    //TODO Are we supposed to throw ItemRegistryException as well with method?
-//    @Override
-    public ItemDTO getDataInfo(Object dataID) throws ItemNotFoundInItemRegistryException {
+    @Override
+    public ItemDTO getDataInfo(Object dataID) throws ItemNotFoundInItemRegistryException, ItemRegistryException{
         Integer itemID = (Integer) dataID;
         if (itemID == DATABASE_NOT_FOUND) {
             throw new ItemRegistryException("Detailed message about database fail");
@@ -106,7 +102,7 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
     }
 
     /**
-     * Updates the inventory system.
+     * Updates the inventory system by adding the specified {@link Sale}.
      * @param closedSale contains the sale details
      * @throws ItemRegistryException when database call failed.
      */
@@ -122,9 +118,9 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
 
     /**
      * Update database by writing to the flat file database
-     * @throws ItemRegistryException
+     * @throws ItemRegistryException database I/O failure
      */
-    private void updateDatabase() {
+    private void updateDatabase() throws ItemRegistryException{
         try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));
              BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(recordHeader);
@@ -135,11 +131,11 @@ public class ItemRegistryFlatFileDB implements ItemRegistry {
             }
             bufferedWriter.flush();
         } catch (FileNotFoundException ex){
-            logger.log(ex);
-            throw new ItemRegistryException("Detailed message about database fail");
+            throw new ItemRegistryException("Flat-file db %s not found in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         } catch (IOException ex){
-            logger.log(ex);
-            throw new ItemRegistryException("Detailed message about database fail");
+            throw new ItemRegistryException("Unable to write to flat file db %s in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         }
     }
 
