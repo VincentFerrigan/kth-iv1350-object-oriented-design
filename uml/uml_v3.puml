@@ -328,8 +328,7 @@ package integration {
         - totalRevenue : Amount
         - totalVatCosts : Amount
         - totalDiscounts : Amount
-        - logger : ErrorFileLogHandler
-        - addRecordDataFromDb() : void {exception IOException}
+        - addRecordDataFromDb() : void {exception AccountingSystemException}
         - updateDatabase() : void {exception AccountingSystemException}
     }
 '        note bottom : Record is a nested class
@@ -351,8 +350,7 @@ package integration {
         - recordHeader : string
         - customerTable : Map<Integer, CustomerData>
 '        - customerTable : HashMap<Integer, CustomerData>
-        - logger : ErrorFileLogHandler
-        - addCustomerData() : void {exception IOException}
+        - addCustomerData() : void {exception CustomerRegistryException}
         - updateDatabase() :void {exception CustomerRegistryException}
     }
 '        note bottom : CustomerData is a nested class
@@ -373,8 +371,7 @@ package integration {
         - recordHeader : string
         - inventoryTable : Map<Integer, ItemData>
 '        - inventoryTable : HashMap<Integer, ItemData>
-        - logger : ErrorFileLogHandler
-        - addItemData() : void {exception IOException}
+        - addItemData() : void {exception ItemRegistryException}
         - updateDatabase() : void {exception ItemRegistryException}
     }
 '        note bottom : ItemData is a nested class
