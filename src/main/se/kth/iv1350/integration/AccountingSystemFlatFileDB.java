@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.*;
 
-//TODO : UML:as
 /**
  * A Singleton that creates an instance representing an external accounting system.
  * This Singleton is a placeholder for a future external accounting system.
@@ -32,10 +31,8 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
     private Amount totalRevenue = new Amount(0);
     private Amount totalVATCosts = new Amount(0);
     private Amount totalDiscounts = new Amount(0);
-    private final ErrorFileLogHandler logger;
 
-    private AccountingSystemFlatFileDB() throws IOException {
-        this.logger = ErrorFileLogHandler.getInstance();
+    private AccountingSystemFlatFileDB() throws AccountingSystemException {
         flatFileDb = new File(
                 System.getProperty(FILE_PATH_KEY) +
                         System.getProperty("file.separator") +
@@ -46,22 +43,27 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
 
     /**
      * @return The only instance of this singleton.
-     * @throws IOException
+     * @throws AccountingSystemException database I/O failure
      */
-    public static AccountingSystemFlatFileDB getInstance() throws IOException {
+    public static AccountingSystemFlatFileDB getInstance() throws AccountingSystemException {
         AccountingSystemFlatFileDB result = instance;
         if (result == null) {
             synchronized (AccountingSystemFlatFileDB.class) {
                 result = instance;
                 if (result == null) {
                     instance = result = new AccountingSystemFlatFileDB();
+                    instance.addRecordDataFromDb();
                 }
             }
         }
         return result;
     }
 
-    private void addRecordDataFromDb() throws IOException {
+    /**
+     * Adds items to the hashmap from the flat file database.
+     * @throws AccountingSystemException database I/O failure
+     */
+    private void addRecordDataFromDb() throws AccountingSystemException {
         try (FileReader reader = new FileReader(flatFileDb);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             String line = "";
@@ -75,13 +77,11 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
                 records.put(LocalDateTime.of(LocalDate.now(), timeOfUpdate), new Record(LocalTime.now(), totalRevenue, totalVATCosts, totalDiscounts));
             }
         } catch (FileNotFoundException ex){
-            // TODO Kan man kasta bara ex? Kommer den då skickas som en IOException?
-            logger.log(ex);
-            throw ex;
+            throw new AccountingSystemException("Flat-file db %s not found in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         } catch (IOException ex){
-            // TODO ska addItemData loggas här?
-            logger.log(ex);
-            throw ex;
+            throw new AccountingSystemException("Unable to read from flat file db %s in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         }
     }
 
@@ -109,7 +109,7 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
 
     /**
      * Update database by writing to the flat file database
-     * @throws AccountingSystemException
+     * @throws AccountingSystemException database I/O failure
      */
     private void updateDatabase() throws AccountingSystemException {
         try (FileWriter fileWriter = new FileWriter(flatFileDb.getPath().replace(".csv", "_" + LocalDate.now() + ".csv"));
@@ -122,11 +122,11 @@ public class AccountingSystemFlatFileDB implements AccountingSystem {
             }
             bufferedWriter.flush();
         } catch (FileNotFoundException ex){
-            logger.log(ex);
-            throw new AccountingSystemException("Detailed message about database fail");
+            throw new AccountingSystemException("Flat-file db %s not found in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         } catch (IOException ex){
-            logger.log(ex);
-            throw new AccountingSystemException("Detailed message about database fail");
+            throw new AccountingSystemException("Unable to write to flat file db %s in path %s"
+                    .formatted(flatFileDb.getName(), flatFileDb.getPath()), ex);
         }
     }
     private class Record {
