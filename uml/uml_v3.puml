@@ -2,6 +2,7 @@
 'https://plantuml.com/class-diagram
 'TODO: abstract and static members should have {abstract} {static}
 'TODO pricing and vat package
+'TODO: only the methods that throw throws exception? Or du you have to add them all the way?
 title CD
 hide circle
 skinparam linetype ortho
@@ -295,12 +296,13 @@ package integration {
         - itemRegistry : ItemRegistry
         - saleLog : SaleLog
         + updateRegistries(closedSale : Sale) : void
-        + logSale(closedSale : Sale) : void
         + updateAccountingSystem(closedSale : Sale) : void
         + updateCustomerRegistry(closedSale : Sale) : void
         + updateItemRegistry(closedSale : Sale) : void
+        + logSale(closedSale : Sale) : void
         + getCustomerInfo(customerID : int) : CustomerDTO {exception CustomerNotFoundInCustomerRegistryException}
         + getItemInfo(itemID : int) : ItemDTO {exception ItemNotFoundInItemRegistryException}
+        + findSaleByCustomerID(customerID : int) : List<Sale>
     }
 
     interface AccountingSystem<T> <<interface>> {
@@ -390,8 +392,8 @@ package integration {
     class SaleLog{
         + sales : List<Sale>
         ~<<create>>SaleLog() : SaleLog
-        + logSale(sale : Sale) : void
-        + findSaleByTotalAmount(totalAmount : Amount) : List<Sale>
+        ~ logSale(sale : Sale) : void
+        ~ findSaleByCustomerID(customerID : int) : List<Sale>
     }
     class Printer{
         + <<create>>Printer() : Printer
