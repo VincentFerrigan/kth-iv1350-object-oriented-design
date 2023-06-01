@@ -2,7 +2,7 @@ package se.kth.iv1350.integration;
 
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.util.ErrorFileLogHandler;
-import se.kth.iv1350.view.TotalRevenue;
+import se.kth.iv1350.model.TotalRevenue;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,8 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
-// TODO UML:a
-// TODO use the System.getProperty?
 public class TotalRevenueFileOutput extends TotalRevenue {
     private static volatile TotalRevenueFileOutput instance;
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
