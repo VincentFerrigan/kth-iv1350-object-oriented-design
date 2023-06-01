@@ -17,7 +17,7 @@ public class SaleLog {
      * Saves the specified sale permanently
      * @param closedSale The sale that will be saved.
      */
-    public void logSale(Sale closedSale) {
+    void logSale(Sale closedSale) {
         sales.add(closedSale);
     }
 
@@ -30,7 +30,7 @@ public class SaleLog {
      * the customer whose sales shall be retrieved.
      * @return A list with all sales made by the specified customer.
      */
-    public List<Sale> findSalesByCustomerID(int customerID) {
+    List<Sale> findSalesByCustomerID(int customerID) {
         List<Sale> salesWithSpecifiedCustomerID = new ArrayList<>();
         for (Sale sale : sales) {
             if (sale.getCustomer() != null && sale.getCustomer().getCustomerID() == customerID) {
