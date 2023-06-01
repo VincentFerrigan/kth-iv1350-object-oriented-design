@@ -12,6 +12,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
+/**
+ * A Singleton that creates an instance responsible for
+ * logging the total revenue to a specific file, each time it is updated.
+ */
 public class TotalRevenueFileOutput extends TotalRevenue {
     private static volatile TotalRevenueFileOutput instance;
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
@@ -42,14 +46,23 @@ public class TotalRevenueFileOutput extends TotalRevenue {
         }
         return result;
     }
+
+    /**
+     * Creates a string builder with total revenue, that is to be written to a file.
+     * @param totalRevenue the new total revenue
+     */
     @Override
     protected void doShowTotalRevenue(Amount totalRevenue) {
        revenueLogger.println("%s %s: %s".formatted("Total revenue ", createTime(), totalRevenue));
     }
 
+    /**
+     * Handles errors that are thrown.
+     * @param ex the exception thrown
+     */
     @Override
-    protected void handleErrors(Exception e) {
-        logger.log(e);
+    protected void handleErrors(Exception ex) {
+        logger.log(ex);
     }
 
     private String createTime() {
