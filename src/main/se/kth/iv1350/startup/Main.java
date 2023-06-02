@@ -38,12 +38,31 @@ public class Main {
             Controller contr = new Controller(printer);
             contr.addCashRegisterObserver(TotalRevenueFileOutput.getInstance());
             View view = new View(contr);
+
+            // # BASIC FLOW
+            clearConsole();
             view.basicFlow();
-            view.AlternativeFlow();
-            view.basicFlowWithExceptions();
+            clearConsole();
+
+            // # ALTERNATIVE FLOWS
+            view.alternativeFlow3AWithCheckedExceptions();
+            clearConsole();
+            view.alternativeFlow3B();
+            clearConsole();
+            view.alternativeFlow3C();
+            clearConsole();
+            view.alternativeFlow9a();
+
+            view.basicFlowWithUnCheckedExceptions();
+
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
             ex.printStackTrace();
         }
+    }
+    private final static void clearConsole()
+    {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }
