@@ -1,6 +1,7 @@
 package se.kth.iv1350.integration;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 // TODO add javadoc and test it
 // TODO add it to the facade
@@ -28,28 +29,28 @@ public class FlatFileDatabaseFactory implements IRegistryFactory{
         return result;
     }
 
-
-
     @Override
-    public IRegistry getDefaultItemRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        String className = System.getProperty(INVENTORY_REGISTER_CLASS_NAME_KEY);
-        String className = "se.kth.iv1350.integration.ItemRegister";
-        return instantiateRegister(className);
+    public ItemRegistry getDefaultItemRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        String className = System.getProperty(INVENTORY_CLASS_NAME_KEY);
+        Class c = Class.forName(className);
+        Method factoryMethod = c.getDeclaredMethod("getInstance");
+        Object singleton = factoryMethod.invoke(null, null);
+        return (ItemRegistry) singleton;
     }
     @Override
-    public IRegistry getDefaultCustomerRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        String className = System.getProperty(CUSTOMER_REGISTER_CLASS_NAME_KEY);
-        String className = "se.kth.iv1350.integration.CustomerRegister";
-        return instantiateRegister(className);
+    public CustomerRegistry getDefaultCustomerRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        String className = System.getProperty(CUSTOMER_CLASS_NAME_KEY);
+        Class c = Class.forName(className);
+        Method factoryMethod = c.getDeclaredMethod("getInstance");
+        Object singleton = factoryMethod.invoke(null, null);
+        return (CustomerRegistry) singleton;
     }
     @Override
-    public IRegistry getDefaultAccountingRegister() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-//        String className = System.getProperty(ACCOUNTING_REGISTER_CLASS_NAME_KEY);
-        String className = "se.kth.iv1350.integration.AccountSystem";
-        return instantiateRegister(className);
-    }
-    private IRegistry instantiateRegister(String className) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class registryClass = Class.forName(className);
-        return (IRegistry) registryClass.getDeclaredConstructor().newInstance();
+    public AccountingSystem getDefaultAccountingSystem() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        String className = System.getProperty(ACCOUNTING_CLASS_NAME_KEY);
+        Class c = Class.forName(className);
+        Method factoryMethod = c.getDeclaredMethod("getInstance");
+        Object singleton = factoryMethod.invoke(null, null);
+        return (AccountingSystem) singleton;
     }
 }

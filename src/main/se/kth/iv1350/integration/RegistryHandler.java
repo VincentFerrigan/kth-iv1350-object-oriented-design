@@ -1,56 +1,46 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.dto.ItemDTO;
-import se.kth.iv1350.integration.dto.RecordDTO;
 import se.kth.iv1350.model.Sale;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDateTime;
+import java.util.List;
 
-
-// Singleton facade.
-// TODO JavaDocs
-// Testa först med att köra factory. Frågan sen om du ska köra abstract to nedan gäller enbart flat file databases.
+/**
+ * A Singleton that creates an instance representing a service container (implemented as a Facade).
+ * This service container is responsible for instantiating all registers (external systems/databases) and provides
+ * a unified and simplified interface for the client classes.
+ */
 public class RegistryHandler { // Rename RegistryFacade?
     private static volatile RegistryHandler instance;
-    private ItemRegister itemRegister;
-//    private CustomerRegister customerRegister;
     private AccountingSystem accountingSystem;
-
-//    private IRegistry itemRegister;
-    private IRegistry customerRegister;
-//    private IRegistry accountingSystem;
-
+    private CustomerRegistry customerRegistry;
+    private ItemRegistry itemRegistry;
     private SaleLog saleLog;
+
     /**
      * Creates an instance of {@link RegistryHandler}.
+     * @throws RegistryHandlerException
      */
-    private RegistryHandler() throws IOException, OperationFailedException {
+    private RegistryHandler() {
         try {
-            FlatFileDatabaseFactory flatFileDatabaseFactory = FlatFileDatabaseFactory.getInstance();
-//            accountingSystem = flatFileDatabaseFactory.getDefaultAccountingRegister();
-            customerRegister = flatFileDatabaseFactory.getDefaultCustomerRegister();
-//            itemRegister = flatFileDatabaseFactory.getDefaultItemRegister();
+            IRegistryFactory  registryFactory = FlatFileDatabaseFactory.getInstance();
+            accountingSystem = registryFactory.getDefaultAccountingSystem();
+            customerRegistry = registryFactory.getDefaultCustomerRegister();
+            itemRegistry = registryFactory.getDefaultItemRegister();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException | InvocationTargetException ex) {
-        throw new OperationFailedException("Unable to instantiate registries", ex);
-    }
-        accountingSystem = AccountingSystem.getInstance();
-//        this.customerRegister = CustomerRegister.getInstance();
-        itemRegister = ItemRegister.getInstance();
+        throw new RegistryHandlerException("Unable to instantiate registries", ex);
+        }
         saleLog = new SaleLog();
-
-
     }
 
     /**
      * @return The only instance of this singleton.
-     * @throws IOException
+     * @throws RegistryHandlerException when database call failed.
      */
-    public static RegistryHandler getInstance() throws IOException, OperationFailedException {
+    public static RegistryHandler getInstance() throws RegistryHandlerException {
         RegistryHandler result = instance;
         if (result == null) {
             synchronized (RegistryHandler.class) {
@@ -63,61 +53,84 @@ public class RegistryHandler { // Rename RegistryFacade?
         return result;
     }
 
-
-    public void updateRegisters(Sale closedSale) {
+    /**
+     * @throws AccountingSystemException
+     * @throws CustomerRegistryException
+     * @throws ItemRegistryException
+     * @param closedSale
+     */
+    public void updateRegistries(Sale closedSale) {
         updateAccountingSystem(closedSale);
-        updateCustomerRegister(closedSale);
-        updateItemRegister(closedSale);
+        updateCustomerRegistry(closedSale);
+        updateItemRegistry(closedSale);
         logSale(closedSale);
     }
 
-    public void logSale(Sale closedSale) {saleLog.logSale(closedSale);}
+    /**
+     * Updates the accounting system.
+     * @param closedSale contains the sale details
+     * @throws AccountingSystemException when database call failed.
+     */
     public void updateAccountingSystem(Sale closedSale) {
-        accountingSystem.updateRegister(closedSale);
-    }
-
-    public void updateCustomerRegister(Sale closedSale) {
-        customerRegister.updateRegister(closedSale);
-    }
-    public void updateItemRegister(Sale closedSale) {
-        itemRegister.updateRegister(closedSale);
+        accountingSystem.updateRegistry(closedSale);
     }
 
     /**
-     *
-     * @param customerID
-     * @return
-     * @throws CustomerNotFoundInCustomerRegistryException
+     * Updates the customer database.
+     * @param closedSale contains the sale details
      * @throws CustomerRegistryException
      */
-    public CustomerDTO getCustomerInfo(int customerID) {
-        try {
-            return (CustomerDTO) customerRegister.getDataInfo(customerID);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public void updateCustomerRegistry(Sale closedSale) {
+        customerRegistry.updateRegistry(closedSale);
     }
 
     /**
-     *
-     * @param itemID
-     * @return
-     * @throws ItemNotFoundInItemRegistryException
-     * @throws ItemRegistryException
+     * Updates the inventory system.
+     * @param closedSale contains the sale details
+     * @throws ItemRegistryException when database call failed.
+     */
+    public void updateItemRegistry(Sale closedSale) {
+        itemRegistry.updateRegistry(closedSale);
+    }
+    /**
+     * Saves the specified sale permanently
+     * @param closedSale The sale that will be saved.
+     */
+    public void logSale(Sale closedSale) {saleLog.logSale(closedSale);}
+
+
+    /**
+     * Searches for customer in the customer database with specified ID.
+     * @param customerID The customer identification
+     * @return Customer information as a {@link CustomerDTO}.
+     * @throws CustomerNotFoundInCustomerRegistryException when customer ID does not exist in customer registry.
+     * @throws CustomerRegistryException when database call failed.
+     */
+    public CustomerDTO getCustomerInfo(int customerID) throws CustomerNotFoundInCustomerRegistryException {
+        return customerRegistry.getDataInfo(customerID);
+    }
+
+    /**
+     * Searches for item in the inventory system with specified ID.
+     * @param  itemID The items unique article number a.k.a item identifier.
+     * @return Item information as a {@link ItemDTO}.
+     * @throws ItemNotFoundInItemRegistryException when item ID does not exist in inventory.
+     * @throws ItemRegistryException when database call failed.
      */
     public ItemDTO getItemInfo(int itemID) throws ItemNotFoundInItemRegistryException {
-        return itemRegister.getDataInfo(itemID);
+        return itemRegistry.getDataInfo(itemID);
     }
 
     /**
+     * Returns a list containing all sales made by a customer with the
+     * specified identification number.
+     * If there are no such sales, the returned list is empty.
      *
-     * @param timeOfSale
-     * @return
-     * @throws AccountRecordNotFoundInAccountingSystemException
-     * @throws AccountingSystemException
+     * @param customerID The customer identification number of
+     * the customer whose sales shall be retrieved.
+     * @return A list with all sales made by the specified customer.
      */
-    public RecordDTO getRecordInfo(LocalDateTime timeOfSale) throws AccountRecordNotFoundInAccountingSystemException {
-        return accountingSystem.getDataInfo(timeOfSale);
-
+    public List<Sale> findSalesByCustomerID(int customerID) {
+        return saleLog.findSalesByCustomerID(customerID);
     }
 }

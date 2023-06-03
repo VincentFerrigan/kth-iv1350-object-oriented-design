@@ -1,6 +1,7 @@
 package se.kth.iv1350.view;
 
 import se.kth.iv1350.model.Amount;
+import se.kth.iv1350.model.TotalRevenue;
 
 // TODO UML:a och skriva JavaDocs
 public class TotalRevenueView extends TotalRevenue {

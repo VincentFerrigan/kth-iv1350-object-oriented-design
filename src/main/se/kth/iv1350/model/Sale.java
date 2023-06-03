@@ -26,7 +26,6 @@ public class Sale {
     private List<SaleObserver> saleObservers;
     private LocalDateTime timeOfSale; // TODO ska den vara kvar? Syfte?
     private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
-    private ItemRegister itemRegister;
     private CashPayment payment;
     private DiscountStrategy pricing;
     private Customer customer;
@@ -36,9 +35,8 @@ public class Sale {
      * Creates a new instance, representing a sale made by a customer.
      * @throws OperationFailedException when unable to set up pricing.
      */
-    public Sale(ItemRegister itemRegister) throws OperationFailedException {
+    public Sale() throws OperationFailedException {
         this.timeOfSale = LocalDateTime.now();
-        this.itemRegister = itemRegister;
         saleObservers = new ArrayList<>();
         isComplete = false;
         try {
@@ -57,7 +55,6 @@ public class Sale {
      * @throws ItemNotFoundInItemRegistryException when item ID does not exist in inventory
      * @throws ItemRegistryException when there is an unknown fail with inventory system
      * @throws OperationFailedException when unable to set up VAT for item.
-//     * @throws ItemNotFoundInShoppingCartException when item does not exist in Shopping Cart
      */
     public void addItem(int itemID, int quantity) throws ItemNotFoundInItemRegistryException, OperationFailedException {
         ShoppingCartItem existingShoppingCartItem = this.shoppingCart.get(itemID);
@@ -66,7 +63,7 @@ public class Sale {
             isComplete = false;
             notifyObservers();
         } else {
-            ItemDTO itemInfo = itemRegister.getDataInfo(itemID);
+            ItemDTO itemInfo = RegistryHandler.getInstance().getItemInfo(itemID);
             addItem(itemInfo, quantity);
         }
     }

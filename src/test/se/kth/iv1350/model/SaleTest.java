@@ -1,20 +1,16 @@
 package se.kth.iv1350.model;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import se.kth.iv1350.POSTestSuperClass;
 import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.integration.dto.CustomerDTO;
+import se.kth.iv1350.integration.dto.ItemDTO;
 import se.kth.iv1350.integration.pricing.CustomerType;
-import se.kth.iv1350.startup.Main;
 import se.kth.iv1350.view.EndOfSaleView;
 import se.kth.iv1350.view.RunningSaleView;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -26,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Open issue: What to do with the cash register?
  *
  */
-class SaleTest {
+class SaleTest extends POSTestSuperClass {
     private Sale instance;
     private static final int TEST_ITEM_ID = 0;
     private static final int TEST_QUANTITY = 5;
@@ -43,29 +39,10 @@ class SaleTest {
     private static final int TEST_VAT_GROUP_CODE = 1;
     */
 
-    /**
-     * Properties set up base on:
-     * <a href=https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html>The Java™ Tutorials - System Properties</a>.
-     * If you're having trouble loading the resource file <code>config.properties></code>,
-     * first check that <code>src/test/resources</code>
-     * is correctly configured as a resources directory in your IDE.
-     */
-    @BeforeAll
-    static void setup() {
-        Properties properties = new Properties(System.getProperties());
-        try {
-            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("config.properties");
-            properties.load(inputStream);
-            System.setProperties(properties);
-        } catch (IOException ex) {
-            System.out.println("Unable to set up configuration");
-            ex.printStackTrace();
-        }
-    }
     @BeforeEach
-    void setUp() throws OperationFailedException, IOException {
-        ItemRegister itemRegister = new ItemRegister();
-        instance = new Sale(itemRegister);
+    void setUp() throws OperationFailedException {
+        instance = new Sale();
+        // Ska observers/displayView testas här eller för sig själva?
         originalSysOut = System.out;
         outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
@@ -86,52 +63,77 @@ class SaleTest {
         System.setOut(originalSysOut);
     }
 
-    @Test
-    void testAddItem() {
+    @Nested
+    @DisplayName("Adding items to sale")
+    class SaleAddItemsTest {
+        private int test_quantity = 5;
+        private int expResult;
+        private StringBuilder expOutputResult;
+        private int result;
+        private String outputResult;
 
-        // First item
-        try {
-            instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
-        } catch (ItemNotFoundInItemRegistryException | OperationFailedException | ItemRegistryException e) {
-            fail("Exception should not have been thrown, " +
-                    e.getMessage());
-            throw new RuntimeException(e);// TODO behövs denna?
+        @Test
+        @DisplayName("First item")
+        void testAddFirstItem() { // TODO: Kommer den med i coverage report?
+            try {
+                instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
+            } catch (ItemNotFoundInItemRegistryException | OperationFailedException | ItemRegistryException e) {
+                fail("Exception should not have been thrown, " +
+                        e.getMessage());
+            }
+
+            expResult = test_quantity;
+
+            String outputResult = outContent.toString(); // TODO ska testas utanför
+            List<ShoppingCartItem> listOfSaleItems = new ArrayList<>(instance.getCollectionOfItems());
+            result = listOfSaleItems.get(0).getQuantity();
+
+            assertAll(
+                    "Verify alternative flow 3-4C",
+                    () -> assertEquals(instance.isComplete(), false), // TODO: Ska denna testas utanför?
+                    () -> assertEquals(expResult, result, "ShoppingCartItem quantity not equal"),
+                    () -> assertTrue(outputResult.contains("Display"), "No display output") // TODO: Ska testas utanför
+            );
         }
+        @Test
+        @DisplayName("Second item")
+        void testAddSecondItem() {
+            try {
+                instance.addItem(TEST_ITEM_ID, test_quantity);
+            } catch (ItemNotFoundInItemRegistryException | OperationFailedException | ItemRegistryException e) {
+                fail("Exception should not have been thrown, " +
+                        e.getMessage());
+                throw new RuntimeException(e);// TODO behövs denna?
+            }
 
-        assertEquals(instance.isComplete(), false);
+            expResult += test_quantity;
+            expOutputResult = new StringBuilder();
+            expOutputResult.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE.multiply(expResult)));
+            expOutputResult.append("(%d * %s)\n".formatted(expResult, TEST_UNIT_PRICE));
 
-        int expResult = TEST_QUANTITY;
-        String outputResult = outContent.toString();
-        List<ShoppingCartItem> listOfSaleItems = new ArrayList<>(instance.getCollectionOfItems());
-        int result = listOfSaleItems.get(0).getQuantity();
+            String outputResultOfAddedQuantity = outContent.toString();
+            List<ShoppingCartItem> listOfSaleItems = new ArrayList<>(instance.getCollectionOfItems());
+            result = listOfSaleItems.get(0).getQuantity();
 
-        assertEquals(expResult, result, "ShoppingCartItem quantity not equal");
-        assertTrue(outputResult.contains("Display"), "No display output");
-
-        // Second item
-        try {
-            instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
-        } catch (ItemNotFoundInItemRegistryException | OperationFailedException | ItemRegistryException e) {
-            fail("Exception should not have been thrown, " +
-                    e.getMessage());
-            throw new RuntimeException(e);// TODO behövs denna?
+            assertAll(
+                    "Verify alternative flow 3-4B",
+                    () -> assertEquals(expResult, result, "ShoppingCartItem quantity not equal"),
+                    () -> assertTrue(outputResultOfAddedQuantity.contains("Display"), "No display output"),
+                    () -> assertTrue(outContent.toString().contains(expOutputResult.toString()),
+                    "ShoppingCartItem did not have the right quantity when added with quantity.")
+            );
         }
-
-        int expResultOfAddedQuantity = expResult + TEST_QUANTITY;
-        StringBuilder expOutMultipleItems = new StringBuilder();
-        expOutMultipleItems.append("%-40s%s%n".formatted(TEST_NAME, TEST_UNIT_PRICE.multiply(expResult)));
-        expOutMultipleItems.append("(%d * %s)\n".formatted(expResult, TEST_UNIT_PRICE));
-
-        String outputResultOfAddedQuantity = outContent.toString();
-        result = listOfSaleItems.get(0).getQuantity();
-
-        assertEquals(expResultOfAddedQuantity, result, "ShoppingCartItem quantity not equal");
-        assertTrue(outputResultOfAddedQuantity.contains("Display"), "No display output");
-        assertTrue(outContent.toString().contains(expOutMultipleItems.toString()),
-                "ShoppingCartItem did not have the right quantity when added with quantity.");
+        @Test
+        @DisplayName("Calculate running total")
+        void testCalculateRunningTotal() {
+            Amount expPriceResult = TEST_UNIT_PRICE.multiply(expResult);
+            Amount priceResult = instance.calculateRunningTotal();
+            assertEquals(expPriceResult, priceResult, "Wrong running total");
+        }
     }
 
     @Test
+    @DisplayName("Add Customer to Sale")
     void testAddCustomerToSale() {
         CustomerDTO customerInfo = new CustomerDTO(1, CustomerType.MEMBER, 0);
         Customer expResult = new Customer(customerInfo);
@@ -141,6 +143,7 @@ class SaleTest {
     }
 
     @Test
+    @DisplayName("Calculate running total")
     void testCalculateRunningTotal() {
         try {
             instance.addItem(TEST_ITEM_ID,TEST_QUANTITY);
@@ -154,6 +157,7 @@ class SaleTest {
         assertEquals(expResult, result, "Wrong running total");
     }
     @Test
+    @DisplayName("Calculate total price")
     void testCalculateTotalPrice() {
 
         try {

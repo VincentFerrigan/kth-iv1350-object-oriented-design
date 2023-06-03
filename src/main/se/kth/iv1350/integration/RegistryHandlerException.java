@@ -1,15 +1,14 @@
 package se.kth.iv1350.integration;
 
 /**
- * Thrown when something fails with the customer registry or customer database
+ * Thrown when something fails with the service container {@link RegistryHandler}.
  */
-public class CustomerRegistryException extends RuntimeException{
-
+public class RegistryHandlerException extends RuntimeException {
     /**
      * Creates a new instance representing the condition described in the specified message.
      * @param message A message that describes what went wrong.
      */
-    CustomerRegistryException(String message) {
+    RegistryHandlerException(String message) {
         super(message);
     }
 
@@ -19,7 +18,7 @@ public class CustomerRegistryException extends RuntimeException{
      * @param msg   The exception message.
      * @param cause The exception that caused this exception.
      */
-    CustomerRegistryException(String msg, Exception cause) {
+    RegistryHandlerException(String msg, Exception cause) {
         super(msg, cause);
     }
 }

@@ -1,8 +1,6 @@
 package se.kth.iv1350.startup;
 import se.kth.iv1350.controller.Controller;
-import se.kth.iv1350.controller.OperationFailedException;
-import se.kth.iv1350.integration.RegisterCreator;
-import se.kth.iv1350.integration.RegistryHandler;
+import se.kth.iv1350.integration.TotalRevenueFileOutput;
 import se.kth.iv1350.view.View;
 import se.kth.iv1350.integration.Printer;
 
@@ -37,19 +35,29 @@ public class Main {
         }
         try {
             Printer printer = new Printer();
-            RegisterCreator registerCreator = new RegisterCreator();
-            Controller contr = new Controller(printer, registerCreator);
-            // TODO: should it not just be "created" in the Controller layer
-//            RegistryHandler registryHandler = RegistryHandler.getInstance();
-//            Controller contr = new Controller(printer, registryHandler);
-
+            Controller contr = new Controller(printer);
+            contr.addCashRegisterObserver(TotalRevenueFileOutput.getInstance());
             View view = new View(contr);
+
+            // # BASIC FLOW
+            clearConsole();
             view.basicFlow();
-            view.AlternativeFlow();
-            view.basicFlowWithExceptions();
+
+            // # ALTERNATIVE FLOWS
+            view.alternativeFlow3AWithCheckedExceptions();
+            view.alternativeFlow3B();
+            view.alternativeFlow3C();
+            view.alternativeFlow9a();
+            view.basicFlowWithUnCheckedExceptions();
+
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
             ex.printStackTrace();
         }
+    }
+    private final static void clearConsole()
+    {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 }
