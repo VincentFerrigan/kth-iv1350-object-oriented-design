@@ -23,6 +23,15 @@ package startup {
     }
 }
 package view {
+    class EndOfSaleView {
+        # printCurrentState(sale : LimitedSaleView) : void
+        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+        # shouldUpdate(isComplete : boolean) : boolean
+        - createDiscountInfoString(discount : Amount, discountInfo : String) : void
+    }
+    class ErrorMessageHandler <<singleton>>{
+        - createTime
+    }
     class View {
         - contr: Controller
         + <<create>> View(contr : Controller) : View
@@ -45,12 +54,6 @@ package view {
         # {abstract} printCurrentState(sale : LimitedSaleView) : void
         # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
         # {abstract} shouldUpdate(isComplete : boolean) : boolean
-    }
-    class EndOfSaleView {
-        # printCurrentState(sale : LimitedSaleView) : void
-        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-        # shouldUpdate(isComplete : boolean) : boolean
-        - createDiscountInfoString(discount : Amount, discountInfo : String) : void
     }
     class RunningSaleView {
         # printCurrentState(sale : LimitedSaleView) : void
@@ -79,7 +82,6 @@ package controller {
 package model {
     class Sale{
         - saleObserver : List<SaleObserver>
-        - timeOfSale : LocalDateTime
         - shoppingCart : HashMap<Integer, ShoppingCartItem>
 '        - shoppingCart : Map<Integer, ShoppingCartItem>
         - payment : CashPayment
@@ -101,7 +103,6 @@ package model {
         + addCustomerToSale(customerInfo : CustomerDTO) : void
         + getCustomer() : Customer
         + getDiscount() : Amount
-        + getTimeOfSale : LocalDateTime
         + createStringDiscountInfo() : String
         + pay(payment : CashPayment) : void
         + printReceipt(printer : Printer) : void
@@ -420,8 +421,6 @@ package util{
         - FILE_PATH : String
         - LOG_FILE_NAME : String
         - LINE_SEPARATOR  : String
-        - locale : Locale
-        - formatter : DateTimeFormatter
         - logFile : PrintWriter
         - createTime() : String
     }
@@ -518,13 +517,6 @@ skinparam package {
             +<<create>>DiscountDTO(customerID : int, customerType : CustomerType, bonusPoints : int) : DiscountDTO
             + equals(o : Object) : boolean
 '        note bottom : Attributes TBD based on Discount Rules.
-        }
-        class RecordDTO{
-        - timeOfUpdate : LocalDateTime
-        - totalAmount : Amount
-        - totalVatAmount : Amount
-        - discounts : Amount
-        +<<create>>RecordDTO(timeOfUpdate : LocalDateTime, totalAmount : Amount, totalVatAmount : Amount, discounts : Amount)
         }
     }
 note top: getters, toString and equals are included as methods for all DTO attributes
@@ -646,12 +638,16 @@ create currentSale
 contr -[dashed]->> currentSale :  <<create>>\n currentSale = Sale() : Sale
 activate currentSale
 autonumber 1.1.1
+create saleObservers
+currentSale -[dashed]->> saleObservers : <<create>>\n observers = ArrayList<SaleObserver>() : ArrayList
+autonumber 1.1.2
 currentSale -> DiscountFactory : <<static>>\n discountFactory = getInstance() : DiscountFactory
 activate DiscountFactory
 deactivate DiscountFactory
 currentSale -> DiscountFactory : pricing = getDiscountStrategy() : DiscountStrategy
 
 'Hur lägga till brytningen som Leif har i sitt exempel?
+autonumber 1.1.3
 activate DiscountFactory
 autonumber stop
 currentSale <<- DiscountFactory : <<exception>>\nClassNotFoundException
@@ -683,19 +679,22 @@ skinparam style strictuml
 'title registerItem
 'REGISTERITEM
 hide unlinked
-participant ":View" as View
-participant "contr:Controller" as contr
-participant "currentSale:Sale" as currentSale
-participant "shoppingCart:Map<Integer, ShoppingCartItem>" as shoppingCart
-participant "itemRegistry:ItemRegistry" as itemRegistry
-participant "item : ShoppingCartItem" as item
-participant "newItem : ShoppingCartItem" as newItem
+participant ": View" as View
+participant "contr\n: Controller" as contr
+participant "currentSale\n: Sale" as currentSale
+participant "shoppingCart\n: Map<Integer, ShoppingCartItem>" as shoppingCart
+participant ": RegistryHandler" as RegistryHandler
+'interface ": ItemRegistry" as ItemRegistry
+participant "<<interface>>\n: ItemRegistry" as ItemRegistry
+participant "existingShoppingCartItem \n: ShoppingCartItem" as oldItem
+participant "newShoppingCartItem\n: ShoppingCartItem" as newItem
 
 loop moreItems
 '[validIdentifier]
     alt singleItem
         autonumber 1
         View -> contr : registerItem(itemID:int) : void
+        activate View
         activate contr
         autonumber 1.1
         contr -> contr : registerItem(itemID:int, 1 : int) : void
@@ -708,58 +707,66 @@ loop moreItems
         View -> contr : registerItem(itemID:int, quantity:int) : void
         activate contr
    end
-        deactivate itemRegistry
-        note right: itemRegistry creates ItemDTO
-
         autonumber 1.2
         contr -> currentSale : addItem(itemID : int, quantity:int) : void
         activate currentSale
             autonumber 1.2.1
-            currentSale -> shoppingCart : item = get.(itemID : int) : ShoppingCartItem
-            activate shoppingCart
-            deactivate shoppingCart
-            autonumber 1.2.2
-            currentSale -> item : addToQuantity(quantity : int) : void
-            activate item
-            deactivate item
-            autonumber stop
-            contr <<- currentSale : <<exception>>\nItemNotFoundInShoppingCartException
-            ref over currentSale
-                Notify Sale Observers
-            end ref
-            deactivate currentSale
+            currentSale -> shoppingCart : existingShoppingCartItem = \nget.(itemID : int) : ShoppingCartItem
+                activate shoppingCart
+                deactivate shoppingCart
+            alt existingShoppingCartItem != null
+                autonumber 1.2.2
+                currentSale -> oldItem : addToQuantity(quantity : int) : void
+            ref over shoppingCart : Notify Sale Observers
+                activate oldItem
+                deactivate oldItem
+            else
+                autonumber 1.2.1
+                currentSale -> RegistryHandler : itemInfo = RegistryHandler\n\t\t.getInstance()\n\t\t.getItemInfo(itemID : int) : ItemDTO
+                ref over RegistryHandler, ItemRegistry
+                    Database call
+                end ref
+                activate RegistryHandler
+                autonumber stop
+                currentSale <<- RegistryHandler : <<exception>>\nItemNotFoundInItemRegistryException
+                currentSale <<- RegistryHandler : <<exception>>\nItemRegistryException
+                deactivate RegistryHandler
+
+                autonumber 1.2.2
+                currentSale -> currentSale : addItem(itemInfo : ItemDTO, quantity : int) : void
+                activate currentSale
+                autonumber 1.2.2.1
+                create newItem
+                currentSale -[dashed]->> newItem : <<create>> \n newShoppingCartItem = \n ShoppingCartItem(itemInfo : ItemDTO, quantity : int) : ShoppingCartItem
+'                activate newItem
+'                deactivate newItem
+                currentSale -> shoppingCart : put(\n\titem.itemID():int, \n\tnewShoppingCartItem : ShoppingCartItem\n) : ShoppingCartItem
+                activate shoppingCart
+                deactivate shoppingCart
+            ref over shoppingCart : Notify Sale Observers
+            end
+                deactivate currentSale
+
+'        activate currentSale
+                autonumber stop
+                    contr <<- currentSale : <<exception>>\nItemNotFoundInItemRegistryException
+                    contr <<- currentSale : <<exception>>\nItemRegistryException
+                    ref over contr : notify developer, log error
+
+'            autonumber 1.2.3
+'            currentSale -> currentSale
 '            activate currentSale
-        group Item not found in Shopping Cart
-            autonumber 1.2
-            contr -> itemRegistry : itemInfo = getItemInfo(itemID : int) : ItemDTO
-            activate itemRegistry
-            autonumber stop
-            contr <<- itemRegistry : <<exception>>\nItemNotFoundInItemRegistryException
-            contr <<- itemRegistry : <<exception>>\nItemRegistryException
-            deactivate itemRegistry
-            autonumber 1.3
-            contr -> currentSale : addItem(itemInfo : ItemDTO, quantity:int) : void
-            activate currentSale
-            autonumber 1.3.1
-            create newItem
-            currentSale -[dashed]->> newItem : <<create>> \n newItem = ShoppingCartItem(itemInfo : ItemDTO, quantity : int) : ShoppingCartItem
-'            activate newItem
-'            deactivate newItem
-            autonumber 1.3.2
-            currentSale -> shoppingCart : put(item.itemID():int, newItem : ShoppingCartItem) : ShoppingCartItem
-            activate shoppingCart
-            deactivate shoppingCart
-        deactivate currentSale
-            ref over currentSale
-                Notify Sale Observers
-            end ref
-        end
+'            deactivate currentSale
+            deactivate currentSale
+                autonumber stop
+                    View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
+                    ref over View : notify user, error message
+                    View <<- contr : <<exception>>\nOperationFailedException
+                    ref over View : notify user, error message
         autonumber stop
-            View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
-            View <<- contr : <<exception>>\nOperationFailedException
-        deactivate contr
 
         deactivate contr
+        deactivate View
 end
 
 autonumber stop
