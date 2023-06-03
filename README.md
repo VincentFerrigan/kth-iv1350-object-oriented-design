@@ -21,8 +21,17 @@ One shall be able to
 ## Basic Flow
 ![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_basic_flow.gif)
 
-## Alternative Flows
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows.gif)
+## Alternative Flow - Checked Exception, Business Logic 
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows3a.gif)
 
-## Exceptions 
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_exceptions.gif)
+## Alternative Flow - Same Item Identification Number.
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows3b.gif)
+
+## Alternative Flow - Multiple Items of The Same Goods
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows3c.gif)
+
+## Alternative Flow - Customer eligible for discount
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows9a.gif)
+
+## Alternative Flow - Unchecked Exception 
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_exceptions_unchecked.gif)

@@ -42,17 +42,12 @@ public class Main {
             // # BASIC FLOW
             clearConsole();
             view.basicFlow();
-            clearConsole();
 
             // # ALTERNATIVE FLOWS
             view.alternativeFlow3AWithCheckedExceptions();
-            clearConsole();
             view.alternativeFlow3B();
-            clearConsole();
             view.alternativeFlow3C();
-            clearConsole();
             view.alternativeFlow9a();
-
             view.basicFlowWithUnCheckedExceptions();
 
         } catch (IOException ex) {

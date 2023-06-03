@@ -43,18 +43,13 @@ public class View {
         printStep("", stepDescription);
     }
     /**
-     * Simulates a user input that generates calls to all system operations,
-     * including with failures and errors.
-     * with itemID 150 to trigger an exception since item is not in inventory system and
-     * with itemID 404 to trigger an exception from inventory system.
-     * with itemID -2 to trigger an IllegalArgumentException.
+     * Simulates a user input that generates calls to all system operations.
      */
     public void basicFlow() {
         System.out.println("BASIC FLOW");
         try {
-            printStep("1.", "Customer arrives at POS with goods to purchase.\n");
-            printStep("2.", "Cashier starts a new sale\n");
-            contr.startSale();
+            step1To2();
+
             printStep( "3.","Cashier enters item identifier.");
             contr.registerItem(5);
             Thread.sleep(1000);
@@ -63,45 +58,30 @@ public class View {
             printStep("inventory system. Program records the sold item.", 0);
             printStep("Program also presents item description,", 0);
             printStep("price, and running total (including VAT).\n");
-            printStep("5.", "Steps three and four are repeated until the", 0);
-            printStep("cashier has registered all items.\n");
+
+            step5();
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3.","Cashier enters item identifier.",0);
             contr.registerItem(1);
             Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3.","Cashier enters item identifier.",0);
             contr.registerItem(3);
             Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3.","Cashier enters item identifier.",0);
             contr.registerItem(9);
             Thread.sleep(1000);
 
-            printStep("6.", "Cashier asks customer if they want to buy", 0);
-            printStep("anything more.\n");
-            printStep("7.", "Customer answers ’no’",0);
-            printStep("a ’yes’ answer will be considered later).\n");
-            printStep("8.", "Cashier ends the sale.");
-            contr.endSale();
+            step6To8();
+
             printStep("9.", "Program presents total price, including VAT.\n");
-            printStep("10.", "Cashier tells customer the total,", 0);
-            printStep("and asks for payment.\n");
-            Amount paidAmount = new Amount(200);
-            printStep("11.", "Customer pays cash.\n");
-            printStep("Paying " + paidAmount + "\n");
-            printStep("12.", "Cashier enters amount paid\n");
-            printStep("13.", "Program logs completed sale.\n");
-            printStep("14.", "Program sends sale information to ", 0);
-            printStep("external accounting system (for accounting)", 0);
-            printStep("and external inventory system (to update", 0);
-            printStep("inventory).\n");
-            printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid.\n");
-            printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer.\n");
 
-            Thread.sleep(2000);
-            clearConsole();
-            contr.pay(paidAmount);
-            Thread.sleep(2000);
-            printStep("17.", "Customer leaves with receipt and goods.",0);
-            Thread.sleep(5000);
-
+            step10To17(200);
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
@@ -111,12 +91,16 @@ public class View {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
     }
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow - checked exception, business logic error.
+     * Item ID 150 triggers an exception since item is not in inventory system.
+     */
     public void alternativeFlow3AWithCheckedExceptions() {
-        System.out.println("ALTERNATIVE FLOW 3-4A");
+        System.out.println( "ALTERNATIVE FLOW - CHECKED EXCEPTION, BUSINESS LOGIC ERROR");
         try {
-            printStep("1.", "Customer arrives at POS with goods to purchase.\n");
-            printStep("2.", "Cashier starts a new sale\n");
-            contr.startSale();
+            step1To2();
+
             printStep( "3.","Cashier enters item identifier.");
             contr.registerItem(5);
             Thread.sleep(1000);
@@ -125,62 +109,62 @@ public class View {
             printStep("inventory system. Program records the sold item.", 0);
             printStep("Program also presents item description,", 0);
             printStep("price, and running total (including VAT).\n");
-            printStep("5.", "Steps three and four are repeated until the", 0);
-            printStep("cashier has registered all items.\n");
-            System.out.println( "CHECKED EXCEPTION, BUSINESS LOGIC ERRORS");
+
+            step5();
+            Thread.sleep(1000);
+
+            clearConsole();
+            System.out.println("ALTERNATIVE FLOW 3-4A");
             printStep("3-4a.", "No item with the specified identifier is found.\n");
             try {
                 printStep( "3a.","Cashier tries to enter a non-existing item ID, ",0);
                 printStep("should generate an error.");
                 Thread.sleep(1000);
+
                 contr.registerItem(150);
-                Thread.sleep(1000);
-                Thread.sleep(1000);
                 errorMessageHandler.log("Managed to enter a non-existing item ID.");
             } catch (ItemNotFoundInItemRegistryException ex) {
                 errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
             } catch (OperationFailedException exc) {
                 writeToLogAndUI("Wrong exception was thrown.", exc);
             }
-            Thread.sleep(1000);
-            printStep( "3.","Cashier enters item identifier.");
-            contr.registerItem(3);
-            Thread.sleep(1000);
-            printStep( "3b", "Cashier enters item identifier.");
-            contr.registerItem(3);
-            Thread.sleep(1000);
-            printStep( "3c","Cashier enters item identifier and quantity.");
-            contr.registerItem(2, 3);
-            Thread.sleep(1000);
-            printStep("6.", "Cashier asks customer if they want to buy", 0);
-            printStep("anything more.\n");
-            printStep("7.", "Customer answers ’no’",0);
-            printStep("a ’yes’ answer will be considered later).\n");
-            printStep("8.", "Cashier ends the sale.");
-            contr.endSale();
-            printStep("9.", "Program presents total price, including VAT.\n");
-            printStep("10.", "Cashier tells customer the total,", 0);
-            printStep("and asks for payment.\n");
-            Amount paidAmount = new Amount(500);
-            printStep("11.", "Customer pays cash.\n");
-            printStep("Paying " + paidAmount + "\n");
-            printStep("12.", "Cashier enters amount paid\n");
-            printStep("13.", "Program logs completed sale.\n");
-            printStep("14.", "Program sends sale information to ", 0);
-            printStep("external accounting system (for accounting)", 0);
-            printStep("and external inventory system (to update", 0);
-            printStep("inventory).\n");
-            printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid.\n");
-            printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer.\n");
+            Thread.sleep(2000);
 
-            Thread.sleep(2000);
             clearConsole();
-            contr.pay(paidAmount);
+            printStep( "3a.","Cashier enters correct item identifier.", 0);
+            contr.registerItem(3);
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3", "Cashier enters item identifier.", 0);
+            contr.registerItem(4);
+            Thread.sleep(1000);
+
+            try {
+                clearConsole();
+                printStep( "3a.","Cashier tries to enter a non-existing item ID, ",0);
+                printStep("should generate an error.");
+                Thread.sleep(1000);
+
+                contr.registerItem(150);
+                errorMessageHandler.log("Managed to enter a non-existing item ID.");
+            } catch (ItemNotFoundInItemRegistryException ex) {
+                errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+            } catch (OperationFailedException exc) {
+                writeToLogAndUI("Wrong exception was thrown.", exc);
+            }
             Thread.sleep(2000);
-            printStep("17.", "Customer leaves with receipt and goods.",0);
-            Thread.sleep(5000);
+
+            clearConsole();
+            printStep( "3", "Cashier enters correct item identifier.", 0);
+            contr.registerItem(2 );
+            Thread.sleep(1000);
+
+            step6To8();
+
+            printStep("9.", "Program presents total price, including VAT.\n");
+
+            step10To17(500);
 
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
@@ -192,68 +176,72 @@ public class View {
         }
     }
 
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow - same item id.
+     */
     public void alternativeFlow3B() {
-        System.out.println("ALTERNATIVE FLOW 3-4B");
+        System.out.println("ALTERNATIVE FLOW - SAME ITEM ID");
         try {
-            printStep("1.", "Customer arrives at POS with goods to purchase.\n");
-            printStep("2.", "Cashier starts a new sale\n");
-            contr.startSale();
+            step1To2();
+
+            System.out.println("ALTERNATIVE FLOW 3-4B");
+            printStep( "3b.","Cashier enters item identifier.");
+            contr.registerItem(3);
+            Thread.sleep(1000);
+
             printStep("3-4b.", "An item with the specified identifier has", 0);
             printStep("already been entered in the current sale.\n");
             printStep("Program increases the sold quantity of the item,",0);
             printStep("and presents item description price,", 0);
             printStep("and running total.\n");
-            printStep( "3b.","Cashier enters item identifier.");
-            contr.registerItem(3);
-            printStep( "3b.","Cashier enters the same item identifier.");
-            contr.registerItem(3);
-            Thread.sleep(1000);
-            Thread.sleep(1000);
-            printStep("4.", "Program retrieves price, VAT (tax) rate,", 0);
-            printStep("and item description from the external",0);
-            printStep("inventory system. Program records the sold item.", 0);
-            printStep("Program also presents item description,", 0);
-            printStep("price, and running total (including VAT).\n");
-            printStep("5.", "Steps three and four are repeated until the", 0);
-            printStep("cashier has registered all items.\n");
-            contr.registerItem(1);
-            Thread.sleep(1000);
-            contr.registerItem(1);
-            Thread.sleep(1000);
-            contr.registerItem(9);
-            Thread.sleep(1000);
-            contr.registerItem(9);
-            Thread.sleep(1000);
-            printStep("6.", "Cashier asks customer if they want to buy", 0);
-            printStep("anything more.\n");
-            printStep("7.", "Customer answers ’no’",0);
-            printStep("a ’yes’ answer will be considered later).\n");
-            printStep("8.", "Cashier ends the sale.");
-            contr.endSale();
-            printStep("9.", "Program presents total price, including VAT.\n");
-            printStep("10.", "Cashier tells customer the total,", 0);
-            printStep("and asks for payment.\n");
-            Amount paidAmount = new Amount(200);
-            printStep("11.", "Customer pays cash.\n");
-            printStep("Paying " + paidAmount + "\n");
-            printStep("12.", "Cashier enters amount paid\n");
-            printStep("13.", "Program logs completed sale.\n");
-            printStep("14.", "Program sends sale information to ", 0);
-            printStep("external accounting system (for accounting)", 0);
-            printStep("and external inventory system (to update", 0);
-            printStep("inventory).\n");
-            printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid.\n");
-            printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer.\n");
 
-            Thread.sleep(2000);
+            contr.registerItem(3);
+            Thread.sleep(1000);
+
+            step5();
+            Thread.sleep(1000);
+
             clearConsole();
-            contr.pay(paidAmount);
-            Thread.sleep(2000);
-            printStep("17.", "Customer leaves with receipt and goods.",0);
-            Thread.sleep(5000);
+            printStep( "3b.","Cashier enters item identifier.", 0);
+            contr.registerItem(1);
+            Thread.sleep(1000);
 
+            clearConsole();
+            printStep( "3b.","Cashier enters the same item identifier.", 0);
+            contr.registerItem(1);
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3b.","Cashier enters item identifier.", 0);
+            contr.registerItem(9);
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3b.","Cashier enters the same item identifier.",0);
+            contr.registerItem(9);
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3b.","Cashier enters the same item identifier.",0);
+            contr.registerItem(9);
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3b.","Cashier enters the same item identifier.",0);
+            contr.registerItem(9);
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3b.","Cashier enters the same item identifier.",0);
+            contr.registerItem(9);
+            Thread.sleep(1000);
+
+            step6To8();
+
+            printStep("9.", "Program presents total price, including VAT.\n");
+
+            step10To17(240);
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
@@ -264,13 +252,16 @@ public class View {
         }
     }
 
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow - multiple items of the same goods.
+     *
+     */
     public void alternativeFlow3C() {
-        System.out.println("ALTERNATIVE FLOW 3-4C");
+        System.out.println("ALTERNATIVE FLOW - MULTIPLE ITEMS OF THE SAME GOODS");
         try {
-            printStep("1.", "Customer arrives at POS with goods to purchase.\n");
-            printStep("2.", "Cashier starts a new sale\n");
-            contr.startSale();
-            System.out.println("*ALTERNATIVE FLOW 3-4C*");
+            step1To2();
+            System.out.println("ALTERNATIVE FLOW 3-4C");
             printStep("3-4c.", "Customer purchases multiple items of the same", 0);
             printStep("goods (with the same identifier),",0);
             printStep("and cashier registers them together");
@@ -279,50 +270,33 @@ public class View {
             printStep("III.", "Program calculates price, records the sold item", 0);
             printStep("and quantity, and presents item",0);
             printStep("description, price, and running total.\n",2);
-            printStep( "3.c","Cashier enters item identifiers with quantities.");
+
+            contr.registerItem(2, 2);
+            Thread.sleep(1000);
+
+            step5();
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3.c","Cashier enters item identifiers with quantities.", 0);
             contr.registerItem(8, 2);
             Thread.sleep(1000);
-            contr.registerItem(8, 4);
+
+            clearConsole();
+            printStep( "3.c","Cashier enters item identifiers with quantities.", 0);
+            contr.registerItem(7, 4);
             Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3.c","Cashier enters item identifiers with quantities.", 0);
             contr.registerItem(10, 4);
             Thread.sleep(1000);
-            printStep("4.", "Program retrieves price, VAT (tax) rate,", 0);
-            printStep("and item description from the external",0);
-            printStep("inventory system. Program records the sold item.", 0);
-            printStep("Program also presents item description,", 0);
-            printStep("price, and running total (including VAT).\n");
-            printStep("5.", "Steps three and four are repeated until the", 0);
-            printStep("cashier has registered all items.\n");
-            printStep("6.", "Cashier asks customer if they want to buy", 0);
-            printStep("anything more.\n");
-            printStep("7.", "Customer answers ’no’",0);
-            printStep("a ’yes’ answer will be considered later).\n");
-            printStep("8.", "Cashier ends the sale.");
-            contr.endSale();
-            printStep("9.", "Program presents total price, including VAT.\n");
-            Thread.sleep(1000);
-            printStep("10.", "Cashier tells customer the total,", 0);
-            printStep("and asks for payment.\n");
-            Amount paidAmount = new Amount(1000);
-            printStep("11.", "Customer pays cash.");
-            printStep("Paying " + paidAmount + "\n");
-            printStep("12.", "Cashier enters amount paid.\n");
-            printStep("13.", "Program logs completed sale. \n");
-            printStep("14.", "Program sends sale information to ", 0);
-            printStep("external accounting system (for accounting)", 0);
-            printStep("and external inventory system (to update", 0);
-            printStep("inventory). \n");
-            printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid. \n");
-            printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer. \n");
 
-            Thread.sleep(2000);
-            clearConsole();
-            contr.pay(paidAmount);
-            Thread.sleep(2000);
-            printStep("17.", "Customer leaves with receipt and goods.",0);
-            Thread.sleep(5000);
+            step6To8();
+
+            printStep("9.", "Program presents total price, including VAT.\n");
+
+            step10To17(1000);
 
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
@@ -333,33 +307,37 @@ public class View {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
     }
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow, customer eligible for discount.
+     */
     public void alternativeFlow9a() {
-        System.out.println("ALTERNATIVE FLOW 9A");
+        System.out.println("ALTERNATIVE FLOW, CUSTOMER ELIGIBLE FOR DISCOUNT");
         try {
-            printStep("1.", "Customer arrives at POS with goods to purchase.\n");
-            printStep("2.", "Cashier starts a new sale\n");
-            printStep( "3.c","Cashier enters item identifiers with quantities.");
+            step1To2();
+
+            printStep( "3.c","Cashier enters item identifiers with quantities.", 0);
+            printStep( "Program calculates price, records the sold item", 0);
+            printStep("and quantity, and presents item");
             contr.registerItem(8, 2);
             Thread.sleep(1000);
-            contr.registerItem(8, 4);
-            Thread.sleep(1000);
-            contr.registerItem(10, 4);
-            Thread.sleep(1000);
-            printStep("4.", "Program retrieves price, VAT (tax) rate,", 0);
-            printStep("and item description from the external",0);
-            printStep("inventory system. Program records the sold item.", 0);
-            printStep("Program also presents item description,", 0);
-            printStep("price, and running total (including VAT).\n");
-            printStep("5.", "Steps three and four are repeated until the", 0);
-            printStep("cashier has registered all items.\n");
-            printStep("6.", "Cashier asks customer if they want to buy", 0);
-            printStep("anything more.\n");
-            printStep("7.", "Customer answers ’no’",0);
-            printStep("a ’yes’ answer will be considered later).\n");
-            printStep("8.", "Cashier ends the sale.");
-            contr.endSale();
+
+            step5();
             Thread.sleep(1000);
 
+            clearConsole();
+            printStep( "3.c","Cashier enters item identifiers with quantities.", 0);
+            contr.registerItem(8, 4);
+            Thread.sleep(1000);
+
+            clearConsole();
+            printStep( "3.c","Cashier enters item identifiers with quantities.", 0);
+            contr.registerItem(10, 4);
+            Thread.sleep(1000);
+
+            step6To8();
+
+            System.out.println("ALTERNATIVE FLOW 9A");
             printStep("9a", "(may also be 10a or 11a) ",0);
             printStep("Customer says they are eligible for a discount.");
             printStep("I.", "Cashier signals discount request.");
@@ -371,28 +349,11 @@ public class View {
             contr.registerCustomerToSale(810111);
             contr.endSale();
             Thread.sleep(1000);
-            printStep("10.", "Cashier tells customer the total,", 0);
-            printStep("and asks for payment.\n");
-            Amount paidAmount = new Amount(1000);
-            printStep("11.", "Customer pays cash.");
-            printStep("Paying " + paidAmount + "\n");
-            printStep("12.", "Cashier enters amount paid.\n");
-            printStep("13.", "Program logs completed sale. \n");
-            printStep("14.", "Program sends sale information to ", 0);
-            printStep("external accounting system (for accounting)", 0);
-            printStep("and external inventory system (to update", 0);
-            printStep("inventory). \n");
-            printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid. \n");
-            printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer. \n");
-
-            Thread.sleep(2000);
             clearConsole();
-            contr.pay(paidAmount);
-            Thread.sleep(2000);
-            printStep("17.", "Customer leaves with receipt and goods.",0);
-            Thread.sleep(5000);
+            contr.endSale();
+            Thread.sleep(1000);
+
+            step10To17(1000);
 
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
@@ -403,12 +364,16 @@ public class View {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
     }
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow - unchecked exception.
+     * Item ID 404 to triggers an exception from inventory system.
+     */
     public void basicFlowWithUnCheckedExceptions() {
-        System.out.println("BASIC FLOW WITH UNCHECKED EXCEPTION");
+        System.out.println("ALTERNATIVE FLOW - UNCHECKED EXCEPTION");
         try {
-            printStep("1.", "Customer arrives at POS with goods to purchase.\n");
-            printStep("2.", "Cashier starts a new sale\n");
-            contr.startSale();
+            step1To2();
+
             printStep( "3.","Cashier enters item identifier.");
             contr.registerItem(5);
             Thread.sleep(1000);
@@ -417,13 +382,14 @@ public class View {
             printStep("inventory system. Program records the sold item.", 0);
             printStep("Program also presents item description,", 0);
             printStep("price, and running total (including VAT).\n");
-            printStep("5.", "Steps three and four are repeated until the", 0);
-            printStep("cashier has registered all items.\n");
+
+            step5();
+
             try {
                 System.out.println( "UNCHECKED EXCEPTION, RUNTIME-ERROR");
                 printStep( "I.", "Simulating a temporary server connection loss, ",0 );
                 printStep( "should generate an error.\n");
-                printStep( "3.","Cashier enters item identifier.");
+                printStep( "3b.","Cashier enters the same item identifier.");
                 Thread.sleep(1000);
                 contr.registerItem(404);
                 printStep("");
@@ -433,46 +399,25 @@ public class View {
             } catch (OperationFailedException ex) {
                 writeToLogAndUI("Correctly failed to register item when database call \nfailed", ex);
             }
-            Thread.sleep(1000);
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             printStep("II.","Server connection resumed\n");
+            Thread.sleep(2000);
+
+            clearConsole();
+            printStep( "3b.","Cashier enters the same item identifier.", 0);
+            contr.registerItem(5);
             Thread.sleep(1000);
-            printStep( "3b", "Cashier enters item identifier.");
-            contr.registerItem(3);
-            Thread.sleep(1000);
-            printStep( "3c","Cashier enters item identifier and quantity.");
+
+            clearConsole();
+            printStep( "3c","Cashier enters item identifier and quantity.", 0);
             contr.registerItem(2, 3);
             Thread.sleep(1000);
-            printStep("6.", "Cashier asks customer if they want to buy", 0);
-            printStep("anything more.\n");
-            printStep("7.", "Customer answers ’no’",0);
-            printStep("a ’yes’ answer will be considered later).\n");
-            printStep("8.", "Cashier ends the sale.");
-            contr.endSale();
+
+            step6To8();
+
             printStep("9.", "Program presents total price, including VAT.\n");
-            printStep("10.", "Cashier tells customer the total,", 0);
-            printStep("and asks for payment.\n");
-            Amount paidAmount = new Amount(500);
-            printStep("11.", "Customer pays cash.\n");
-            printStep("Paying " + paidAmount + "\n");
-            printStep("12.", "Cashier enters amount paid\n");
-            printStep("13.", "Program logs completed sale.\n");
-            printStep("14.", "Program sends sale information to ", 0);
-            printStep("external accounting system (for accounting)", 0);
-            printStep("and external inventory system (to update", 0);
-            printStep("inventory).\n");
-            printStep("15.", "Program increases the amount present in the ",0);
-            printStep("register with the amount paid.\n");
-            printStep("16.", "Program prints receipt and tells how much ", 0);
-            printStep("change to give customer.\n");
 
-            Thread.sleep(2000);
-            clearConsole();
-            contr.pay(paidAmount);
-            Thread.sleep(2000);
-            printStep("17.", "Customer leaves with receipt and goods.",0);
-            Thread.sleep(5000);
-
+            step10To17(500);
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
@@ -481,6 +426,50 @@ public class View {
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
         }
+    }
+    private void step1To2() throws InterruptedException, OperationFailedException {
+        printStep("1.", "Customer arrives at POS with goods to purchase.\n");
+        printStep("2.", "Cashier starts a new sale\n");
+        contr.startSale();
+    }
+    private void step5() throws InterruptedException {
+        printStep("5.", "Steps three and four are repeated until the", 0);
+        printStep("cashier has registered all items.\n");
+    }
+    private void step6To8() throws InterruptedException {
+        printStep("6.", "Cashier asks customer if they want to buy", 0);
+        printStep("anything more.\n");
+        printStep("7.", "Customer answers ’no’",0);
+        printStep("a ’yes’ answer will be considered later).\n");
+        printStep("8.", "Cashier ends the sale.");
+        contr.endSale();
+        Thread.sleep(1000);
+    }
+    private void step10To17(double paidAmt) throws InterruptedException, OperationFailedException {
+        printStep("10.", "Cashier tells customer the total,", 0);
+        printStep("and asks for payment.\n");
+        Amount paidAmount = new Amount(paidAmt);
+        printStep("11.", "Customer pays cash.\n");
+        printStep("Paying " + paidAmount + "\n");
+        printStep("12.", "Cashier enters amount paid\n");
+        printStep("13.", "Program logs completed sale.\n");
+        printStep("14.", "Program sends sale information to ", 0);
+        printStep("external accounting system (for accounting)", 0);
+        printStep("and external inventory system (to update", 0);
+        printStep("inventory).\n");
+        printStep("15.", "Program increases the amount present in the ",0);
+        printStep("register with the amount paid.\n");
+        printStep("16.", "Program prints receipt and tells how much ", 0);
+        printStep("change to give customer.\n");
+
+        Thread.sleep(2000);
+        clearConsole();
+        contr.pay(paidAmount);
+        Thread.sleep(1000);
+        printStep("17.", "Customer leaves with receipt and goods.",0);
+        Thread.sleep(2000);
+        clearConsole();
+        Thread.sleep(3000);
     }
     private final static void clearConsole()
     {
