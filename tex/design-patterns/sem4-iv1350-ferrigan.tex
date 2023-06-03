@@ -172,29 +172,58 @@ is correctly configured as a resource directory in your IDE.
 
 Since the system reads and writes to files, handling exceptions became necessary.
 
-\section*{Exceptions}
-\subsection*{Checked exceptions}
+\section*{Task 1 - Exceptions}
+\emph{Checked exceptions} are usually used for error handling business logic while
+\emph{unchecked exceptions} are used for programming errors.
+
+To manage the alternative flow, step $3-4a$,
+where an item is not found in the item registry,
+a checked exception named \mintinline{java}{ItemNotFoundException} is used.
+
+It is thrown when an item identifier is not valid or is not found in item registry.
+It is manually tested by the sample method \mintinline{java}{alternativeFlow3AWithCheckedExceptions()}
+in \verb|View| and automatically tested in the unit test classes \verb|SaleTest| and \verb|ControllTest|.
+
+Error handling when records are not found in Customer Registry is
+also implemented with
+a checked exception -- \mintinline{java}{CustomerNotFoundIncustomerRegistryException}.
+The program also handles I/O exceptions when reading and writing to the flat file databases (e.g. \mintinline{java}{FileNotFoundException}.
+
+A database failure can be simulated by registering the item id $404$.
+It triggers the ItemRegistry (a class that represents an external inventory system)
+to throw the programs unchecked exception \mintinline{java}{ItemRegistryException}.
+Additional unchecked exceptions are implemented and handled.
+\mintinline{CustomerRegistryException} and \mintinline{AccountingSystemException} for
+failures related to the other two databases.
+The checked \emph{Reflective Operation exceptions}, like
+\mintinline{java}{ClassNotFoundException}
+and \mintinline{java}{InstantiationException},
+are caught and rethrown
+by the programs own unchecked exception for pricing strategies
+(Factory-Method failure) called
+\mintinline{java}{PricingFailureException} and by
+the programs unchecked exception \mintinline{java}{RegistryHandlerException}
+when the program joint database interface fasad fails to set up the registries
+(Abstract Factory failure).
+
+If system operations are called in a wrong order,
+\mintinline{java}{IllegalStateException} is thrown.
+For example, when registering an item before initializing a sale
+or calling the pay operation before ending sale.
+
+All the above mentioned unchecked exceptions %for registry, pricing strategies and fasad
+are caught and rethrown as the programs own checked
+exception \mintinline{java}{OperationFailedException}
+by the \verb|Controller|.
+
+Both \mintinline{java}{ItemRegistryException} and \mintinline{java}{OperationFailedException}
+are tested manually
+by the sample method \mintinline{java}{basicFlowWithUnCheckedExceptions()}
+in \verb|View| and are automatically tested in the unit test
+classes \verb|SaleTest| and \verb|ControllTest|.
+
 % TODO lägg till hur du implementerade alt. flow 3a, unchekced och notifieringar. Med UML? Test skriv om i test avsnittet
 % TODO skriv att gällande notifieringar till användare och utvecklar, så implementerade du dessa med ett interface och med The Singleton Design Pattern.
-* Choose between checked and unchecked exceptions.
-* Use the correct abstraction level for exceptions.
-* Name the exception after the error condition.
-* Include information about the error condition.
-* Use functionality provided in java.lang.Exception
-* Write javadoc comments for all exceptions.
-* An object shall not change state if an exception is thrown.
-* Notify users.
-* Notify developers.
-* Write unit tests for the exception handling.
-
-
-Additional exception handling were implemented;
-\begin{enumerate}
-    \item Exceptions thrown by reflective operations (issues related to the Factory Design Pattern see ****),%TODO
-    \item I/O exceptions (related to reading and writing to the flat file databases and creating and writing to the revenue and error logs),
-    \item \mintinline{java}{IllegalStateException}, which is thrown if system operations are called in a wrong order.
-    For example, when registering an item before initializing a sale or calling the pay operation before ending sale.
-\end{enumerate}
 
 
 \section*{Tests}
@@ -243,7 +272,7 @@ This enables testing classes in both the integration and util layer package.
 
 %TODO Presentera Exceptiontesterna
 
-\section*{Refactoring to Patterns}
+\section*{Task 2 - Refactoring to Patterns}
 %TODO  Observer först. 2a men att du även använd the template method och singleton (referera till Additional Task rapporten????)
 
 \subsubsection{Discount and promotion algorithms}
@@ -354,16 +383,16 @@ The entire program can be found here:
 %    \end{center}
 %\end{figure}
 %
-%\subsubsection*{The StartSale System Operations}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003}
-%%        \includegraphics[trim=0cm 0cm 51cm 0cm ,clip, width=\textwidth]{../uml/output/uml_v3.png}
-%%        \caption{The \verb|startSale| system operation }
-%        \caption{The startSale system operation }
-%        \label{fig:SD}
-%    \end{center}
-%\end{figure}
+\subsubsection*{The StartSale System Operations}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003.png}
+%        \includegraphics[trim=0cm 0cm 51cm 0cm ,clip, width=\textwidth]{../uml/output/uml_v3.png}
+%        \caption{The \verb|startSale| system operation }
+        \caption{The startSale system operation }
+        \label{fig:SD}
+    \end{center}
+\end{figure}
 %%
 %\newpage
 \subsubsection*{The registerItem System Operations}
