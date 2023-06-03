@@ -88,9 +88,9 @@ package model {
         - pricing : DiscountStrategy
         - customer : Customer
         - isComplete : boolean
-        + <<create>> Sale() : Sale {exception OperationFailedException}
-        + addItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException)}
-        + addItem(itemInfo : ItemDTO, quantity : int) : void {exception OperationFailedException}
+        + <<create>> Sale() : Sale {exception PricingFailedException}
+        + addItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, ItemRegistryException, PricingFailedException)}
+        + addItem(itemInfo : ItemDTO, quantity : int) : void {exception PricingFailedException}
         + calculateTotalPrice() : Amount
         + calculateRunningTotal() : Amount
         + getTotalVATCosts() : Amount
@@ -114,8 +114,8 @@ package model {
         - timeOfUpdate : LocalDateTime
         - quantity : int
         - vatCalculation : VATStrategy
-        + <<create>> ShoppingCartItem(itemInfo:ItemDTO) : ShoppingCartItem
-        + <<create>> ShoppingCartItem(itemInfo:ItemDTO, quantity : int): ShoppingCartItem
+        + <<create>> ShoppingCartItem(itemInfo:ItemDTO) : ShoppingCartItem {exception PricingFailedException}
+        + <<create>> ShoppingCartItem(itemInfo:ItemDTO, quantity : int): ShoppingCartItem {exception PricingFailedException}
         + addToQuantity(additionalQuantity : int) : void
         + getTotalSubPrice() : Amount
         + calculateTotalSubVATCosts() : Amount
@@ -183,15 +183,6 @@ package model {
         + toString() : String
         + equals(o : Object) : boolean
         + compareTo(o : Object) : int
-    }
-    class VAT{
-        - vatRateGroupCode : int
-        - vatRate : double
-        + <<create>> VAT(vatRateGroupCode : int) : VAT
-        + <<create>> VAT() : VAT
-        + getVATRateGroupCode() : Int
-        + getVATRate() : double
-        + equals(Object o)
     }
     class Customer {
         - customerID : int
@@ -264,8 +255,6 @@ package integration {
             - discountAmount : Amount
             - toString() : String
         }
-     }
-    package vat {
         class VATFactory <<singleton>> {
             - {static} VAT_CLASS_NAME_KEY : String
             + getDefaultVATStrategy() : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
@@ -738,8 +727,11 @@ loop moreItems
                 autonumber 1.2.2.1
                 create newItem
                 currentSale -[dashed]->> newItem : <<create>> \n newShoppingCartItem = \n ShoppingCartItem(itemInfo : ItemDTO, quantity : int) : ShoppingCartItem
-'                activate newItem
-'                deactivate newItem
+                activate newItem
+                ref over newItem : VAT Strategy
+                autonumber stop
+                 currentSale <<- newItem : <<exception>>\nPricingFailedException
+                deactivate newItem
                 currentSale -> shoppingCart : put(\n\titem.itemID():int, \n\tnewShoppingCartItem : ShoppingCartItem\n) : ShoppingCartItem
                 activate shoppingCart
                 deactivate shoppingCart

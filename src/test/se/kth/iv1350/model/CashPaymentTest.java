@@ -28,14 +28,14 @@ class CashPaymentTest extends POSTestSuperClass {
         instance = new CashPayment(paidAmount);
         try {
             sale = new Sale();
-        } catch (OperationFailedException ex) {
+        } catch (PricingFailedException ex) {
             fail("Failed to setUp CashPaymentTest");
             ex.printStackTrace();
         }
         try {
             sale.addItem(ITEM_ID, 1);
         } catch (ItemRegistryException | ItemNotFoundInItemRegistryException
-                 | OperationFailedException e) {
+                 | PricingFailedException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
         }
