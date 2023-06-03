@@ -1,6 +1,5 @@
 package se.kth.iv1350.util;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,8 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
-// TODO use the System.getProperty?
-// TODO UML:a och skriva JavaDocs
 /**
  * A Singleton that creates an instance responsible for
  * logging errors to a specific file.
@@ -21,8 +18,6 @@ public class ErrorFileLogHandler implements Logger {
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.log.file.location");
     private static final String LOG_FILE_NAME = System.getProperty("se.kth.iv1350.log.file.error_log");
     private static final String LINE_SEPARATOR  = System.getProperty("line.separator");
-    private Locale locale = new Locale("sv", "SE");
-    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
     private PrintWriter logFile;
 
     private ErrorFileLogHandler() throws IOException {
@@ -63,6 +58,8 @@ public class ErrorFileLogHandler implements Logger {
     }
 
     private String createTime() {
+        Locale locale = new Locale("sv", "SE");
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
         LocalDateTime now = LocalDateTime.now();
         return now.format(formatter);
     }

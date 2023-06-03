@@ -2,13 +2,11 @@ package se.kth.iv1350.view;
 
 import se.kth.iv1350.util.Logger;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
-// TODO UML:a och skriva JavaDocs
 /**
  * A Singleton that creates an instance responsible for
  * showing error messages to the user.
@@ -17,8 +15,6 @@ import java.util.Locale;
  * It is implemented as a singleton
  */
 class ErrorMessageHandler implements Logger {
-    private Locale locale = new Locale("sv", "SE");
-    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
     private static final ErrorMessageHandler INSTANCE = new ErrorMessageHandler();
     private ErrorMessageHandler() {}
 
@@ -50,6 +46,8 @@ class ErrorMessageHandler implements Logger {
     }
 
     private String createTime() {
+        Locale locale = new Locale("sv", "SE");
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
         LocalDateTime now = LocalDateTime.now();
         return now.format(formatter);
     }
