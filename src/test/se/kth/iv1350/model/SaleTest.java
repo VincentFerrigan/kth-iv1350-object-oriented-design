@@ -67,6 +67,44 @@ class SaleTest extends POSTestSuperClass {
         System.setOut(originalSysOut);
     }
 
+    @Test
+    @DisplayName("Alternative flow 3a, add item - checked exception")
+    void testAddInvalidItemID() {
+        int invalidID = 150;
+        assertThrows(ItemNotFoundInItemRegistryException.class, () -> instance.addItem(invalidID, 1));
+
+        try {
+            instance.addItem(invalidID, 1);
+            fail("No exception was thrown");
+        } catch (PricingFailedException | ItemRegistryException ex) {
+            fail("Wrong exception thrown. "
+                    + "%s".formatted(ex.getMessage()));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            assertTrue(ex.getMessage().contains(Integer.toString(invalidID)),
+                    "Wrong exception message, does not contain specified item ID: " + ex.getMessage());
+            assertEquals(ex.getItemIDNotFound(), invalidID,
+                    "Wrong item ID is specified: "
+                            + ex.getItemIDNotFound());
+        }
+    }
+
+    @Test
+    @DisplayName("Unchecked exception, database failure.")
+    void testUncheckedException() {
+        int dbFailureSimulatingID = 404;
+        assertThrows(ItemRegistryException.class, () -> instance.addItem(dbFailureSimulatingID, 1));
+
+        try {
+            instance.addItem(dbFailureSimulatingID, 1);
+            fail("No exception was thrown");
+        } catch (PricingFailedException | ItemNotFoundInItemRegistryException ex) {
+            fail("Wrong exception thrown. "
+                    + "%s".formatted(ex.getMessage()));
+        } catch (ItemRegistryException ex) {
+            assertTrue(ex.getMessage().contains("database fail"),
+                    "Wrong exception message, does not mention database fail: " + ex.getMessage());
+        }
+    }
     @Nested
     @DisplayName("Adding items to sale")
     class SaleAddItemsTest {
