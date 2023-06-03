@@ -40,8 +40,8 @@
 \headheight 27pt
 \pagestyle{fancyplain}
 \lhead{\footnotesize{Object-Oriented Design, IV1350}}
-\chead{\footnotesize{Seminar 3 Implementation}}
-\rhead{}
+\chead{}
+\rhead{\footnotesize{Seminar 4 Exceptions and Design Patterns}}
 \lfoot{}
 \cfoot{\thepage\ (\pageref{LastPage})}
 \rfoot{}
@@ -67,22 +67,13 @@ specifically as outlined in chapters eight and nine of the course book.
 The seminar consisted of two tasks.
 The first task was to use both checked and
 unchecked exception handling.
-The former to manage the alternative flow of $3-4a$
+The former to manage the alternative flow, step $3-4a$
 in the Process Sale, and the latter to indicate database failure (such as a
 database server not running or database connectivity lost).
-The latter had to
-be simulated.
+All caught exceptions were to be logged for developers, and those caught
+in \verb|View|, an informative message displayed to the user.
 
-Additional exception handling were implemented;
-\begin{enumerate}
-    \item Exceptions thrown by reflective operations (issues related to the Factory Design Pattern see ****%TODO),
-    \item I/O exceptions (related to reading and writing to the flat file databases and creating and writing to the revenue and error logs),
-    \item \mintinline{java}{IllegalStateException}, which is thrown if system operations are called in a wrong order.
-    For example when registering an item before initializing a sale or calling the pay operation before ending sale
-    when methods are called in wrong order.
-\end{enumerate}
-
-The second task consisted of two parts.
+The second task also consisted of two parts.
 The first part, \emph{task 2a}, revolved
 around employing the Observer Design Pattern to introduce a new functionality:
 displaying the total revenue from the start of the program, each time it was
@@ -181,6 +172,31 @@ is correctly configured as a resource directory in your IDE.
 
 Since the system reads and writes to files, handling exceptions became necessary.
 
+\section*{Exceptions}
+\subsection*{Checked exceptions}
+% TODO lägg till hur du implementerade alt. flow 3a, unchekced och notifieringar. Med UML? Test skriv om i test avsnittet
+% TODO skriv att gällande notifieringar till användare och utvecklar, så implementerade du dessa med ett interface och med The Singleton Design Pattern.
+* Choose between checked and unchecked exceptions.
+* Use the correct abstraction level for exceptions.
+* Name the exception after the error condition.
+* Include information about the error condition.
+* Use functionality provided in java.lang.Exception
+* Write javadoc comments for all exceptions.
+* An object shall not change state if an exception is thrown.
+* Notify users.
+* Notify developers.
+* Write unit tests for the exception handling.
+
+
+Additional exception handling were implemented;
+\begin{enumerate}
+    \item Exceptions thrown by reflective operations (issues related to the Factory Design Pattern see ****),%TODO
+    \item I/O exceptions (related to reading and writing to the flat file databases and creating and writing to the revenue and error logs),
+    \item \mintinline{java}{IllegalStateException}, which is thrown if system operations are called in a wrong order.
+    For example, when registering an item before initializing a sale or calling the pay operation before ending sale.
+\end{enumerate}
+
+
 \section*{Tests}
 Tests are created using the JUnit 5 framework and follow best practice, i.e., they
 have the same directory architecture as the program, and are placed outside the source
@@ -225,7 +241,10 @@ This enables testing classes in both the integration and util layer package.
     \label{listing:before-all-tests-setup}
 \end{longlisting}
 
+%TODO Presentera Exceptiontesterna
+
 \section*{Refactoring to Patterns}
+%TODO  Observer först. 2a men att du även använd the template method och singleton (referera till Additional Task rapporten????)
 
 \subsubsection{Discount and promotion algorithms}
 Conditional discount logic can be replaced with a combination of the Strategy, Factory and Composite Pattern.
@@ -271,11 +290,19 @@ The entire program can be found here:
 \subsubsection*{Basic flow}
 \href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/tree/main#basic-flow}{Basic-flow-gif}
 
-\subsubsection*{Alternative flows}
-\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/tree/main#alternative-flows}{Alternative-flows-gif}
+\subsection*{Alternative Flows}
+\subsubsection*{Alternative Flow -- Same Item Identification Number}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---same-item-identification-number}{Alternative-flow-3b-gif}
 
-\subsubsection*{Exceptions}
-\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/tree/main#exceptions}{Exceptions-gif}
+\subsubsection*{Alternative Flow - Multiple Items of The Same Goods}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---multiple-items-of-the-same-goods}{Alternative-flow-3c-gif}
+
+\subsection*{Exceptions}
+\subsubsection*{Alternative Flow -- Checked Exception, Business Logic}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---checked-exception-business-logic}{Alternative-flow-3a-gif}
+
+\subsubsection*{Alternative Flow -- Unchecked Exception}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Unchecked-exception-gif}
 
 %\section{The Class Diagram}
 %\begin{figure}[h!]
@@ -339,17 +366,17 @@ The entire program can be found here:
 %\end{figure}
 %%
 %\newpage
-%\subsubsection*{The registerItem System Operations}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_004}
-%%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
-%%        \caption{The \verb|registerItem| system operation }
-%        \caption{The registerItem operation }
-%        \label{fig:SD1}
-%    \end{center}
-%\end{figure}
-%
+\subsubsection*{The registerItem System Operations}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_004.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{The register item operation, including checked and unchecked exceptions}
+        \label{fig:SD4}
+    \end{center}
+\end{figure}
+
 %\subsection*{Displaying the output of current sale}
 %\begin{longlisting}
 %    \inputminted[
@@ -433,6 +460,35 @@ The entire program can be found here:
 
 \chapter{Discussion}
 \label{sec:discussion}
+* Does exception handling follow the nine bullets about exception handling best
+practices from chapter eight, which are specified in the lab tutorial?
+    * Choose between checked and unchecked exceptions.
+    * Use the correct abstraction level for exceptions.
+    * Name the exception after the error condition.
+    * Include information about the error condition.
+    * Use functionality provided in java.lang.Exception
+    * Write javadoc comments for all exceptions.
+    * An object shall not change state if an exception is thrown.
+    * Notify users.
+    * Notify developers.
+    * Write unit tests for the exception handling.
+
+
+* Are pattern implementation(s) really correct implementations of the pattern(s).
+Sometimes it seems like this at a first glance even though there are severe flaws.
+
+* Is the use of design patterns explained and motivated?
+
+* Do you agree with choices of observer and observed object?
+
+* How is the reference to observer passed to observed object? Does this have bad
+effects on coupling or cohesion?
+
+* What data is passed from observed object to observer? Does this brake encapsulation of the observed object?
+
+* Is the method and result explained in the report? Is there a discussion? Is the
+discussion relevant?
+
 
 \listoflistings % Now typeset the list
 \printbibliography
