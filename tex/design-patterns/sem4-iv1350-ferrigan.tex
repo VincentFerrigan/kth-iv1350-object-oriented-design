@@ -28,7 +28,7 @@
 % \usepackage{minted}
 \usepackage[outputdir=output/tex]{minted} % iom min makefile
 
-\usepackage{caption}
+\usepackage[font=footnotesize,labelfont=bf,skip=2pt]{caption}
 \usepackage{hyperref}
 \newenvironment{longlisting}{\captionsetup{type=listing}}{}
 % \renewcommand\listoflistingscaption{Källkod....}
@@ -172,60 +172,6 @@ is correctly configured as a resource directory in your IDE.
 
 Since the system reads and writes to files, handling exceptions became necessary.
 
-\section*{Task 1 - Exceptions}
-\emph{Checked exceptions} are usually used for error handling business logic while
-\emph{unchecked exceptions} are used for programming errors.
-
-To manage the alternative flow, step $3-4a$,
-where an item is not found in the item registry,
-a checked exception named \mintinline{java}{ItemNotFoundException} is used.
-
-It is thrown when an item identifier is not valid or is not found in item registry.
-It is manually tested by the sample method \mintinline{java}{alternativeFlow3AWithCheckedExceptions()}
-in \verb|View| and automatically tested in the unit test classes \verb|SaleTest| and \verb|ControllTest|.
-
-Error handling when records are not found in Customer Registry is
-also implemented with
-a checked exception -- \mintinline{java}{CustomerNotFoundIncustomerRegistryException}.
-The program also handles I/O exceptions when reading and writing to the flat file databases (e.g. \mintinline{java}{FileNotFoundException}.
-
-A database failure can be simulated by registering the item id $404$.
-It triggers the ItemRegistry (a class that represents an external inventory system)
-to throw the programs unchecked exception \mintinline{java}{ItemRegistryException}.
-Additional unchecked exceptions are implemented and handled.
-\mintinline{CustomerRegistryException} and \mintinline{AccountingSystemException} for
-failures related to the other two databases.
-The checked \emph{Reflective Operation exceptions}, like
-\mintinline{java}{ClassNotFoundException}
-and \mintinline{java}{InstantiationException},
-are caught and rethrown
-by the programs own unchecked exception for pricing strategies
-(Factory-Method failure) called
-\mintinline{java}{PricingFailureException} and by
-the programs unchecked exception \mintinline{java}{RegistryHandlerException}
-when the program joint database interface fasad fails to set up the registries
-(Abstract Factory failure).
-
-If system operations are called in a wrong order,
-\mintinline{java}{IllegalStateException} is thrown.
-For example, when registering an item before initializing a sale
-or calling the pay operation before ending sale.
-
-All the above mentioned unchecked exceptions %for registry, pricing strategies and fasad
-are caught and rethrown as the programs own checked
-exception \mintinline{java}{OperationFailedException}
-by the \verb|Controller|.
-
-Both \mintinline{java}{ItemRegistryException} and \mintinline{java}{OperationFailedException}
-are tested manually
-by the sample method \mintinline{java}{basicFlowWithUnCheckedExceptions()}
-in \verb|View| and are automatically tested in the unit test
-classes \verb|SaleTest| and \verb|ControllTest|.
-
-% TODO lägg till hur du implementerade alt. flow 3a, unchekced och notifieringar. Med UML? Test skriv om i test avsnittet
-% TODO skriv att gällande notifieringar till användare och utvecklar, så implementerade du dessa med ett interface och med The Singleton Design Pattern.
-
-
 \section*{Tests}
 Tests are created using the JUnit 5 framework and follow best practice, i.e., they
 have the same directory architecture as the program, and are placed outside the source
@@ -270,6 +216,61 @@ This enables testing classes in both the integration and util layer package.
     \label{listing:before-all-tests-setup}
 \end{longlisting}
 
+
+
+\section*{Task 1 - Exceptions}
+\emph{Checked exceptions} are usually used for error handling business logic while
+\emph{unchecked exceptions} are used for programming errors.
+
+To manage the alternative flow, step $3-4a$,
+where an item is not found in the item registry,
+a checked exception named \mintinline{java}{ItemNotFoundException} is used.
+
+It is thrown when an item identifier is not valid or is not found in item registry.
+It is manually tested by the sample method \mintinline{java}{alternativeFlow3AWithCheckedExceptions()}
+in \verb|View| and automatically tested in the unit test classes \verb|SaleTest| and \verb|ControllTest|.
+
+Error handling when records are not found in Customer Registry is
+also implemented with
+a checked exception -- \mintinline{java}{CustomerNotFoundIncustomerRegistryException}.
+The program also handles I/O exceptions when reading and writing to the flat file databases.
+
+A database failure can be simulated by registering the item id $404$.
+It triggers the ItemRegistry (a class that represents an external inventory system)
+to throw the programs unchecked exception \mintinline{java}{ItemRegistryException}.
+
+Additional unchecked exceptions are implemented and handled.
+\begin{enumerate}
+    \item \mintinline{java}{CustomerRegistryException} and \mintinline{java}{AccountingSystemException} for
+    failures related to the other two databases.
+    \item \mintinline{java}{PricingFailureException} and \mintinline{java}{RegistryHandlerException}.
+    Both are used when reflective operation exceptions are caught.
+    The former is the programs own unchecked exception for pricing strategies
+    (i.e. Factory-Method failure) while the latter
+    is the programs unchecked exception for
+    when the program joint database interface fasad fails to set up the registries
+    (i.e. Abstract Factory failure).
+    \item \mintinline{java}{IllegalStateException} is thrown if the
+    system operations are called in the wrong order.
+    For example, when registering an item before initializing a sale
+    or calling the pay operation before ending sale.
+\end{enumerate}
+
+All the above mentioned unchecked exceptions %for registry, pricing strategies and fasad
+are caught and rethrown as the programs own checked
+exception \mintinline{java}{OperationFailedException}
+by the \verb|Controller|.
+
+Both \mintinline{java}{ItemRegistryException} and \mintinline{java}{OperationFailedException}
+are tested manually
+by the sample method \mintinline{java}{basicFlowWithUnCheckedExceptions()}
+in \verb|View| and are automatically tested in the unit test
+classes \verb|SaleTest| and \verb|ControllTest|.
+
+% TODO lägg till hur du implementerade alt. flow 3a, unchekced och notifieringar. Med UML? Test skriv om i test avsnittet
+% TODO skriv att gällande notifieringar till användare och utvecklar, så implementerade du dessa med ett interface och med The Singleton Design Pattern.
+
+
 %TODO Presentera Exceptiontesterna
 
 \section*{Task 2 - Refactoring to Patterns}
@@ -278,8 +279,12 @@ This enables testing classes in both the integration and util layer package.
 \subsubsection{Discount and promotion algorithms}
 Conditional discount logic can be replaced with a combination of the Strategy, Factory and Composite Pattern.
 Here, each discount (or promotion) algorithm
-can be defined in a separate strategy-class, but with a common interface.
-see listing 1 ~\ref{listing:discount-strategy}.
+can be defined in a separate strategy-class, but with a common interface
+(see listing ~\ref{listing:discount-strategy}).
+
+Knowing, however, which discount to choose from requires a third pattern.....
+The need to substitute or add discounts at runtime required....
+Creational knowledge is also moved to the factory, since discounts will be substituted or added at runtime (and after deployment )
 
 \begin{longlisting}
     \inputminted[
@@ -295,9 +300,6 @@ see listing 1 ~\ref{listing:discount-strategy}.
     \label{listing:discount-strategy}
 \end{longlisting}
 
-Knowing, however, which discount to choose from requires a third pattern.....
-The need to substitute or add discounts at runtime required....
-Creational knowledge is also moved to the factory, since discounts will be substituted or added at runtime (and after deployment )
 
 and some duplicated code was eliminated by using the Template Method Pattern.
 
