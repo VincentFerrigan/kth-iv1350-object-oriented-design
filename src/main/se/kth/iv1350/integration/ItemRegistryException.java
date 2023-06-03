@@ -15,10 +15,10 @@ public class ItemRegistryException extends RuntimeException {
     /**
      * Creates a new instance with the specified message and root cause.
      *
-     * @param msg   The exception message.
+     * @param message   The exception message.
      * @param cause The exception that caused this exception.
      */
-    ItemRegistryException(String msg, Exception cause) {
-        super(msg, cause);
+    ItemRegistryException(String message, Exception cause) {
+        super(message, cause);
     }
 }
