@@ -85,7 +85,6 @@ public class View {
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
@@ -169,7 +168,6 @@ public class View {
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
@@ -245,10 +243,9 @@ public class View {
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.log(ex);
-            errorMessageHandler.log("No connection to inventory system. Try again.");
-        } catch (Exception exc) {
-            writeToLogAndUI("Failed to register sale, please try again.", exc);
+            writeToLogAndUI("No connection to inventory system. Try again.", ex);
+        } catch (Exception ex) {
+            writeToLogAndUI("Failed to register sale, please try again.", ex);
         }
     }
 
@@ -301,7 +298,6 @@ public class View {
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
@@ -358,7 +354,6 @@ public class View {
         } catch (ItemNotFoundInItemRegistryException ex) {
             errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
         } catch (OperationFailedException ex) {
-            logger.log(ex);
             errorMessageHandler.log("No connection to inventory system. Try again.");
         } catch (Exception exc) {
             writeToLogAndUI("Failed to register sale, please try again.", exc);
