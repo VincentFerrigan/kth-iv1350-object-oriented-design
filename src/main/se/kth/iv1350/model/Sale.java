@@ -24,7 +24,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class Sale {
     private List<SaleObserver> saleObservers;
-    private LocalDateTime timeOfSale; // TODO ska den vara kvar? Syfte?
     private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
     private CashPayment payment;
     private DiscountStrategy pricing;
@@ -36,7 +35,6 @@ public class Sale {
      * @throws OperationFailedException when unable to set up pricing.
      */
     public Sale() throws OperationFailedException {
-        this.timeOfSale = LocalDateTime.now();
         saleObservers = new ArrayList<>();
         isComplete = false;
         try {
@@ -193,14 +191,6 @@ public class Sale {
      */
     public Amount getDiscount() {
         return pricing.getDiscount();
-    }
-
-    /**
-     * Get time of sale
-     * @return time of sale
-     */
-    public LocalDateTime getTimeOfSale() {
-        return timeOfSale;
     }
 
     /**
