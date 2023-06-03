@@ -1,4 +1,4 @@
-package se.kth.iv1350.integration.vat;
+package se.kth.iv1350.integration.pricing;
 
 import java.lang.reflect.InvocationTargetException;
 

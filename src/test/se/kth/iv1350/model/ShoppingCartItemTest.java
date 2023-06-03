@@ -25,7 +25,7 @@ class ShoppingCartItemTest extends POSTestSuperClass {
     void setUp() {
         try {
             instance = new ShoppingCartItem(this.TEST_ITEM_INFO, TEST_QUANTITY);
-        } catch (OperationFailedException e) {
+        } catch (PricingFailedException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
         }
@@ -58,7 +58,7 @@ class ShoppingCartItemTest extends POSTestSuperClass {
         try {
             a = new ShoppingCartItem(TEST_ITEM_INFO, 2);
             b = new ShoppingCartItem(TEST_ITEM_INFO,2);
-        } catch (OperationFailedException e) {
+        } catch (PricingFailedException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
             throw new RuntimeException(e);

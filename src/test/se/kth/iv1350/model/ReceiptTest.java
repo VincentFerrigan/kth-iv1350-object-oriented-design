@@ -32,13 +32,13 @@ class ReceiptTest extends POSTestSuperClass {
         payment = new CashPayment(PAID_AMOUNT);
         try {
             sale = new Sale();
-        } catch (OperationFailedException ex) {
+        } catch (PricingFailedException ex) {
             fail("Failed to setUp CashPaymentTest");
             ex.printStackTrace();
         }
         try {
             sale.addItem(ITEM_ID, 1);
-        } catch (OperationFailedException | ItemRegistryException | ItemNotFoundInItemRegistryException e) {
+        } catch (PricingFailedException | ItemRegistryException | ItemNotFoundInItemRegistryException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
             throw new RuntimeException(e);
@@ -70,9 +70,9 @@ class ReceiptTest extends POSTestSuperClass {
         String result = instance.toString();
         assertTrue(result.contains(Integer.toString(saleTime.getYear())), "Wrong sale year.");
         assertTrue(result.contains(Integer.toString(saleTime.getMonthValue())),
-                "Wrong rental month.");
+                "Wrong sale month.");
         assertTrue(result.contains(Integer.toString(saleTime.getDayOfMonth())),
-                "Wrong rental day.");
+                "Wrong sale day.");
         assertTrue(result.contains(Integer.toString(saleTime.getHour())), "Wrong sale hour.");
         assertTrue(result.contains(Integer.toString(saleTime.getMinute())), "Wrong sale minute.");
         assertTrue(result.contains(sale.getTotalPricePaid().toString()), "Wrong total price");
