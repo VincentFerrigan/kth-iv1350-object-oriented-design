@@ -1,9 +1,4 @@
 @startuml
-'https://plantuml.com/class-diagram
-'TODO: abstract and static members should have {abstract} {static}
-'TODO pricing and vat package
-'TODO: only the methods that throw throws exception? Or du you have to add them all the way?
-title CD
 hide circle
 skinparam linetype ortho
 skinparam package {
@@ -16,67 +11,9 @@ interface Comparable <<interface>> {
     + compareTo(Object o) : int
     }
 
-together {
 package startup {
     class Main{
         + <<static>> main(args : String[]) : void
-    }
-}
-package view {
-    class EndOfSaleView {
-        # printCurrentState(sale : LimitedSaleView) : void
-        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-        # shouldUpdate(isComplete : boolean) : boolean
-        - createDiscountInfoString(discount : Amount, discountInfo : String) : void
-    }
-    class ErrorMessageHandler <<singleton>>{
-        - createTime
-    }
-    class View {
-        - contr: Controller
-        + <<create>> View(contr : Controller) : View
-    }
-    abstract class TotalRevenue {
-        # TotalRevenue
-        # {abstract} doShowTotalRevenue(totalRevenue : Amount)
-        # {abstract} handleErrors(e : Exception) : void
-    }
-    class TotalRevenueView {
-        # doShowTotalRevenue(totalRevenue : Amount)
-        # handleErrors(e : Exception) : void
-    }
-    abstract class SaleView {
-        - listOfShoppingCartItems : List<ShoppingCartItem>
-        - sale :LimitedSaleView
-        # SaleView()
-        # createSaleItemsInfoString() : String
-        # addNewSaleInfoDetails(sale : LimitedSaleView) : void
-        # {abstract} printCurrentState(sale : LimitedSaleView) : void
-        # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-        # {abstract} shouldUpdate(isComplete : boolean) : boolean
-    }
-    class RunningSaleView {
-        # printCurrentState(sale : LimitedSaleView) : void
-        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-        # shouldUpdate(isComplete : boolean) : boolean
-    }
-}
-package controller {
-    class Controller{
-        - saleObserver : List<SaleObserver>
-        - printer : Printer
-        - cashRegister : CashRegister
-        - currentSale : Sale
-        - logger : ErrorFileLogHandler
-        + <<create>> Controller(printer : Printer) : Controller
-        + addSaleObserver(observer : SaleObserver) : void
-        + addCashRegisterObserver(observer : CashRegisterObserver) : void
-        + startSale() : void {exception OperationFailedException}
-        + registerItem(itemID : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
-        + registerItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
-        + endSale() : void {exception IllegalStateException}
-        + registerCustomerToSale(customerID : int) void {exceptions=(IllegalStateException, CustomerNotFoundInCustomerRegistryException, OperationFailedException)}
-        + pay(paidAmt : Amount) : void {exception IllegalStateException}
     }
 }
 package model {
@@ -216,174 +153,80 @@ package model {
         + <<create>> LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
     }
 }
+package view {
+    class EndOfSaleView {
+        # printCurrentState(sale : LimitedSaleView) : void
+        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+        # shouldUpdate(isComplete : boolean) : boolean
+        - createDiscountInfoString(discount : Amount, discountInfo : String) : void
+    }
+    class ErrorMessageHandler <<singleton>>{
+        - createTime
+    }
+    class View {
+        - contr: Controller
+        + <<create>> View(contr : Controller) : View
+    }
+    abstract class TotalRevenue {
+        # TotalRevenue
+        # {abstract} doShowTotalRevenue(totalRevenue : Amount)
+        # {abstract} handleErrors(e : Exception) : void
+    }
+    class TotalRevenueView {
+        # doShowTotalRevenue(totalRevenue : Amount)
+        # handleErrors(e : Exception) : void
+    }
+    abstract class SaleView {
+        - listOfShoppingCartItems : List<ShoppingCartItem>
+        - sale :LimitedSaleView
+        # SaleView()
+        # createSaleItemsInfoString() : String
+        # addNewSaleInfoDetails(sale : LimitedSaleView) : void
+        # {abstract} printCurrentState(sale : LimitedSaleView) : void
+        # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+        # {abstract} shouldUpdate(isComplete : boolean) : boolean
+    }
+    class RunningSaleView {
+        # printCurrentState(sale : LimitedSaleView) : void
+        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+        # shouldUpdate(isComplete : boolean) : boolean
+    }
+}
+
+package controller {
+    class Controller{
+        - saleObserver : List<SaleObserver>
+        - printer : Printer
+        - cashRegister : CashRegister
+        - currentSale : Sale
+        - logger : ErrorFileLogHandler
+        + <<create>> Controller(printer : Printer) : Controller
+        + addSaleObserver(observer : SaleObserver) : void
+        + addCashRegisterObserver(observer : CashRegisterObserver) : void
+        + startSale() : void {exception OperationFailedException}
+        + registerItem(itemID : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+        + registerItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+        + endSale() : void {exception IllegalStateException}
+        + registerCustomerToSale(customerID : int) void {exceptions=(IllegalStateException, CustomerNotFoundInCustomerRegistryException, OperationFailedException)}
+        + pay(paidAmt : Amount) : void {exception IllegalStateException}
+    }
+}
 package integration {
-    package pricing {
-        enum "//<<enumeration>>//\nCustomerType" as CustomerType {
-        STUDENT,
-        MEMBER
+    package "**ref**" <<Frame>>{
+        package **Pricing** <<Rectangle>> {
+            class "**DiscountFactory**" as DiscountFactory <<Singleton>>{
+            }
+            class "**VATFactory**" as VATFactory <<Singleton>> {
+            }
+       }
     }
-        class DiscountFactory <<singleton>> {
-            - {static} DISCOUNT_CLASS_NAME_KEY : String
-            + getDiscountStrategy() : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-            - createComposite(classNames : String[] {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-            - instantiateDiscountStrategy(className : String) : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
+    package "**ref **" <<Frame>> {
+        package **Facade** <<Rectangle>> {
+            class "**RegistryHandler**" as RegistryHandler <<Singleton>>{
+            }
+            package **Factory** <<Database>>{
+            }
         }
-         interface DiscountStrategy <<interface>>{
-            + getTotal(sale : Sale) : Amount
-            + getDiscount() : Amount
-        }
-         class CompositeDiscountStrategy {
-            - discountStrategies : List<DiscountStrategy>
-            - usedDiscountStrategy : DiscountStrategy
-            ~ <<create>> CompositeDiscountStrategy() : CompositeDiscountStrategy
-            + addDiscountStrategy(discountStrategy : DiscountStrategy)
-            + toString()
-        }
-         class MemberDiscount {
-            - discountRate : double
-            - discountAmount : Amount
-            + toString() : String
-        }
-        class StudentDiscount {
-            - discountRate : double
-            - discountAmount : Amount
-            + toString() : String
-        }
-        class Promotion {
-            - threshold : Amount
-            - bonusCheck : Amount
-            - discountAmount : Amount
-            - toString() : String
-        }
-        class VATFactory <<singleton>> {
-            - {static} VAT_CLASS_NAME_KEY : String
-            + getDefaultVATStrategy() : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-            - instantiateVATStrategy(className : String) : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-        }
-        interface VATStrategy <<interface>> {
-            + calculateVATForItem(item : ShoppingCartItem) : Amount
-        }
-        class SwedishVAT {
-            - getVATRate(vatGroupCode : int): double
-        }
-    }
-'     TODO: Go through all the dB singletons. Are they correct? Is the UML updated?
-    interface IRegistryFactory <<interface>> {
-       + getDefaultItemRegister() : ItemRegistry {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
-       + getDefaultCustomerRegister() : CustomerRegistry {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
-       + getDefaultAccountingSystem() : AccountingSystem {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
-    }
-
-    class FlatFileDatabaseFactory <<singleton>> {
-        - ACCOUNTING_CLASS_NAME_KEY : String
-        - CUSTOMER_CLASS_NAME_KEY : String
-        - INVENTORY_CLASS_NAME_KEY : String
-    }
-
-    class RegistryHandler <<singleton>> {
-        - accountingSystem : AccountingSystem
-        - customerRegister : CustomerRegistry
-        - itemRegistry : ItemRegistry
-        - saleLog : SaleLog
-        + updateRegistries(closedSale : Sale) : void
-        + updateAccountingSystem(closedSale : Sale) : void
-        + updateCustomerRegistry(closedSale : Sale) : void
-        + updateItemRegistry(closedSale : Sale) : void
-        + logSale(closedSale : Sale) : void
-        + getCustomerInfo(customerID : int) : CustomerDTO {exception CustomerNotFoundInCustomerRegistryException}
-        + getItemInfo(itemID : int) : ItemDTO {exception ItemNotFoundInItemRegistryException}
-        + findSaleByCustomerID(customerID : int) : List<Sale>
-    }
-
-    interface AccountingSystem<T> <<interface>> {
-        + updateRegistry(closedSale : Sale) : void {exception} {exception AccountingSystemException}
-    }
-    interface CustomerRegistry<T> <<interface>> {
-        + getDataInfo(dataID T) : CustomerDTO {exceptions=(CustomerNotFoundInCustomerRegistryException, CustomerRegistryException)}
-        + updateRegistry(closedSale : Sale) : void {exception CustomerRegistryException}
-    }
-    interface ItemRegistry<T> <<interface>> {
-        + getDataInfo(dataID T) : ItemDTO {exceptions=(ItemNotFoundInItemRegistryException, ItemRegistryException)}
-        + updateRegistry(closedSale : Sale) : void {exception ItemRegistryException}
-    }
-
-'     TODO Se över hela upplägget. Records och dylikt
-    class AccountingSystemFlatFileDB <<singleton>>{
-        - {static} CSV_DELIMITER : String
-        - FILE_PATH_KEY : String
-        - FLAT_FILE_DB_NAME _KEY: String
-        - flatFileDb : File
-        - recordHeader : string
-        - records : Map<LocalDateTime, Record>
-'        - records : HashMap<LocalDateTime, Record>
-        - timeOfUpdate : LocalTime
-        - totalRevenue : Amount
-        - totalVatCosts : Amount
-        - totalDiscounts : Amount
-        - addRecordDataFromDb() : void {exception AccountingSystemException}
-        - updateDatabase() : void {exception AccountingSystemException}
-    }
-'        note bottom : Record is a nested class
-        class Record {
-            - timeOfUpdate : LocalTime
-            - totalAmount : Amount
-            - totalVatAmount : Amount
-            - discounts : Amount
-            + <<create>>Record(timeOfUpdate : LocalTime, totalAmount : Amount, totalVatAmount : Amount, discounts : Amount)
-            + toString() : String
-        }
-
-    class CustomerRegistryFlatFileDB <<singleton>> {
-        - {static} CSV_DELIMITER : String
-        - FILE_PATH_KEY : String
-        - FLAT_FILE_DB_NAME _KEY: String
-        - DATABASE_NOT_FOUND : int
-        - flatFileDb : File
-        - recordHeader : string
-        - customerTable : Map<Integer, CustomerData>
-'        - customerTable : HashMap<Integer, CustomerData>
-        - addCustomerData() : void {exception CustomerRegistryException}
-        - updateDatabase() :void {exception CustomerRegistryException}
-    }
-'        note bottom : CustomerData is a nested class
-        class CustomerData {
-            - customerID : int
-            - customerType : CustomerType
-            - bonusPoints : int
-            + <<create>>CustomerData(customerID : int, customerType : CustomerType, bonusPoints : int)
-            + toString() : String
-        }
-
-    class ItemRegistryFlatFileDB <<singleton>> {
-        - {static} CSV_DELIMITER : String
-        - FILE_PATH_KEY : String
-        - FLAT_FILE_DB_NAME _KEY: String
-        - DATABASE_NOT_FOUND : int
-        - flatFileDb : File
-        - recordHeader : string
-        - inventoryTable : Map<Integer, ItemData>
-'        - inventoryTable : HashMap<Integer, ItemData>
-        - addItemData() : void {exception ItemRegistryException}
-        - updateDatabase() : void {exception ItemRegistryException}
-    }
-'        note bottom : ItemData is a nested class
-        class ItemData {
-            - articleNo : int
-            - name : String
-            - description : String
-            - price : Amount
-            - vatGroupCode : int
-            - inStore : int
-            - sold : int
-            + <<create>>ItemData(articleNo : int, name : String, \n description : String, price : Amount, vatGroupCode : int, \ninStore : int, sold : int)
-            + toString() : String
-        }
-
-    class SaleLog{
-        + sales : List<Sale>
-        ~<<create>>SaleLog() : SaleLog
-        ~ logSale(sale : Sale) : void
-        ~ findSaleByCustomerID(customerID : int) : List<Sale>
     }
     class Printer{
         + <<create>>Printer() : Printer
@@ -427,26 +270,252 @@ SaleObserver <|-[dashed]- SaleView
 SaleView <|- EndOfSaleView
 SaleView <|- RunningSaleView
 
+Logger <|-[dashed]- ErrorFileLogHandler
+Logger <|-[dashed]- ErrorMessageHandler
+
+LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
+
+Comparable <|-[dashed]- Amount
+
+'Dependencies
+Main ---> View
+Main -up-> Controller
+Main ---> Printer
+
+View -right-> Controller
+
+Controller -right-> CashRegister
+Controller -right-> RegistryHandler
+Controller -right-> Sale
+Controller -right-> CashPayment
+
+Sale --> RegistryHandler
+Sale --> DiscountFactory
+Sale --> CashPayment
+Sale -> Receipt
+Sale --> Printer
+Sale --> ShoppingCartItem
+Sale --> Amount
+
+ShoppingCartItem --> VATFactory
+@enduml
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam package {
+    BackgroundColor LightYellow
+}
+'top to bottom direction
+left to right direction
+skinparam ClassAttributeIconSize 0
+mainframe **cd** Pricing
+
+package itegration.pricing {
+    enum "//<<enumeration>>//\nCustomerType" as CustomerType {
+        STUDENT,
+        MEMBER
+    }
+    class DiscountFactory <<singleton>> {
+        - {static} DISCOUNT_CLASS_NAME_KEY : String
+        + getDiscountStrategy() : DiscountStrategy
+        - createComposite(classNames : String[]
+        - instantiateDiscountStrategy(className : String) : DiscountStrategy
+    }
+     interface DiscountStrategy <<interface>>{
+        + getTotal(sale : Sale) : Amount
+        + getDiscount() : Amount
+    }
+     class CompositeDiscountStrategy {
+        - discountStrategies : List<DiscountStrategy>
+        - usedDiscountStrategy : DiscountStrategy
+        ~ <<create>> CompositeDiscountStrategy() : CompositeDiscountStrategy
+        + addDiscountStrategy(discountStrategy : DiscountStrategy)
+        + toString()
+    }
+     class MemberDiscount {
+        - discountRate : double
+        - discountAmount : Amount
+        + toString() : String
+    }
+    class StudentDiscount {
+        - discountRate : double
+        - discountAmount : Amount
+        + toString() : String
+    }
+    class Promotion {
+        - threshold : Amount
+        - bonusCheck : Amount
+        - discountAmount : Amount
+        - toString() : String
+    }
+    Together {
+    class VATFactory <<singleton>> {
+        - {static} VAT_CLASS_NAME_KEY : String
+        + getDefaultVATStrategy() : DiscountStrategy
+        - instantiateVATStrategy(className : String) : DiscountStrategy
+    }
+    interface VATStrategy <<interface>> {
+        + calculateVATForItem(item : ShoppingCartItem) : Amount
+    }
+    class SwedishVAT {
+        - getVATRate(vatGroupCode : int): double
+    }
+    }
+}
+class ReflectiveOperationException {
+        ClassNotFoundException \n | NoSuchMethodException \n | InvocationTargetException \n | InstantiationException \n | IllegalAccessException
+
+}
+
+'interfaces
+VATStrategy <|-[dashed]- SwedishVAT
 DiscountStrategy <|-[dashed]- CompositeDiscountStrategy
 DiscountStrategy <|-[dashed]- StudentDiscount
 DiscountStrategy <|-[dashed]- Promotion
 DiscountStrategy <|-[dashed]- MemberDiscount
 
-Logger <|-[dashed]- ErrorFileLogHandler
-Logger <|-[dashed]- ErrorMessageHandler
+'relations
+DiscountFactory -down-> ReflectiveOperationException : Throws
+VATFactory ---> ReflectiveOperationException : Throws
+@enduml
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam package {
+    BackgroundColor LightYellow
+}
+'top to bottom direction
+left to right direction
+skinparam ClassAttributeIconSize 0
 
-VATStrategy <|-[dashed]- CompositeVATStrategy
-VATStrategy <|-[dashed]- SwedishVAT
+mainframe **cd** Facade
+'     TODO: Go through all the dB singletons. Are they correct? Is the UML updated?
+package integration {
+    interface IRegistryFactory <<interface>> {
+       + getDefaultItemRegister() : ItemRegistry {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
+       + getDefaultCustomerRegister() : CustomerRegistry {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
+       + getDefaultAccountingSystem() : AccountingSystem {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
+    }
 
+    class FlatFileDatabaseFactory <<singleton>> {
+        - ACCOUNTING_CLASS_NAME_KEY : String
+        - CUSTOMER_CLASS_NAME_KEY : String
+        - INVENTORY_CLASS_NAME_KEY : String
+    }
+
+    class RegistryHandler <<singleton>> {
+        - accountingSystem : AccountingSystem
+        - customerRegister : CustomerRegistry
+        - itemRegistry : ItemRegistry
+        - saleLog : SaleLog
+        + updateRegistries(closedSale : Sale) : void
+        + updateAccountingSystem(closedSale : Sale) : void
+        + updateCustomerRegistry(closedSale : Sale) : void
+        + updateItemRegistry(closedSale : Sale) : void
+        + logSale(closedSale : Sale) : void
+        + getCustomerInfo(customerID : int) : CustomerDTO {exception CustomerNotFoundInCustomerRegistryException}
+        + getItemInfo(itemID : int) : ItemDTO {exception ItemNotFoundInItemRegistryException}
+        + findSaleByCustomerID(customerID : int) : List<Sale>
+    }
+
+    interface AccountingSystem<T> <<interface>> {
+        + updateRegistry(closedSale : Sale) : void {exception} {exception AccountingSystemException}
+    }
+    interface CustomerRegistry<T> <<interface>> {
+        + getDataInfo(dataID T) : CustomerDTO {exceptions=(CustomerNotFoundInCustomerRegistryException, CustomerRegistryException)}
+        + updateRegistry(closedSale : Sale) : void {exception CustomerRegistryException}
+    }
+    interface ItemRegistry<T> <<interface>> {
+        + getDataInfo(dataID T) : ItemDTO {exceptions=(ItemNotFoundInItemRegistryException, ItemRegistryException)}
+        + updateRegistry(closedSale : Sale) : void {exception ItemRegistryException}
+    }
+
+    '     TODO Se över hela upplägget. Records och dylikt
+    class AccountingSystemFlatFileDB <<singleton>>{
+        - {static} CSV_DELIMITER : String
+        - FILE_PATH_KEY : String
+        - FLAT_FILE_DB_NAME _KEY: String
+        - flatFileDb : File
+        - recordHeader : string
+        - records : Map<LocalDateTime, Record>
+    '        - records : HashMap<LocalDateTime, Record>
+        - timeOfUpdate : LocalTime
+        - totalRevenue : Amount
+        - totalVatCosts : Amount
+        - totalDiscounts : Amount
+        - addRecordDataFromDb() : void {exception AccountingSystemException}
+        - updateDatabase() : void {exception AccountingSystemException}
+    }
+    '        note bottom : Record is a nested class
+        class Record {
+            - timeOfUpdate : LocalTime
+            - totalAmount : Amount
+            - totalVatAmount : Amount
+            - discounts : Amount
+            + <<create>>Record(timeOfUpdate : LocalTime, totalAmount : Amount, totalVatAmount : Amount, discounts : Amount)
+            + toString() : String
+        }
+
+    class CustomerRegistryFlatFileDB <<singleton>> {
+        - {static} CSV_DELIMITER : String
+        - FILE_PATH_KEY : String
+        - FLAT_FILE_DB_NAME _KEY: String
+        - DATABASE_NOT_FOUND : int
+        - flatFileDb : File
+        - recordHeader : string
+        - customerTable : Map<Integer, CustomerData>
+    '        - customerTable : HashMap<Integer, CustomerData>
+        - addCustomerData() : void {exception CustomerRegistryException}
+        - updateDatabase() :void {exception CustomerRegistryException}
+    }
+    '        note bottom : CustomerData is a nested class
+    class CustomerData {
+        - customerID : int
+        - customerType : CustomerType
+        - bonusPoints : int
+        + <<create>>CustomerData(customerID : int, customerType : CustomerType, bonusPoints : int)
+        + toString() : String
+    }
+
+    class ItemRegistryFlatFileDB <<singleton>> {
+        - {static} CSV_DELIMITER : String
+        - FILE_PATH_KEY : String
+        - FLAT_FILE_DB_NAME _KEY: String
+        - DATABASE_NOT_FOUND : int
+        - flatFileDb : File
+        - recordHeader : string
+        - inventoryTable : Map<Integer, ItemData>
+    '        - inventoryTable : HashMap<Integer, ItemData>
+        - addItemData() : void {exception ItemRegistryException}
+        - updateDatabase() : void {exception ItemRegistryException}
+    }
+    '        note bottom : ItemData is a nested class
+    class ItemData {
+        - articleNo : int
+        - name : String
+        - description : String
+        - price : Amount
+        - vatGroupCode : int
+        - inStore : int
+        - sold : int
+        + <<create>>ItemData(articleNo : int, name : String, \n description : String, price : Amount, vatGroupCode : int, \ninStore : int, sold : int)
+        + toString() : String
+    }
+
+    class SaleLog{
+        + sales : List<Sale>
+        ~<<create>>SaleLog() : SaleLog
+        ~ logSale(sale : Sale) : void
+        ~ findSaleByCustomerID(customerID : int) : List<Sale>
+    }
+}
+
+'interfaces
 IRegistryFactory <|-[dashed]- FlatFileDatabaseFactory
 
 AccountingSystem <|-[dashed]- AccountingSystemFlatFileDB
 CustomerRegistry <|-[dashed]- CustomerRegistryFlatFileDB
 ItemRegistry <|-[dashed]- ItemRegistryFlatFileDB
-
-LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
-
-Comparable <|-[dashed]- Amount
 
 'Nested classes
 ItemData +-- ItemRegistryFlatFileDB
@@ -454,30 +523,12 @@ CustomerData +-- CustomerRegistryFlatFileDB
 Record +-- AccountingSystemFlatFileDB
 
 'Dependencies
-Main --> View
-Main -left-> Controller
-Main ---> Printer
-Main ---> RegistryHandler
-Controller -up-> CashRegister
-Controller --> SaleLog
-Controller --> CustomerRegistryFlatFileDB
-Controller --> AccountingSystemFlatFileDB
-Controller --> ItemRegistryFlatFileDB
-Controller --> RegistryHandler
 RegistryHandler --> CustomerRegistryFlatFileDB
 RegistryHandler --> AccountingSystemFlatFileDB
 RegistryHandler --> ItemRegistryFlatFileDB
 RegistryHandler --> SaleLog
-View -right-> Controller
-Controller --> Sale
-Controller --> CashPayment
-Sale --> CashPayment
-Receipt <-- Sale
-Sale --> Printer
-Sale --> ShoppingCartItem
-Sale --> Amount
-@enduml
 
+@enduml
 @startuml
 'title DTO
 ' //TODO Ska vi ha en customerDTO och customerDb?
@@ -488,6 +539,7 @@ skinparam linetype ortho
 skinparam package {
     BackgroundColor LightYellow
 }
+package instegration {
     package dto {
         class ItemDTO{
             - itemId : int
@@ -508,6 +560,7 @@ skinparam package {
 '        note bottom : Attributes TBD based on Discount Rules.
         }
     }
+}
 note top: getters, toString and equals are included as methods for all DTO attributes
 @enduml
 
@@ -722,7 +775,7 @@ loop moreItems
                 autonumber stop
                     contr <<- currentSale : <<exception>>\nItemNotFoundInItemRegistryException
                     contr <<- currentSale : <<exception>>\nItemRegistryException
-                    ref over contr : Notify Developer\l(Log error)
+                    ref over contr : \t\tNotify Developer
 
              end
 '            autonumber 1.2.3
@@ -732,9 +785,9 @@ loop moreItems
             deactivate currentSale
                 autonumber stop
                     View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
-                    ref over View : Notify User & Devloper \l(User by error message and developer by logging error)
+                    ref over View : \t Notify User & Developer
                     View <<- contr : <<exception>>\nOperationFailedException
-                    ref over View : Notify User\l(Error message)
+                    ref over View : \tNotify User
         autonumber stop
 
         deactivate contr
@@ -803,24 +856,6 @@ loop for each SaleObserver in saleObservers
     Sale -> saleObservers : updateSale(limitedSaleView : LimitedSaleView) : void
     activate saleObservers
     deactivate saleObservers
-end loop
-
-@enduml
-@startuml
-
-skinparam style strictuml
-mainframe **sd** Notify Cash Register Observers
-participant ": CashRegister" as CashRegister
-participant "cashRegisterObservers\n: List<CashRegisterObserver>" as cashRegisterObservers
-
--> CashRegister : addPayment()
-activate CashRegister
-CashRegister -> CashRegister : notifyObservers() : void
-activate CashRegister
-loop for each CashRegisterObserver in cashRegisterObservers
-    CashRegister -> cashRegisterObservers : updateRevenue(revenue : Amount) : void
-    activate cashRegisterObservers
-    deactivate cashRegisterObservers
 end loop
 
 @enduml
@@ -908,8 +943,9 @@ skinparam style strictuml
 
 participant ": View" as View
 participant "contr : Controller" as contr
-participant ": CustomerRegistry" as CustomerRegistry
 participant "currentSale : Sale" as currentSale
+participant ": RegistryHandler" as RegistryHandler
+participant ": CustomerRegistry" as CustomerRegistry
 participant ": Customer" as customer
 
 autonumber 1
@@ -917,21 +953,24 @@ View -> contr : registerCustomerToSale(customerID:int): void
 activate View
 activate contr
 autonumber 1.1
-'create CustomerRegistry
-contr -> CustomerRegistry : customerInfo = \ngetCustomerInfo(customerID:int) : CustomerDTO
-activate CustomerRegistry
+                currentSale -> RegistryHandler : itemInfo = RegistryHandler\n\t\t.getInstance()\n\t\t.getItemInfo(itemID : int) : ItemDTO
+'                activate currentSale
+                ref over RegistryHandler, CustomerRegistry
+                    Database call
+                end ref
+                activate RegistryHandler
 autonumber stop
-contr <<- CustomerRegistry : <<exception>>\nCustomerNotFoundInCustomerRegistryException
-contr <<- CustomerRegistry : <<exception>>\nCustomerRegistryException
-deactivate CustomerRegistry
+contr <<- RegistryHandler : <<exception>>\nCustomerNotFoundInCustomerRegistryException
 View <<- contr : <<exception>>\nCustomerNotFoundInCustomerRegistryException
+contr <<- RegistryHandler : <<exception>>\nCustomerRegistryException
+deactivate RegistryHandler
 View <<- contr : <<exception>>\nOperationFailedException
 autonumber 1.2
-contr -> currentSale : addCustomerToSale(customerInfo:CustomerDTO): void
+contr -> currentSale : addCustomerToSale(\n\tcustomerInfo:CustomerDTO\n): void
 activate currentSale
 create customer
 autonumber 1.2.1
-currentSale -[dashed]-> customer : <<create>>\nCustomer(customerInfo : CustomerDTO) \n: Customer
+currentSale -[dashed]-> customer : <<create>>\nCustomer(customerInfo : CustomerDTO) : Customer
 activate customer
 deactivate customer
 deactivate customer
@@ -1093,4 +1132,22 @@ opt customer != null
 payment ->  customer : addBonusPoints(totalCostPaid : Amount)
 end opt
 deactivate currentSale
+@enduml
+@startuml
+
+skinparam style strictuml
+mainframe **sd** Notify Cash Register Observers
+participant ": CashRegister" as CashRegister
+participant "cashRegisterObservers\n: List<CashRegisterObserver>" as cashRegisterObservers
+
+-> CashRegister : addPayment()
+activate CashRegister
+CashRegister -> CashRegister : notifyObservers() : void
+activate CashRegister
+loop for each CashRegisterObserver in cashRegisterObservers
+    CashRegister -> cashRegisterObservers : updateRevenue(revenue : Amount) : void
+    activate cashRegisterObservers
+    deactivate cashRegisterObservers
+end loop
+
 @enduml
