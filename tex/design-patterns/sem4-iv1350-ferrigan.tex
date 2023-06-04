@@ -221,22 +221,33 @@ This enables testing classes in both the integration and util layer package.
 \section*{Task 1 - Exceptions}
 \emph{Checked exceptions} are usually used for error handling business logic while
 \emph{unchecked exceptions} are used for programming errors.
-
 To manage the alternative flow, step $3-4a$,
 where an item is not found in the item registry,
 a checked exception named \mintinline{java}{ItemNotFoundException} is used.
+It is thrown when an item identifier is not valid or is not found in the Item Registry.
+\mintinline{java}{ItemNotFoundException} extends \mintinline{java}{Exception}
+and creates a message to inform the user that there is no
+item with the item identifier that was provided to the system, along with the incorrect item
+identifier.
+This exception is then passed through the system and is caught in the View, where it is
+logged and handled.
+The developer gets notified by an error-log and the user gets notified by a message.
 
-It is thrown when an item identifier is not valid or is not found in item registry.
-It is manually tested by the sample method \mintinline{java}{alternativeFlow3AWithCheckedExceptions()}
-in \verb|View| and automatically tested in the unit test classes \verb|SaleTest| and \verb|ControllTest|.
 
-Error handling when records are not found in Customer Registry is
+
+The exception is declared in the signature of each method between the throw from the
+integration layer %(Item Registry)
+to the catch in view.
+
+Error handling when records are not found in the Customer Registry is
 also implemented with
-a checked exception -- \mintinline{java}{CustomerNotFoundIncustomerRegistryException}.
+a checked exception, \mintinline{java}{CustomerNotFoundIncustomerRegistryException},
+and handled in the same fashion as above.
+
 The program also handles I/O exceptions when reading and writing to the flat file databases.
 
-A database failure can be simulated by registering the item id $404$.
-It triggers the ItemRegistry (a class that represents an external inventory system)
+A database failure can be simulated by registering the item id $404$,
+which triggers the ItemRegistry (a class that represents an external inventory system)
 to throw the programs unchecked exception \mintinline{java}{ItemRegistryException}.
 
 Additional unchecked exceptions are implemented and handled.
@@ -261,11 +272,27 @@ are caught and rethrown as the programs own checked
 exception \mintinline{java}{OperationFailedException}
 by the \verb|Controller|.
 
-Both \mintinline{java}{ItemRegistryException} and \mintinline{java}{OperationFailedException}
+\mintinline{java}{ItemNotFoundException} is manually tested by the sample method
+\mintinline{java}{alternativeFlow3AWithCheckedExceptions()}
+in \verb|View|
+and automatically tested in the unit test classes \verb|SaleTest| and \verb|ControllTest|.
+The output of this alternative flow is demonstrated in
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---checked-exception-business-logic}{Alternative-flow-3a-gif}
+and illustrated in
+figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}
+
+\subsubsection*{Alternative Flow -- Unchecked Exception}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Unchecked-exception-gif}
+
+\mintinline{java}{ItemRegistryException} and \mintinline{java}{OperationFailedException}
 are tested manually
 by the sample method \mintinline{java}{basicFlowWithUnCheckedExceptions()}
 in \verb|View| and are automatically tested in the unit test
 classes \verb|SaleTest| and \verb|ControllTest|.
+The output of this alternative flow is demonstrated in
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Unchecked-exception-gif}
+and also illustrated by
+figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}
 
 % TODO lägg till hur du implementerade alt. flow 3a, unchekced och notifieringar. Med UML? Test skriv om i test avsnittet
 % TODO skriv att gällande notifieringar till användare och utvecklar, så implementerade du dessa med ett interface och med The Singleton Design Pattern.
@@ -309,7 +336,6 @@ and some duplicated code was eliminated by using the Template Method Pattern.
 \newpage
 \chapter{Result}
 \label{sec:result}
-xxxxx
 
 The entire program can be found here:
 
@@ -404,10 +430,39 @@ The entire program can be found here:
 %        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
 %        \caption{The \verb|registerItem| system operation }
         \caption{The register item operation, including checked and unchecked exceptions}
-        \label{fig:SD4}
+        \label{fig:reg-item}
     \end{center}
 \end{figure}
 
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_005.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{Item not previously found in shopping cart}
+        \label{fig:item-not-in-shopping-cart}
+    \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_006.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{Notify sale observers}
+        \label{fig:notify-sale-observers}
+    \end{center}
+\end{figure}
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_008.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{Notify users and/or developers}
+        \label{fig:notify-users-developers}
+    \end{center}
+\end{figure}
 %\subsection*{Displaying the output of current sale}
 %\begin{longlisting}
 %    \inputminted[
