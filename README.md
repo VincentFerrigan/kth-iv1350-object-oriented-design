@@ -19,19 +19,19 @@ One shall be able to
 * discuss the quality of a programme and then refer to established guidelines for object-oriented architecture, design and programming
 * interpret and clarify a given specification by applying established guidelines for analysis. 
 ## Basic Flow
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_basic_flow.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/peek_basic_flow.gif)
 
 ## Alternative Flow - Checked Exception, Business Logic 
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows3a.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/peek_alternative_flows3a.gif)
 
 ## Alternative Flow - Same Item Identification Number.
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows3b.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/peek_alternative_flows3b.gif)
 
 ## Alternative Flow - Multiple Items of The Same Goods
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows3c.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/peek_alternative_flows3c.gif)
 
 ## Alternative Flow - Customer eligible for discount
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_alternative_flows9a.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/peek_alternative_flows9a.gif)
 
 ## Alternative Flow - Unchecked Exception 
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/peek_exceptions_unchecked.gif)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/peek_exceptions_unchecked.gif)
