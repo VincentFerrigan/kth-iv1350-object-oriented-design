@@ -91,23 +91,28 @@ income to a file.
 The second part of the second task, \emph{task 2b}, involved refactoring other parts of
 the code to two or more GoF patterns.
 
-%\textbf{Creational Patterns}
-%\begin{inparaenum}[1)]
-%\item \emph{Singleton},
-%\item \emph{Abstract Factory} and
-%\item \emph{Factory method},
-%the \textbf{Structural Patterns}
-%\item \emph{Composite} and
-%\item \emph{Facade} and the \textbf{Behavioral Patterns}
-%\item \emph{Observer},
-%\item \emph{Strategy} and
-%\item \emph{Template Method}.
-%\end{inparaenum}
-
-
-
-%TODO Lägg till github konto.
-
+In total, the following eight GoF design patterns are implemented:
+\begin{enumerate}
+    \item \textbf{The Creational Patterns}
+    \begin{enumerate}
+        \item \emph{Singleton},
+        \item \emph{Abstract Factory} and
+        \item \emph{Factory method}.
+    \end{enumerate}
+    \item \textbf{The Structural Patterns}
+    \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item \emph{Composite} and
+        \item \emph{Facade}.
+    \end{enumerate}
+    \item \textbf{The Behavioral Patterns}
+    \begin{enumerate}
+        \setcounter{enumi}{5}
+        \item \emph{Observer},
+        \item \emph{Strategy} and
+        \item \emph{Template Method}.
+    \end{enumerate}
+\end{enumerate}
 
 \chapter{Method}
 \section*{Tools}
@@ -130,6 +135,9 @@ To improve the design and implement certain design patterns,
 one had to continuously analyze the code-base to identify code smells and
 (re)valuate parts of the code that can be refactored to a
 particular design pattern (or patterns).
+Several resources were used; the course textbook, The GoF Design Patterns
+and Clean Code -- A handbook of Agile Software Craftmanship.
+The latter was mostly used as a guide in implementing error and exception handling.
 
 As a result, the system design was continuously refined,
 allowing for more clean and maintainable code and a greater ease to add new code.
@@ -184,6 +192,7 @@ This enables testing classes in both the integration and util layer package.
     \label{listing:test-config.properties}
 \end{longlisting}
 
+\newpage
 \begin{longlisting}
     \inputminted[
         label=@BeforeAll tests setup,
@@ -199,17 +208,16 @@ This enables testing classes in both the integration and util layer package.
     \label{listing:before-all-tests-setup}
 \end{longlisting}
 
-
 \newpage
 \chapter{Result}
 \label{sec:result}
-The entire program can be found here:
+The entire program can be found here on GitHub:
 
 \subsubsection*{GitHub-Repo}
 \url{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design}
 
 \section*{Task 1 - Exceptions}
-\emph{Checked exceptions} are usually used for error handling business logic while
+\emph{Checked exceptions} are usually used for error handling business logic, while
 \emph{unchecked exceptions} are used for programming errors.
 To manage the alternative flow, step $3-4a$,
 where an item is not found in the item registry,
@@ -236,7 +244,7 @@ The program also handles I/O exceptions when reading and writing to the flat fil
 
 A database failure can be simulated by registering the item id $404$,
 which triggers the ItemRegistry (a class that represents an external inventory system)
-to throw the programs unchecked exception \mintinline{java}{ItemRegistryException}.
+to throw the program's unchecked exception \mintinline{java}{ItemRegistryException}.
 
 Additional unchecked exceptions are implemented and handled.
 \begin{enumerate}
@@ -255,8 +263,8 @@ Additional unchecked exceptions are implemented and handled.
     or calling the pay operation before ending sale.
 \end{enumerate}
 
-All the above mentioned unchecked exceptions %for registry, pricing strategies and fasad
-are caught and rethrown as the programs own checked
+All the above-mentioned unchecked exceptions %for registry, pricing strategies and fasad
+are caught and re-thrown as the program's own checked
 exception \mintinline{java}{OperationFailedException}
 by the \verb|Controller|.
 It is in this try-catch statement that the developer gets notified by an error-log.
@@ -271,7 +279,7 @@ and automatically tested in the unit test classes \verb|SaleTest| and \verb|Cont
 The output of this alternative flow is demonstrated in
 \href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---checked-exception-business-logic}{Alternative-flow-3a-gif}
 and illustrated in
-figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}
+figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}.
 
 \mintinline{java}{ItemRegistryException} and \mintinline{java}{OperationFailedException}
 are tested manually
@@ -281,7 +289,7 @@ classes \verb|SaleTest| and \verb|ControllTest|.
 The output of this alternative flow is demonstrated in
 \href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Unchecked-exception-gif}
 and also illustrated by
-figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}
+figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}.
 
 \subsubsection{Logging exceptions and notifying users and developers}
 Both the \mintinline{java}{ErrorMessageHandler} and \mintinline{java}{ErrorFileLogHandler}
@@ -294,36 +302,13 @@ It's a dummy implementation that prints to
 \mintinline{java}{System.out} while
 \mintinline{java}{ErrorMessageHandler}
 is responsible for logging errors to a specific file.
-This processes is demonstrated in
+This process is demonstrated in
 \href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Alternative-flow-unchecked-exception-gif}
 and illustrated in
 figure ~\ref{fig:reg-item} and ~\ref{fig:notify-users-developers}
 
 \newpage
 \section*{Task 2 - Refactoring to Patterns}
-In total, the following eight GoF design patterns are implemented:
-\begin{enumerate}
-    \item \textbf{The Creational Patterns}
-    \begin{enumerate}
-        \item \emph{Singleton},
-        \item \emph{Abstract Factory} and
-        \item \emph{Factory method}.
-    \end{enumerate}
-    \item \textbf{The Structural Patterns}
-    \begin{enumerate}
-        \setcounter{enumi}{3}
-        \item \emph{Composite} and
-        \item \emph{Facade}.
-    \end{enumerate}
-    \item \textbf{The Behavioral Patterns}
-    \begin{enumerate}
-        \setcounter{enumi}{5}
-        \item \emph{Observer},
-        \item \emph{Strategy} and
-        \item \emph{Template Method}.
-    \end{enumerate}
-\end{enumerate}
-
 \subsubsection{The observer and template method design pattern}
 The Observer design-pattern is applied not only for the task at hand (revenue updates)
 but also for displaying sale details.
@@ -405,7 +390,7 @@ Knowing, however, which discount strategy to choose from
 can be solved with the composite design-pattern.
 This ''Composite-Discount-Strategy''
 (shown in the listing ~\ref{listing:discount-composite})
-performs multiple discount and promotion algorithms but chooses only chooses
+performs multiple discount and promotion algorithms but chooses only
 one of them -- the one that returns the lowest total price.
 
 \subsubsection*{Adding or substituting discounts - The Factory Method}
@@ -552,53 +537,10 @@ The patterns are implemented according to the GoF (Gang of Four) design patterns
 The system implements Singleton, Abstract Factory, Factory method,
 Composite, Facade, Observer, Strategy, and Template Method.
 
-Probably an overuse of patterns.
+Probably an overuse of patterns!
 I became quite ''Pattern-Happy'', eager to use as many patterns I could possibly comprehend.
-\newpage
 \appendix
-\section*{Appendix A UML -- The Refined Design}
-\subsection*{Class Diagram}
-\begin{figure}[H]
-    \begin{center}
-        \includegraphics[width=\textwidth]{../../uml/output/uml_v3}
-        \caption{The Class Diagram}
-        \label{fig:CD}
-    \end{center}
-\end{figure}
-
-\begin{figure}[H]
-    \begin{center}
-        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_001}
-        \caption{Discount and VAT Factory.
-        Algorithms used for calculating total price with
-        disounts or promotions and for
-        calulating VAT for a specific item}
-        \label{fig:discount-vat-factories}
-    \end{center}
-\end{figure}
-
-\begin{figure}[H]
-    \begin{center}
-        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_002}
-        \caption{The facade provides a unified interface to a
-        set of interfaces in a subsystem.
-        It represents a service container (implemented as a Facade).
-        This service container is responsible for instantiating all registers (external systems/databases) and provides
-        a unified and simplified interface for the client classes.
-        }
-        \label{fig:facade}
-    \end{center}
-\end{figure}
-
-\begin{figure}[H]
-    \begin{center}
-        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003}
-        \caption{The DTOs (Data Transfer Objects)}
-        \label{fig:DTO}
-    \end{center}
-\end{figure}
-
-\newpage
+\chapter{UML -- The Refined Design}
 \subsection*{System Operations}
 \subsubsection*{The Start up, Main System Operation}
 \begin{figure}[H]
@@ -606,7 +548,7 @@ I became quite ''Pattern-Happy'', eager to use as many patterns I could possibly
         \includegraphics[width=\textwidth]{../../uml/output/uml_v3_004}
 %        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
 %        \caption{The Start Up \verb|Main| system operations}
-        \caption{The Start Up Main system operations}
+        \caption{The Main System operation}
         \label{fig:start-up}
     \end{center}
 \end{figure}
@@ -675,22 +617,6 @@ I became quite ''Pattern-Happy'', eager to use as many patterns I could possibly
     \end{center}
 \end{figure}
 %
-%\subsubsection*{End of Sale - Displaying the output of a checkout}
-%\begin{longlisting}
-%    \inputminted[
-%        label= Output of a checkout,
-%        linenos=false,
-%%        bgcolor=lightgray,
-%        firstline=61,
-%        lastline=72,
-%%        frame=single,
-%        fontsize=\footnotesize,
-%    ]{bash}{output/outputs.txt}
-%    \caption{The checkout shopping cart printed to System.out}
-%    \label{listing:checkout}
-%\end{longlisting}
-%
-
 \subsubsection*{The payment operation, discount, bonuspoints and promotion}
 \begin{figure}[H]
     \begin{center}
@@ -730,6 +656,50 @@ I became quite ''Pattern-Happy'', eager to use as many patterns I could possibly
         \label{fig:notify-cashregister-observer}
     \end{center}
 \end{figure}
+
+\newpage
+\subsection*{Class Diagram}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3}
+        \caption{The Class Diagram}
+        \label{fig:CD}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_001}
+        \caption{Discount and VAT Factory.
+        Algorithms used for calculating total price with
+        disounts or promotions and for
+        calulating VAT for a specific item}
+        \label{fig:discount-vat-factories}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_002}
+        \caption{The facade provides a unified interface to a
+        set of interfaces in a subsystem.
+        It represents a service container (implemented as a Facade).
+        This service container is responsible for instantiating all registers (external systems/databases) and provides
+        a unified and simplified interface for the client classes.
+        }
+        \label{fig:facade}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003}
+        \caption{The DTOs (Data Transfer Objects)}
+        \label{fig:DTO}
+    \end{center}
+\end{figure}
+
+\newpage
 
 \listoflistings % Now typeset the list
 \printbibliography
