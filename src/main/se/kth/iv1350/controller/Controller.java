@@ -58,7 +58,12 @@ public class Controller {
      * @throws OperationFailedException when unable to set up pricing.
      */
     public void startSale() throws OperationFailedException {
-        this.currentSale = new Sale();
+        try {
+            this.currentSale = new Sale();
+        } catch (PricingFailedException ex) {
+            logger.log(ex);
+            throw new OperationFailedException("Unable to set up pricing, unable to initiate sale", ex);
+        }
         currentSale.addAllSaleObservers(saleObservers);
     }
 
@@ -90,7 +95,7 @@ public class Controller {
         } catch (ItemRegistryException itmRegExc) {
             logger.log(itmRegExc);
             throw new OperationFailedException("No connection to inventory system. Try again.", itmRegExc);
-        } catch (OperationFailedException vatRegExc) {
+        } catch (PricingFailedException vatRegExc) {
             logger.log(vatRegExc);
             throw new OperationFailedException("Unable to set up VAT, unable to register items", vatRegExc);
         }

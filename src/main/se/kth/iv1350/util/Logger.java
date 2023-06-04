@@ -1,6 +1,5 @@
 package se.kth.iv1350.util;
 
-// TODO UML:a
 /**
  * Specifies an object that can print to a log. This interface does not handle log locations, it is
  * up to the implementing class to decide where the log is.

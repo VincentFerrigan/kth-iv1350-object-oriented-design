@@ -12,6 +12,7 @@
 \usepackage{pgf}
 \usepackage{wrapfig}
 \usepackage{fancyvrb}
+\usepackage{float}
 
 %\usepackage[style=ieee]{biblatex} % om du vill köra ieee (tror leif kör den)
 \usepackage[backend=biber,style=vancouver]{biblatex}
@@ -28,11 +29,14 @@
 % \usepackage{minted}
 \usepackage[outputdir=output/tex]{minted} % iom min makefile
 
-\usepackage{caption}
+
+
+\usepackage[font=footnotesize,labelfont=bf,skip=2pt]{caption}
 \usepackage{hyperref}
 \newenvironment{longlisting}{\captionsetup{type=listing}}{}
 % \renewcommand\listoflistingscaption{Källkod....}
 \renewcommand\listoflistingscaption{List of source codes}
+\setmintedinline[java]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
 
 \usepackage{paralist} %Inline lists
 
@@ -40,8 +44,8 @@
 \headheight 27pt
 \pagestyle{fancyplain}
 \lhead{\footnotesize{Object-Oriented Design, IV1350}}
-\chead{\footnotesize{Seminar 3 Implementation}}
-\rhead{}
+\chead{}
+\rhead{\footnotesize{Seminar 4 Exceptions and Design Patterns}}
 \lfoot{}
 \cfoot{\thepage\ (\pageref{LastPage})}
 \rfoot{}
@@ -67,22 +71,13 @@ specifically as outlined in chapters eight and nine of the course book.
 The seminar consisted of two tasks.
 The first task was to use both checked and
 unchecked exception handling.
-The former to manage the alternative flow of $3-4a$
+The former to manage the alternative flow, step $3-4a$
 in the Process Sale, and the latter to indicate database failure (such as a
 database server not running or database connectivity lost).
-The latter had to
-be simulated.
+All caught exceptions were to be logged for developers, and those caught
+in \verb|View|, an informative message displayed to the user.
 
-Additional exception handling were implemented;
-\begin{enumerate}
-    \item Exceptions thrown by reflective operations (issues related to the Factory Design Pattern see ****%TODO),
-    \item I/O exceptions (related to reading and writing to the flat file databases and creating and writing to the revenue and error logs),
-    \item \mintinline{java}{IllegalStateException}, which is thrown if system operations are called in a wrong order.
-    For example when registering an item before initializing a sale or calling the pay operation before ending sale
-    when methods are called in wrong order.
-\end{enumerate}
-
-The second task consisted of two parts.
+The second task also consisted of two parts.
 The first part, \emph{task 2a}, revolved
 around employing the Observer Design Pattern to introduce a new functionality:
 displaying the total revenue from the start of the program, each time it was
@@ -94,47 +89,30 @@ total income and a second class called \mintinline{java}{TotalRevenueFileOutput}
 income to a file.
 
 The second part of the second task, \emph{task 2b}, involved refactoring other parts of
-the code to two more GoF patterns.
-Here the author chose to implement
+the code to two or more GoF patterns.
+
+In total, the following eight GoF design patterns are implemented:
 \begin{enumerate}
-\item \textbf{The Creational Patterns}
-\begin{enumerate}
-    \item \emph{Singleton},
-    \item \emph{Abstract Factory} and
-    \item \emph{Factory method}.
+    \item \textbf{The Creational Patterns}
+    \begin{enumerate}
+        \item \emph{Singleton},
+        \item \emph{Abstract Factory} and
+        \item \emph{Factory method}.
+    \end{enumerate}
+    \item \textbf{The Structural Patterns}
+    \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item \emph{Composite} and
+        \item \emph{Facade}.
+    \end{enumerate}
+    \item \textbf{The Behavioral Patterns}
+    \begin{enumerate}
+        \setcounter{enumi}{5}
+        \item \emph{Observer},
+        \item \emph{Strategy} and
+        \item \emph{Template Method}.
+    \end{enumerate}
 \end{enumerate}
-\item \textbf{The Structural Patterns}
-\begin{enumerate}
-    \setcounter{enumi}{3}
-    \item \emph{Composite} and
-    \item \emph{Facade}.
-\end{enumerate}
-\item \textbf{The Behavioral Patterns}
-\begin{enumerate}
-    \setcounter{enumi}{5}
-    \item \emph{Observer},
-    \item \emph{Strategy} and
-    \item \emph{Template Method}.
-\end{enumerate}
-\end{enumerate}
-
-%\textbf{Creational Patterns}
-%\begin{inparaenum}[1)]
-%\item \emph{Singleton},
-%\item \emph{Abstract Factory} and
-%\item \emph{Factory method},
-%the \textbf{Structural Patterns}
-%\item \emph{Composite} and
-%\item \emph{Facade} and the \textbf{Behavioral Patterns}
-%\item \emph{Observer},
-%\item \emph{Strategy} and
-%\item \emph{Template Method}.
-%\end{inparaenum}
-
-
-
-%TODO Lägg till github konto.
-
 
 \chapter{Method}
 \section*{Tools}
@@ -157,11 +135,15 @@ To improve the design and implement certain design patterns,
 one had to continuously analyze the code-base to identify code smells and
 (re)valuate parts of the code that can be refactored to a
 particular design pattern (or patterns).
+Several resources were used; the course textbook, The GoF Design Patterns
+and Clean Code -- A handbook of Agile Software Craftmanship.
+The latter was mostly used as a guide in implementing error and exception handling.
 
 As a result, the system design was continuously refined,
 allowing for more clean and maintainable code and a greater ease to add new code.
 
 \section*{The project's resources and the system's configuration and data}
+\label{sec:resources}
 Instead of hard-coding data in the integration classes,
 flat file databases are used to store records.
 These CSV-files store,
@@ -205,11 +187,12 @@ This enables testing classes in both the integration and util layer package.
         lastline=25,
 %        frame=single,
         fontsize=\footnotesize,
-    ]{java}{../../src/test/resources/config.properties}
+    ]{bash}{../../src/test/resources/config.properties}
     \caption{The Config Properties file for the JUnit tests.}
     \label{listing:test-config.properties}
 \end{longlisting}
 
+\newpage
 \begin{longlisting}
     \inputminted[
         label=@BeforeAll tests setup,
@@ -225,62 +208,275 @@ This enables testing classes in both the integration and util layer package.
     \label{listing:before-all-tests-setup}
 \end{longlisting}
 
-\section*{Refactoring to Patterns}
+\newpage
+\chapter{Result}
+\label{sec:result}
+The entire program can be found here on GitHub:
 
-\subsubsection{Discount and promotion algorithms}
-Conditional discount logic can be replaced with a combination of the Strategy, Factory and Composite Pattern.
+\subsubsection*{GitHub-Repo}
+\url{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design}
+
+\section*{Task 1 - Exceptions}
+\emph{Checked exceptions} are usually used for error handling business logic, while
+\emph{unchecked exceptions} are used for programming errors.
+To manage the alternative flow, step $3-4a$,
+where an item is not found in the item registry,
+a checked exception named \mintinline{java}{ItemNotFoundException} is used.
+It is thrown when an item identifier is not valid or is not found in the Item Registry.
+\mintinline{java}{ItemNotFoundException} extends \mintinline{java}{Exception}
+and creates a message to inform the user that there is no
+item with the item identifier that was provided to the system, along with the incorrect item
+identifier.
+This exception is then passed through the system and is caught in the View, where it is
+handled.
+The user gets notified by an error message.
+
+The exception is declared in the signature of each method between the throw from the
+integration layer %(Item Registry)
+to the catch in view.
+
+Error handling when records are not found in the Customer Registry is
+also implemented with
+a checked exception, \mintinline{java}{CustomerNotFoundIncustomerRegistryException},
+and handled in the same fashion as above.
+
+The program also handles I/O exceptions when reading and writing to the flat file databases.
+
+A database failure can be simulated by registering the item id $404$,
+which triggers the ItemRegistry (a class that represents an external inventory system)
+to throw the program's unchecked exception \mintinline{java}{ItemRegistryException}.
+
+Additional unchecked exceptions are implemented and handled.
+\begin{enumerate}
+    \item \mintinline{java}{CustomerRegistryException} and \mintinline{java}{AccountingSystemException} for
+    failures related to the other two databases.
+    \item \mintinline{java}{PricingFailureException} and \mintinline{java}{RegistryHandlerException}.
+    Both are used when reflective operation exceptions are caught.
+    The former is the programs own unchecked exception for pricing strategies
+    (i.e. Factory-Method failure) while the latter
+    is the programs unchecked exception for
+    when the program joint database interface fasad fails to set up the registries
+    (i.e. Abstract Factory failure).
+    \item \mintinline{java}{IllegalStateException} is thrown if the
+    system operations are called in the wrong order.
+    For example, when registering an item before initializing a sale
+    or calling the pay operation before ending sale.
+\end{enumerate}
+
+All the above-mentioned unchecked exceptions %for registry, pricing strategies and fasad
+are caught and re-thrown as the program's own checked
+exception \mintinline{java}{OperationFailedException}
+by the \verb|Controller|.
+It is in this try-catch statement that the developer gets notified by an error-log.
+This exception is then caught in the \verb|View|, where it is
+handled.
+The user gets notified by an error message.
+
+\mintinline{java}{ItemNotFoundException} is manually tested by the sample method
+\mintinline{java}{alternativeFlow3AWithCheckedExceptions()}
+in \verb|View|
+and automatically tested in the unit test classes \verb|SaleTest| and \verb|ControllTest|.
+The output of this alternative flow is demonstrated in
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---checked-exception-business-logic}{Alternative-flow-3a-gif}
+and illustrated in
+figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}.
+
+\mintinline{java}{ItemRegistryException} and \mintinline{java}{OperationFailedException}
+are tested manually
+by the sample method \mintinline{java}{basicFlowWithUnCheckedExceptions()}
+in \verb|View| and are automatically tested in the unit test
+classes \verb|SaleTest| and \verb|ControllTest|.
+The output of this alternative flow is demonstrated in
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Unchecked-exception-gif}
+and also illustrated by
+figure ~\ref{fig:reg-item}, ~\ref{fig:item-not-in-shopping-cart}, ~\ref{fig:notify-sale-observers} and ~\ref{fig:notify-users-developers}.
+
+\subsubsection{Logging exceptions and notifying users and developers}
+Both the \mintinline{java}{ErrorMessageHandler} and \mintinline{java}{ErrorFileLogHandler}
+are \emph{Singletons} that implement the \mintinline{java}{Logger} interface.
+They create a message from the exceptions
+caught.
+\mintinline{java}{ErrorMessageHandler}
+is responsible for showing error messages to the user.
+It's a dummy implementation that prints to
+\mintinline{java}{System.out} while
+\mintinline{java}{ErrorMessageHandler}
+is responsible for logging errors to a specific file.
+This process is demonstrated in
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Alternative-flow-unchecked-exception-gif}
+and illustrated in
+figure ~\ref{fig:reg-item} and ~\ref{fig:notify-users-developers}
+
+\newpage
+\section*{Task 2 - Refactoring to Patterns}
+\subsubsection{The observer and template method design pattern}
+The Observer design-pattern is applied not only for the task at hand (revenue updates)
+but also for displaying sale details.
+The display is updated each time an item is added to the shopping cart
+and during end-of-sale.
+The latter is performed in order to display possible discounts.
+
+The outcome of refactoring with the observer-pattern
+is demonstrated in all samples included in the README file,
+and therefore presented on the GitHub repository page.
+How the observers are added to the observables are illustrated both
+in figure ~\ref{fig:start-up} and ~\ref{fig:start-sale}.
+The sale observers are notified in \mintinline{java}{Sale} by the
+\mintinline{java}{addItem()} and
+\mintinline{java}{endSale()} method
+(see figure ~\ref{fig:reg-item}, ~\ref{fig:end-sale}
+and ~\ref{fig:notify-sale-observers}),
+while the cash register observers are notified in
+\mintinline{java}{CashRegister} by the
+\mintinline{java}{addPayment()} method
+(see figure \ref{fig:pay} and ~\ref{fig:notify-cashregister-observer}).
+The former displays sale details (including the shopping cart)
+and the latter displays the total revenue
+when it has changed.
+
+Since the observers perform similar steps in the same order,
+the Template Method design-pattern is used.
+The abstract class \mintinline{java}{SaleView} is the template
+for sale observers
+while the abstract class \mintinline{java}{TotalRevenue}
+acts as the template for cash register observers
+(see the class diagram in figure ~\ref{fig:CD} for further details).
+%duplicated code was eliminated by using the Template Method Pattern.
+
+The observers are only exposed to certain methods or attributes.
+For example, a limited view of a particular sale is sent to the
+sale observers by using an ''observered-interface'' called
+\mintinline{java}{LimitedSaleView}.
+This interface is implemented by the wrapper class
+\mintinline{java}{LimitedSaleViewWrapper} that
+only exposes certain Sale methods.
+
+All logging systems in this program, which includes the observer that logs the total revenue to a file,
+should only have one instance of the logger,
+as multiple loggers can cause inconsistent and cluttered logs.
+The Singleton pattern is therefore applied to create a
+single logger instance.
+This instance can be accessed from different parts of the code.
+
+\subsubsection{The facade as interface for a set of registry interfaces}
+The previous RegisterCreator (see previous seminars) was refactored to Facade.
+A facade provides a unified interface to a
+set of interfaces in a subsystem [GoF, "Design Patterns"].
+Here it represents a ''service container'' where the Facade Design pattern was applied.
+This service container is responsible for instantiating all registers
+(external systems/databases) and provides
+a unified and simplified interface for the client classes.
+
+The Abstract Factory was used with Facade to provide an
+interface for creating registry objects
+(see \mintinline{java}{IRegistryFactory}
+and \mintinline{java}{FlatFileDatabaseFactory} in figure ~\ref{fig:facade}
+
+Both the facade and the registries are implemented as
+Singletons since only one facade per subsystem is needed.
+Please note howevever, that the \mintinline{java}{SaleLog}
+is not implemented as a Singleton.
+
+%a single instance available to all of the program, for example, a single database object shared by different parts of the program.g
+
+\subsubsection{Discount and promotion algorithms - a combination of Strategy and Composite Patterns}
+Conditional discount logic can be replaced with
+a combination of the Strategy and Composite Pattern.
 Here, each discount (or promotion) algorithm
-can be defined in a separate strategy-class, but with a common interface.
-see listing 1 ~\ref{listing:discount-strategy}.
+can be defined in a separate strategy-class, but with a common interface
+(see listing ~\ref{listing:discount-strategy}).
+
+Knowing, however, which discount strategy to choose from
+can be solved with the composite design-pattern.
+This ''Composite-Discount-Strategy''
+(shown in the listing ~\ref{listing:discount-composite})
+performs multiple discount and promotion algorithms but chooses only
+one of them -- the one that returns the lowest total price.
+
+\subsubsection*{Adding or substituting discounts - The Factory Method}
+The Factory Method is applied in order to enable the developers (or users) to substitute
+or add discounts.
+Here even the creational knowledge is moved to the factory,
+since discounts and promotions can be substituted or added at runtime (and after deployment).
+The Discount Factory class is shown in listing ~\ref{listing:discount-factory}.
+
+The class names of the objects a \emph{Factory} can create, 
+can be added in the in the project's \verb|Config.Properties| 
+file under \verb|src/main/resources| 
+(see section \ref{sec:resources} on project resources and systems configuration).
 
 \begin{longlisting}
     \inputminted[
         label=The common Discount-Strategy Interface,
         linenos=true,
         bgcolor=lightgray,
-        firstline=6,
-        lastline=20,
+        firstline=11,
+        lastline=21,
 %        frame=single,
         fontsize=\footnotesize,
     ]{java}{../../src/main/se/kth/iv1350/integration/pricing/DiscountStrategy.java}
-    \caption{Caption text av något slag.}
+    \caption{Discount strategy defining the ability to calculate total price.
+        This interface shall be implemented by a class providing a promotion or
+        discount algorithm.}
     \label{listing:discount-strategy}
 \end{longlisting}
 
-Knowing, however, which discount to choose from requires a third pattern.....
-The need to substitute or add discounts at runtime required....
-Creational knowledge is also moved to the factory, since discounts will be substituted or added at runtime (and after deployment )
+\begin{longlisting}
+    \inputminted[
+        label=The Compostie Discount-Strategy,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=16,
+        lastline=70,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../src/main/se/kth/iv1350/integration/pricing/CompositeDiscountStrategy.java}
+    \caption{A DiscountStrategy, which performs multiple discount and promotion algorithms.
+        All these algorithms that are added to this composite are executed,
+        and the lowest total price is found.
+        }
+    \label{listing:discount-composite}
+\end{longlisting}
 
-and some duplicated code was eliminated by using the Template Method Pattern.
+\begin{longlisting}
+    \inputminted[
+        label=The Discount-Factory,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=10,
+        lastline=73,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../src/main/se/kth/iv1350/integration/pricing/DiscountFactory.java}
+    \caption{A Discount Factore implmented as a
+        Singleton that creates instances of the algorithm used for calculating total price with
+        discounts or promotions.
+        All such instances must implement DiscountStrategy.}
+    \label{listing:discount-factory}
+\end{longlisting}
 
-
-%a single instance available to all of the program, for example, a single database object shared by different parts of the program.g
-
-\newpage
-\chapter{Result}
-\label{sec:result}
-xxxxx
-
-The entire program can be found here:
-
-\subsubsection*{GitHub-Repo}
-\url{https://github.com/VincentFerrigan/kth-iv1350-point-of-sale}
-
-\section*{Output}
-
+\section*{Output-samples}
 \subsubsection*{Basic flow}
 \href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/tree/main#basic-flow}{Basic-flow-gif}
 
-\subsubsection*{Alternative flows}
-\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/tree/main#alternative-flows}{Alternative-flows-gif}
+\subsection*{Alternative Flows}
+\subsubsection*{Alternative Flow -- Same Item Identification Number}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---same-item-identification-number}{Alternative-flow-3b-gif}
 
-\subsubsection*{Exceptions}
-\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/tree/main#exceptions}{Exceptions-gif}
+\subsubsection*{Alternative Flow - Multiple Items of The Same Goods}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---multiple-items-of-the-same-goods}{Alternative-flow-3c-gif}
+
+\subsection*{Exceptions}
+\subsubsection*{Alternative Flow -- Checked Exception, Business Logic}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---checked-exception-business-logic}{Alternative-flow-3a-gif}
+
+\subsubsection*{Alternative Flow -- Unchecked Exception}
+\href{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design#alternative-flow---unchecked-exception}{Unchecked-exception-gif}
 
 %\section{The Class Diagram}
 %\begin{figure}[h!]
 %    \begin{center}
-%        \includegraphics[width=\textwidth]{uml/output/CD_Sem1}
+%        \includegraphics[width=\textwidth]{../../uml/output/CD_Sem1}
 %        \caption{The class diagram after all system operations have been designed.}
 %        \label{fig:CD}
 %    \end{center}
@@ -292,147 +488,218 @@ The entire program can be found here:
 %All possible attributes and methods that belong to a class (including their parameters) are shown.
 %In other words, all methods (and parameters) that were depicted in the Interaction Diagrams are all
 %collected and grouped here in the Class Diagram.
-%\newpage
-%%\begin{landscape}
-%    \section*{The Refined Design}
-%    \subsection*{Class Diagram}
-%%    \newgeometry{left=0cm,right=0cm,top=0cm,bottom=0cm}
-%
-%    \begin{figure}[h!]
-%        \begin{center}
-%            \includegraphics[width=\textwidth]{../../uml/output/uml_v3}
-%            \caption{The Class Diagram}
-%            \label{fig:CD}
-%        \end{center}
-%    \end{figure}
-%
-%    \begin{figure}[h!]
-%        \begin{center}
-%            \includegraphics[width=\textwidth]{../../uml/output/uml_v3_001}
-%            \caption{The DTOs (Data Transfer Objects)}
-%            \label{fig:DTO}
-%        \end{center}
-%    \end{figure}
-%
-%\newpage
-%\subsection*{System Operations}
-%\subsubsection*{The Start up, Main System Operation}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_002}
-%%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
-%%        \caption{The Start Up \verb|Main| system operations}
-%        \caption{The Start Up Main system operations}
-%        \label{fig:SD5}
-%    \end{center}
-%\end{figure}
-%
-%\subsubsection*{The StartSale System Operations}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003}
-%%        \includegraphics[trim=0cm 0cm 51cm 0cm ,clip, width=\textwidth]{../uml/output/uml_v3.png}
-%%        \caption{The \verb|startSale| system operation }
-%        \caption{The startSale system operation }
-%        \label{fig:SD}
-%    \end{center}
-%\end{figure}
-%%
-%\newpage
-%\subsubsection*{The registerItem System Operations}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_004}
-%%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
-%%        \caption{The \verb|registerItem| system operation }
-%        \caption{The registerItem operation }
-%        \label{fig:SD1}
-%    \end{center}
-%\end{figure}
-%
-%\subsection*{Displaying the output of current sale}
-%\begin{longlisting}
-%    \inputminted[
-%        label= Output of a current sale,
-%        linenos=false,
-%%        bgcolor=lightgray,
-%        firstline=1,
-%        lastline=8,
-%%        frame=single,
-%        fontsize=\footnotesize,
-%    ]{bash}{output/outputs.txt}
-%    \caption{The Receipt printed to System.out}
-%    \label{listing:checkoutOutput}
-%\end{longlisting}
-%
-%\subsubsection*{The endSale System Operations}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_005}
-%%        \includegraphics[trim=0cm 0cm 50cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
-%%        \caption{The \verb|endSale| system operation }
-%        \caption{The endSale system operation }
-%        \label{fig:SD2}
-%    \end{center}
-%\end{figure}
-%
-%\subsubsection*{End of Sale - Displaying the output of a checkout}
-%\begin{longlisting}
-%    \inputminted[
-%        label= Output of a checkout,
-%        linenos=false,
-%%        bgcolor=lightgray,
-%        firstline=61,
-%        lastline=72,
-%%        frame=single,
-%        fontsize=\footnotesize,
-%    ]{bash}{output/outputs.txt}
-%    \caption{The checkout shopping cart printed to System.out}
-%    \label{listing:checkout}
-%\end{longlisting}
-%
-%\subsubsection*{The discountRequest System Operations}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_006}
-%%        \includegraphics[trim=0cm 0cm 30cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
-%        \caption{The discoutRequest system operation }
-%        \label{fig:SD3}
-%    \end{center}
-%\end{figure}
-%
-%\subsubsection*{The addPayment System Operations}
-%\begin{figure}[h!]
-%    \begin{center}
-%        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_007}
-%%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
-%%        \caption{The \verb|addPayment| system operation }
-%        \caption{The addPayment system operation }
-%        \label{fig:SD4}
-%    \end{center}
-%\end{figure}
-%
-%\subsubsection*{Receipt}
-%\begin{longlisting}
-%    \inputminted[
-%        label= Receipt,
-%        linenos=false,
-%%        bgcolor=lightgray,
-%        firstline=73,
-%        lastline=91,
-%%        frame=single,
-%        fontsize=\footnotesize,
-%    ]{bash}{output/outputs.txt}
-%    \caption{The Receipt printed to System.out}
-%    \label{listing:receipt}
-%\end{longlisting}
-%
-%%    \restoregeometry
-%%\end{landscape}
-%
-
 \chapter{Discussion}
 \label{sec:discussion}
+\section*{Exception Handling}
+The system uses both checked and unchecked exceptions based on the situation, correctly
+reflecting the abstraction level for the exceptions.
+For instance, \mintinline{java}{ItemNotFoundException} is used when an item is not found in the item registry,
+appropriately named after the error condition and provides enough information about the error.
+Moreover, exceptions like
+\mintinline{java}{ItemRegistryException} and
+\mintinline{java}{OperationFailedException} are tested,
+satisfying the requirement of writing unit tests for the exception handling.
+
+The system also includes javadoc comments, follows the principle of an object not changing state when an exception is thrown,
+and notifies both users and developers.
+
+\section*{Refactoring to Patterns}
+I have tried to refactor to several design patterns, with the purpose of enhancing readability, modularity, and maintainability.
+One can find a variety of Creational, Structural, and Behavioral Patterns as per the GoF design patterns.
+The Singleton pattern is used for maintaining single logger instances and registries,
+Facade pattern is used to provide a simplified interface to the registries,
+and the Observer pattern is used to update sale and revenue displays.
+The template method is used to avoid duplicated code.
+The Factory method, Strategy and Composite pattern are all used for applying VAT, Discounts and promotions.
+
+The explanation and motivation for using design patterns are not always detailed in the text.
+I mention the use of various patterns but do not always provide the rationale for choosing those patterns.
+
+\subsubsection*{The observers and their observables}
+The system seems to have implemented the Observer pattern correctly with suitable objects.
+The \mintinline{java}{Sale} and \mintinline{java}{CashRegister} objects are observed while the observer objects
+are those that display sale details and total revenue.
+
+I claim that this is a logical choice,
+as any change in a sale or the cash register would require updating the displayed information.
+
+The observers are only exposed to certain methods or attributes,
+here I am implying that encapsulation is maintained, which promotes high cohesion and low coupling.
+
+The data passed from the observed object (\mintinline{java}{Sale}) to observers is the sale details,
+including the shopping cart details.
+It's passed through an interface (\mintinline{java}{LimitedSaleView}) which ensures that encapsulation is not broken,
+as it exposes only certain Sale methods.
+Therefore, it maintains the state of the observed object while still allowing the observer to update its display.
+
+\section*{Pattern Happy?}
+The patterns are implemented according to the GoF (Gang of Four) design patterns.
+The system implements Singleton, Abstract Factory, Factory method,
+Composite, Facade, Observer, Strategy, and Template Method.
+
+Probably an overuse of patterns!
+I became quite ''Pattern-Happy'', eager to use as many patterns I could possibly comprehend.
+\appendix
+\chapter{UML -- The Refined Design}
+\subsection*{System Operations}
+\subsubsection*{The Start up, Main System Operation}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_004}
+%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The Start Up \verb|Main| system operations}
+        \caption{The Main System operation}
+        \label{fig:start-up}
+    \end{center}
+\end{figure}
+%
+\subsubsection*{The StartSale System Operations}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_005.png}
+%        \includegraphics[trim=0cm 0cm 51cm 0cm ,clip, width=\textwidth]{../uml/output/uml_v3.png}
+%        \caption{The \verb|startSale| system operation }
+        \caption{The Start Sale System Operation}
+        \label{fig:start-sale}
+    \end{center}
+\end{figure}
+%%
+%\newpage
+\subsubsection*{The registerItem System Operations}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_006.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{The register item operation, including checked and unchecked exceptions}
+        \label{fig:reg-item}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_007.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{Item not previously found in shopping cart}
+        \label{fig:item-not-in-shopping-cart}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_008.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{Notify sale observers}
+        \label{fig:notify-sale-observers}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_009.png}
+%        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{Notify users and/or developers}
+        \label{fig:notify-users-developers}
+    \end{center}
+\end{figure}
+
+\subsubsection*{The endSale System Operations}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{../../uml/output/uml_v3_010}
+%        \includegraphics[trim=0cm 0cm 50cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|endSale| system operation }
+        \caption{The endSale system operation}
+        \label{fig:end-sale}
+    \end{center}
+\end{figure}
+%
+\subsubsection*{The payment operation, discount, bonuspoints and promotion}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_011}
+%        \includegraphics[trim=0cm 0cm 30cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+        \caption{Register customer to sale.}
+        \label{fig:reg-customer}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_012}
+%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|addPayment| system operation }
+        \caption{The payment system operation}
+        \label{fig:pay}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_013}
+%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|addPayment| system operation }
+        \caption{Pricing strategy}
+        \label{fig:pricing}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{../../uml/output/uml_v3_014}
+%        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{uml/output/uml_v3.png}
+%        \caption{The \verb|addPayment| system operation }
+        \caption{Notify cash register observers}
+        \label{fig:notify-cashregister-observer}
+    \end{center}
+\end{figure}
+
+\newpage
+\subsection*{Class Diagram}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3}
+        \caption{The Class Diagram}
+        \label{fig:CD}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_001}
+        \caption{Discount and VAT Factory.
+        Algorithms used for calculating total price with
+        disounts or promotions and for
+        calulating VAT for a specific item}
+        \label{fig:discount-vat-factories}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_002}
+        \caption{The facade provides a unified interface to a
+        set of interfaces in a subsystem.
+        It represents a service container (implemented as a Facade).
+        This service container is responsible for instantiating all registers (external systems/databases) and provides
+        a unified and simplified interface for the client classes.
+        }
+        \label{fig:facade}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{../../uml/output/uml_v3_003}
+        \caption{The DTOs (Data Transfer Objects)}
+        \label{fig:DTO}
+    \end{center}
+\end{figure}
+
+\newpage
 
 \listoflistings % Now typeset the list
 \printbibliography

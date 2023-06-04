@@ -1,9 +1,7 @@
 package se.kth.iv1350.model;
 import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDateTime;
 import java.util.*;
 
-import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.integration.dto.CustomerDTO;
 import se.kth.iv1350.integration.dto.ItemDTO;
@@ -24,7 +22,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class Sale {
     private List<SaleObserver> saleObservers;
-    private LocalDateTime timeOfSale; // TODO ska den vara kvar? Syfte?
     private Map<Integer, ShoppingCartItem> shoppingCart = new HashMap<>();
     private CashPayment payment;
     private DiscountStrategy pricing;
@@ -33,10 +30,9 @@ public class Sale {
 
     /**
      * Creates a new instance, representing a sale made by a customer.
-     * @throws OperationFailedException when unable to set up pricing.
+     * @throws PricingFailedException when unable to set up pricing.
      */
-    public Sale() throws OperationFailedException {
-        this.timeOfSale = LocalDateTime.now();
+    public Sale() throws PricingFailedException {
         saleObservers = new ArrayList<>();
         isComplete = false;
         try {
@@ -44,7 +40,7 @@ public class Sale {
             pricing = discountFactory.getDiscountStrategy();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                  | NoSuchMethodException | InvocationTargetException ex) {
-            throw new OperationFailedException("Unable to instantiate pricing algorithms", ex);
+            throw new PricingFailedException("Unable to instantiate pricing algorithms", ex);
         }
     }
 
@@ -54,9 +50,9 @@ public class Sale {
      * @param quantity The item quantity.
      * @throws ItemNotFoundInItemRegistryException when item ID does not exist in inventory
      * @throws ItemRegistryException when there is an unknown fail with inventory system
-     * @throws OperationFailedException when unable to set up VAT for item.
+     * @throws PricingFailedException when unable to set up VAT for item.
      */
-    public void addItem(int itemID, int quantity) throws ItemNotFoundInItemRegistryException, OperationFailedException {
+    public void addItem(int itemID, int quantity) throws ItemNotFoundInItemRegistryException, PricingFailedException {
         ShoppingCartItem existingShoppingCartItem = this.shoppingCart.get(itemID);
         if (existingShoppingCartItem != null) {
             existingShoppingCartItem.addToQuantity(quantity);
@@ -71,9 +67,9 @@ public class Sale {
     /**
      * Adds an item to the shopping cart.
      * @param itemInfo item information as {@link ItemDTO}
-     * @throws OperationFailedException when unable to set up VAT for item.
+     * @throws PricingFailedException when unable to set up VAT for item.
      */
-    private void addItem(ItemDTO itemInfo, int quantity) throws OperationFailedException {
+    private void addItem(ItemDTO itemInfo, int quantity) throws PricingFailedException {
         ShoppingCartItem newShoppingCartItem = new ShoppingCartItem(itemInfo, quantity);
         ShoppingCartItem alreadyExistedShoppingCartItem = shoppingCart.put(
                 itemInfo.getItemID(),
@@ -193,14 +189,6 @@ public class Sale {
      */
     public Amount getDiscount() {
         return pricing.getDiscount();
-    }
-
-    /**
-     * Get time of sale
-     * @return time of sale
-     */
-    public LocalDateTime getTimeOfSale() {
-        return timeOfSale;
     }
 
     /**

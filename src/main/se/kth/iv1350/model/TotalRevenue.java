@@ -4,7 +4,7 @@ import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.CashRegisterObserver;
 
 /**
- * A template for a sale observer that displays the total revenue when it has changed.
+ * A template for a cash register observer that displays the total revenue when it has changed.
  */
 public abstract class TotalRevenue implements CashRegisterObserver {
 

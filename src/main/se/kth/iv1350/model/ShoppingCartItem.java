@@ -1,11 +1,9 @@
 package se.kth.iv1350.model;
 
-import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.dto.ItemDTO;
-import se.kth.iv1350.integration.vat.VATFactory;
-import se.kth.iv1350.integration.vat.VATStrategy;
+import se.kth.iv1350.integration.pricing.VATFactory;
+import se.kth.iv1350.integration.pricing.VATStrategy;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 
@@ -23,9 +21,9 @@ public class ShoppingCartItem {
      * Creates a new instance representing the added item.
      * @param item ShoppingCartItem information as a {@link ItemDTO}
      * @param quantity The quantity
-     * @throws OperationFailedException when unable to set up VAT.
+     * @throws PricingFailedException when unable to set up VAT.
      */
-    public ShoppingCartItem(ItemDTO item, int quantity) throws OperationFailedException {
+    public ShoppingCartItem(ItemDTO item, int quantity) throws PricingFailedException {
         this.timeOfUpdate = LocalDateTime.now();
         this.itemInfo = item;
         this.quantity = quantity;
@@ -34,15 +32,15 @@ public class ShoppingCartItem {
             vatCalculation = vatFactory.getDefaultVATStrategy();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException | InvocationTargetException ex) {
-            throw new OperationFailedException("Unable to instantiate vat algorithms", ex);
+            throw new PricingFailedException("Unable to instantiate vat algorithms", ex);
         }
     }
     /**
      * Creates a new instance representing the added item.
      * @param item ShoppingCartItem information as a {@link ItemDTO}
-     * @throws OperationFailedException when unable to set up VAT.
+     * @throws PricingFailedException when unable to set up VAT.
      */
-    public ShoppingCartItem(ItemDTO item) throws OperationFailedException {
+    public ShoppingCartItem(ItemDTO item) throws PricingFailedException {
         this(item, 1);
     }
 

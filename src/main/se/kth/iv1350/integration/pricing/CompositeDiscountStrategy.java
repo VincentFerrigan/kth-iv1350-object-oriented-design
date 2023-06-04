@@ -8,7 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A <code>DiscountStrategy</code>, which performs multiple discount and promotion algorithms.
+ * A <code>DiscountStrategy</code>, which performs multiple discount and promotion
+ * algorithms.
  * All these algorithms that are added to this composite are executed,
  * and the lowest total price is found.
  */
@@ -22,7 +23,8 @@ public class CompositeDiscountStrategy implements DiscountStrategy {
 
     /**
      * Invokes all discount and promotion algorithms added to this composite.
-     * @param sale the sale to perform the discount and promotion strategies/algorithms on.
+     * @param sale the sale to perform the discount and promotion
+     *             strategies/algorithms on.
      * @return the lowest total price
      */
     @Override
@@ -42,8 +44,10 @@ public class CompositeDiscountStrategy implements DiscountStrategy {
     }
 
     /**
-     * Adds a discount or promotion algorithm that will be invoked when this composite is calculating the total price.
-     * The newly added algorithm will be called after all previously added algorithms.
+     * Adds a discount or promotion algorithm that will be invoked when
+     * this composite is calculating the total price.
+     * The newly added algorithm will be called after all previously added
+     * algorithms.
      *
      * @param discountStrategy The new <code>DiscountStrategy</code> to add.
      */

@@ -2,10 +2,8 @@ package se.kth.iv1350.model;
 
 import org.junit.jupiter.api.*;
 import se.kth.iv1350.POSTestSuperClass;
-import se.kth.iv1350.controller.OperationFailedException;
 import se.kth.iv1350.integration.*;
 import se.kth.iv1350.integration.dto.CustomerDTO;
-import se.kth.iv1350.integration.dto.ItemDTO;
 import se.kth.iv1350.integration.pricing.CustomerType;
 import se.kth.iv1350.view.EndOfSaleView;
 import se.kth.iv1350.view.RunningSaleView;
@@ -40,20 +38,26 @@ class SaleTest extends POSTestSuperClass {
     */
 
     @BeforeEach
-    void setUp() throws OperationFailedException {
-        instance = new Sale();
-        // Ska observers/displayView testas här eller för sig själva?
-        originalSysOut = System.out;
-        outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
-        List<SaleObserver> saleObservers;
-        saleObservers = new ArrayList<>();
-        saleObservers.add(new RunningSaleView());
-        saleObservers.add(new EndOfSaleView());
-        instance.addAllSaleObservers(saleObservers);
-//        // TODO Nedan korrekt? Funkar enbart om cash reg skulle köras från sale. Vilket den inte gör§v
-//        CashRegister cashRegister = new CashRegister();
-//        cashRegister.addCashRegisterObserver(new TotalRevenueView());
+    void setUp() {
+        try {
+            instance = new Sale();
+            // Ska observers/displayView testas här eller för sig själva?
+            originalSysOut = System.out;
+            outContent = new ByteArrayOutputStream();
+            System.setOut(new PrintStream(outContent));
+            List<SaleObserver> saleObservers;
+            saleObservers = new ArrayList<>();
+            saleObservers.add(new RunningSaleView());
+            saleObservers.add(new EndOfSaleView());
+            instance.addAllSaleObservers(saleObservers);
+            // TODO Nedan korrekt? Funkar enbart om cash reg skulle köras från sale. Vilket den inte gör§v
+            // CashRegister cashRegister = new CashRegister();
+            // cashRegister.addCashRegisterObserver(new TotalRevenueView());
+        } catch (PricingFailedException ex) {
+        // Not part of the test
+             fail("No exception should be thrown, unable to set up the ControllerTest. "
+                     + "%s".formatted(ex.getMessage()));
+        }
     }
 
     @AfterEach
@@ -63,6 +67,44 @@ class SaleTest extends POSTestSuperClass {
         System.setOut(originalSysOut);
     }
 
+    @Test
+    @DisplayName("Alternative flow 3a, add item - checked exception")
+    void testAddInvalidItemID() {
+        int invalidID = 150;
+        assertThrows(ItemNotFoundInItemRegistryException.class, () -> instance.addItem(invalidID, 1));
+
+        try {
+            instance.addItem(invalidID, 1);
+            fail("No exception was thrown");
+        } catch (PricingFailedException | ItemRegistryException ex) {
+            fail("Wrong exception thrown. "
+                    + "%s".formatted(ex.getMessage()));
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            assertTrue(ex.getMessage().contains(Integer.toString(invalidID)),
+                    "Wrong exception message, does not contain specified item ID: " + ex.getMessage());
+            assertEquals(ex.getItemIDNotFound(), invalidID,
+                    "Wrong item ID is specified: "
+                            + ex.getItemIDNotFound());
+        }
+    }
+
+    @Test
+    @DisplayName("Unchecked exception, database failure.")
+    void testUncheckedException() {
+        int dbFailureSimulatingID = 404;
+        assertThrows(ItemRegistryException.class, () -> instance.addItem(dbFailureSimulatingID, 1));
+
+        try {
+            instance.addItem(dbFailureSimulatingID, 1);
+            fail("No exception was thrown");
+        } catch (PricingFailedException | ItemNotFoundInItemRegistryException ex) {
+            fail("Wrong exception thrown. "
+                    + "%s".formatted(ex.getMessage()));
+        } catch (ItemRegistryException ex) {
+            assertTrue(ex.getMessage().contains("database fail"),
+                    "Wrong exception message, does not mention database fail: " + ex.getMessage());
+        }
+    }
     @Nested
     @DisplayName("Adding items to sale")
     class SaleAddItemsTest {
@@ -77,7 +119,7 @@ class SaleTest extends POSTestSuperClass {
         void testAddFirstItem() { // TODO: Kommer den med i coverage report?
             try {
                 instance.addItem(TEST_ITEM_ID, TEST_QUANTITY);
-            } catch (ItemNotFoundInItemRegistryException | OperationFailedException | ItemRegistryException e) {
+            } catch (ItemNotFoundInItemRegistryException | PricingFailedException | ItemRegistryException e) {
                 fail("Exception should not have been thrown, " +
                         e.getMessage());
             }
@@ -100,7 +142,7 @@ class SaleTest extends POSTestSuperClass {
         void testAddSecondItem() {
             try {
                 instance.addItem(TEST_ITEM_ID, test_quantity);
-            } catch (ItemNotFoundInItemRegistryException | OperationFailedException | ItemRegistryException e) {
+            } catch (ItemNotFoundInItemRegistryException | PricingFailedException | ItemRegistryException e) {
                 fail("Exception should not have been thrown, " +
                         e.getMessage());
                 throw new RuntimeException(e);// TODO behövs denna?
@@ -147,7 +189,7 @@ class SaleTest extends POSTestSuperClass {
     void testCalculateRunningTotal() {
         try {
             instance.addItem(TEST_ITEM_ID,TEST_QUANTITY);
-        } catch (ItemRegistryException | ItemNotFoundInItemRegistryException | OperationFailedException e) {
+        } catch (ItemRegistryException | ItemNotFoundInItemRegistryException | PricingFailedException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
         }
@@ -162,7 +204,7 @@ class SaleTest extends POSTestSuperClass {
 
         try {
             instance.addItem(TEST_ITEM_ID,TEST_QUANTITY);
-        } catch (ItemRegistryException | ItemNotFoundInItemRegistryException | OperationFailedException e) {
+        } catch (ItemRegistryException | ItemNotFoundInItemRegistryException | PricingFailedException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
         }

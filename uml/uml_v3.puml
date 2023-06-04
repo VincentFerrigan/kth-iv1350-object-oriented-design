@@ -1,9 +1,4 @@
 @startuml
-'https://plantuml.com/class-diagram
-'TODO: abstract and static members should have {abstract} {static}
-'TODO pricing and vat package
-'TODO: only the methods that throw throws exception? Or du you have to add them all the way?
-title CD
 hide circle
 skinparam linetype ortho
 skinparam package {
@@ -16,79 +11,23 @@ interface Comparable <<interface>> {
     + compareTo(Object o) : int
     }
 
-together {
 package startup {
     class Main{
         + <<static>> main(args : String[]) : void
     }
 }
-package view {
-    class View {
-        - contr: Controller
-        + <<create>> View(contr : Controller) : View
-    }
-    abstract class TotalRevenue {
-        # TotalRevenue
-        # {abstract} doShowTotalRevenue(totalRevenue : Amount)
-        # {abstract} handleErrors(e : Exception) : void
-    }
-    class TotalRevenueView {
-        # doShowTotalRevenue(totalRevenue : Amount)
-        # handleErrors(e : Exception) : void
-    }
-    abstract class SaleView {
-        - listOfShoppingCartItems : List<ShoppingCartItem>
-        - sale :LimitedSaleView
-        # SaleView()
-        # createSaleItemsInfoString() : String
-        # addNewSaleInfoDetails(sale : LimitedSaleView) : void
-        # {abstract} printCurrentState(sale : LimitedSaleView) : void
-        # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-        # {abstract} shouldUpdate(isComplete : boolean) : boolean
-    }
-    class EndOfSaleView {
-        # printCurrentState(sale : LimitedSaleView) : void
-        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-        # shouldUpdate(isComplete : boolean) : boolean
-        - createDiscountInfoString(discount : Amount, discountInfo : String) : void
-    }
-    class RunningSaleView {
-        # printCurrentState(sale : LimitedSaleView) : void
-        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
-        # shouldUpdate(isComplete : boolean) : boolean
-    }
-}
-package controller {
-    class Controller{
-        - saleObserver : List<SaleObserver>
-        - printer : Printer
-        - cashRegister : CashRegister
-        - currentSale : Sale
-        - logger : ErrorFileLogHandler
-        + <<create>> Controller(printer : Printer) : Controller
-        + addSaleObserver(observer : SaleObserver) : void
-        + addCashRegisterObserver(observer : CashRegisterObserver) : void
-        + startSale() : void {exception OperationFailedException}
-        + registerItem(itemID : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
-        + registerItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
-        + endSale() : void {exception IllegalStateException}
-        + registerCustomerToSale(customerID : int) void {exceptions=(IllegalStateException, CustomerNotFoundInCustomerRegistryException, OperationFailedException)}
-        + pay(paidAmt : Amount) : void {exception IllegalStateException}
-    }
-}
 package model {
     class Sale{
         - saleObserver : List<SaleObserver>
-        - timeOfSale : LocalDateTime
         - shoppingCart : HashMap<Integer, ShoppingCartItem>
 '        - shoppingCart : Map<Integer, ShoppingCartItem>
         - payment : CashPayment
         - pricing : DiscountStrategy
         - customer : Customer
         - isComplete : boolean
-        + <<create>> Sale() : Sale {exception OperationFailedException}
-        + addItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException)}
-        + addItem(itemInfo : ItemDTO, quantity : int) : void {exception OperationFailedException}
+        + <<create>> Sale() : Sale {exception PricingFailedException}
+        + addItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, ItemRegistryException, PricingFailedException)}
+        + addItem(itemInfo : ItemDTO, quantity : int) : void {exception PricingFailedException}
         + calculateTotalPrice() : Amount
         + calculateRunningTotal() : Amount
         + getTotalVATCosts() : Amount
@@ -101,7 +40,6 @@ package model {
         + addCustomerToSale(customerInfo : CustomerDTO) : void
         + getCustomer() : Customer
         + getDiscount() : Amount
-        + getTimeOfSale : LocalDateTime
         + createStringDiscountInfo() : String
         + pay(payment : CashPayment) : void
         + printReceipt(printer : Printer) : void
@@ -113,8 +51,8 @@ package model {
         - timeOfUpdate : LocalDateTime
         - quantity : int
         - vatCalculation : VATStrategy
-        + <<create>> ShoppingCartItem(itemInfo:ItemDTO) : ShoppingCartItem
-        + <<create>> ShoppingCartItem(itemInfo:ItemDTO, quantity : int): ShoppingCartItem
+        + <<create>> ShoppingCartItem(itemInfo:ItemDTO) : ShoppingCartItem {exception PricingFailedException}
+        + <<create>> ShoppingCartItem(itemInfo:ItemDTO, quantity : int): ShoppingCartItem {exception PricingFailedException}
         + addToQuantity(additionalQuantity : int) : void
         + getTotalSubPrice() : Amount
         + calculateTotalSubVATCosts() : Amount
@@ -183,15 +121,6 @@ package model {
         + equals(o : Object) : boolean
         + compareTo(o : Object) : int
     }
-    class VAT{
-        - vatRateGroupCode : int
-        - vatRate : double
-        + <<create>> VAT(vatRateGroupCode : int) : VAT
-        + <<create>> VAT() : VAT
-        + getVATRateGroupCode() : Int
-        + getVATRate() : double
-        + equals(Object o)
-    }
     class Customer {
         - customerID : int
         - customerType : CustomerType
@@ -224,60 +153,244 @@ package model {
         + <<create>> LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
     }
 }
+package view {
+    class EndOfSaleView {
+        # printCurrentState(sale : LimitedSaleView) : void
+        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+        # shouldUpdate(isComplete : boolean) : boolean
+        - createDiscountInfoString(discount : Amount, discountInfo : String) : void
+    }
+    class ErrorMessageHandler <<singleton>>{
+        - createTime
+    }
+    class View {
+        - contr: Controller
+        + <<create>> View(contr : Controller) : View
+    }
+    abstract class TotalRevenue {
+        # TotalRevenue
+        # {abstract} doShowTotalRevenue(totalRevenue : Amount)
+        # {abstract} handleErrors(e : Exception) : void
+    }
+    class TotalRevenueView {
+        # doShowTotalRevenue(totalRevenue : Amount)
+        # handleErrors(e : Exception) : void
+    }
+    abstract class SaleView {
+        - listOfShoppingCartItems : List<ShoppingCartItem>
+        - sale :LimitedSaleView
+        # SaleView()
+        # createSaleItemsInfoString() : String
+        # addNewSaleInfoDetails(sale : LimitedSaleView) : void
+        # {abstract} printCurrentState(sale : LimitedSaleView) : void
+        # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+        # {abstract} shouldUpdate(isComplete : boolean) : boolean
+    }
+    class RunningSaleView {
+        # printCurrentState(sale : LimitedSaleView) : void
+        # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+        # shouldUpdate(isComplete : boolean) : boolean
+    }
+}
+
+package controller {
+    class Controller{
+        - saleObserver : List<SaleObserver>
+        - printer : Printer
+        - cashRegister : CashRegister
+        - currentSale : Sale
+        - logger : ErrorFileLogHandler
+        + <<create>> Controller(printer : Printer) : Controller
+        + addSaleObserver(observer : SaleObserver) : void
+        + addCashRegisterObserver(observer : CashRegisterObserver) : void
+        + startSale() : void {exception OperationFailedException}
+        + registerItem(itemID : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+        + registerItem(itemID : int, quantity : int) : void {exceptions=(ItemNotFoundInItemRegistryException, OperationFailedException, IllegalStateException)}
+        + endSale() : void {exception IllegalStateException}
+        + registerCustomerToSale(customerID : int) void {exceptions=(IllegalStateException, CustomerNotFoundInCustomerRegistryException, OperationFailedException)}
+        + pay(paidAmt : Amount) : void {exception IllegalStateException}
+    }
+}
 package integration {
-    package pricing {
-        enum "//<<enumeration>>//\nCustomerType" as CustomerType {
+    package "**ref**" <<Frame>>{
+        package **Pricing** <<Rectangle>> {
+            class "**DiscountFactory**" as DiscountFactory <<Singleton>>{
+            }
+            class "**VATFactory**" as VATFactory <<Singleton>> {
+            }
+       }
+    }
+    package "**ref **" <<Frame>> {
+        package **Facade** <<Rectangle>> {
+            class "**RegistryHandler**" as RegistryHandler <<Singleton>>{
+            }
+            package **Factory** <<Database>>{
+            }
+        }
+    }
+    class Printer{
+        + <<create>>Printer() : Printer
+        + printReceipt(receipt : Receipt) : void
+         + printSaleLog(saleLog : SaleLog) : void
+    }
+    class TotalRevenueFileOutput {
+        - FILE_SEPARATOR  : String
+        - FILE_PATH : String
+        - LOG_FILE_NAME : String
+        - locale : Locale
+        - formatter : DateTimeFormatter
+        - revenueLogger : PrintWriter
+        - logger : ErrorFileLogHandler
+        + <<create>>TotalRevenueFileOutput() : TotalRevenueFileOutput {exception IOException}
+        # doShowTotalRevenue(totalRevenue : Amount)
+        # handleErrors(e : Exception) : void
+        - createTime() : String
+        }
+}
+package util{
+    class ErrorFileLogHandler <<singleton>>{
+        - FILE_SEPARATOR  : String
+        - FILE_PATH : String
+        - LOG_FILE_NAME : String
+        - LINE_SEPARATOR  : String
+        - logFile : PrintWriter
+        - createTime() : String
+    }
+     interface Logger <T><<interface>> {
+        + log(message : T) : void
+    }
+}
+
+'interfaces
+CashRegisterObserver <|-[dashed]- TotalRevenue
+TotalRevenue <|- TotalRevenueView
+TotalRevenue <|- TotalRevenueFileOutput
+
+SaleObserver <|-[dashed]- SaleView
+SaleView <|- EndOfSaleView
+SaleView <|- RunningSaleView
+
+Logger <|-[dashed]- ErrorFileLogHandler
+Logger <|-[dashed]- ErrorMessageHandler
+
+LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
+
+Comparable <|-[dashed]- Amount
+
+'Dependencies
+Main ---> View
+Main -up-> Controller
+Main ---> Printer
+
+View -right-> Controller
+
+Controller -right-> CashRegister
+Controller -right-> RegistryHandler
+Controller -right-> Sale
+Controller -right-> CashPayment
+
+Sale --> RegistryHandler
+Sale --> DiscountFactory
+Sale --> CashPayment
+Sale -> Receipt
+Sale --> Printer
+Sale --> ShoppingCartItem
+Sale --> Amount
+
+ShoppingCartItem --> VATFactory
+@enduml
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam package {
+    BackgroundColor LightYellow
+}
+'top to bottom direction
+left to right direction
+skinparam ClassAttributeIconSize 0
+mainframe **cd** Pricing
+
+package itegration.pricing {
+    enum "//<<enumeration>>//\nCustomerType" as CustomerType {
         STUDENT,
         MEMBER
     }
-        class DiscountFactory <<singleton>> {
-            - {static} DISCOUNT_CLASS_NAME_KEY : String
-            + getDiscountStrategy() : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-            - createComposite(classNames : String[] {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-            - instantiateDiscountStrategy(className : String) : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-        }
-         interface DiscountStrategy <<interface>>{
-            + getTotal(sale : Sale) : Amount
-            + getDiscount() : Amount
-        }
-         class CompositeDiscountStrategy {
-            - discountStrategies : List<DiscountStrategy>
-            - usedDiscountStrategy : DiscountStrategy
-            ~ <<create>> CompositeDiscountStrategy() : CompositeDiscountStrategy
-            + addDiscountStrategy(discountStrategy : DiscountStrategy)
-            + toString()
-        }
-         class MemberDiscount {
-            - discountRate : double
-            - discountAmount : Amount
-            + toString() : String
-        }
-        class StudentDiscount {
-            - discountRate : double
-            - discountAmount : Amount
-            + toString() : String
-        }
-        class Promotion {
-            - threshold : Amount
-            - bonusCheck : Amount
-            - discountAmount : Amount
-            - toString() : String
-        }
-     }
-    package vat {
-        class VATFactory <<singleton>> {
-            - {static} VAT_CLASS_NAME_KEY : String
-            + getDefaultVATStrategy() : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-            - instantiateVATStrategy(className : String) : DiscountStrategy {exceptions = (ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException)}
-        }
-        interface VATStrategy <<interface>> {
-            + calculateVATForItem(item : ShoppingCartItem) : Amount
-        }
-        class SwedishVAT {
-            - getVATRate(vatGroupCode : int): double
-        }
+    class DiscountFactory <<singleton>> {
+        - {static} DISCOUNT_CLASS_NAME_KEY : String
+        + getDiscountStrategy() : DiscountStrategy
+        - createComposite(classNames : String[]
+        - instantiateDiscountStrategy(className : String) : DiscountStrategy
     }
+     interface DiscountStrategy <<interface>>{
+        + getTotal(sale : Sale) : Amount
+        + getDiscount() : Amount
+    }
+     class CompositeDiscountStrategy {
+        - discountStrategies : List<DiscountStrategy>
+        - usedDiscountStrategy : DiscountStrategy
+        ~ <<create>> CompositeDiscountStrategy() : CompositeDiscountStrategy
+        + addDiscountStrategy(discountStrategy : DiscountStrategy)
+        + toString()
+    }
+     class MemberDiscount {
+        - discountRate : double
+        - discountAmount : Amount
+        + toString() : String
+    }
+    class StudentDiscount {
+        - discountRate : double
+        - discountAmount : Amount
+        + toString() : String
+    }
+    class Promotion {
+        - threshold : Amount
+        - bonusCheck : Amount
+        - discountAmount : Amount
+        - toString() : String
+    }
+    Together {
+    class VATFactory <<singleton>> {
+        - {static} VAT_CLASS_NAME_KEY : String
+        + getDefaultVATStrategy() : DiscountStrategy
+        - instantiateVATStrategy(className : String) : DiscountStrategy
+    }
+    interface VATStrategy <<interface>> {
+        + calculateVATForItem(item : ShoppingCartItem) : Amount
+    }
+    class SwedishVAT {
+        - getVATRate(vatGroupCode : int): double
+    }
+    }
+}
+class ReflectiveOperationException {
+        ClassNotFoundException \n | NoSuchMethodException \n | InvocationTargetException \n | InstantiationException \n | IllegalAccessException
+
+}
+
+'interfaces
+VATStrategy <|-[dashed]- SwedishVAT
+DiscountStrategy <|-[dashed]- CompositeDiscountStrategy
+DiscountStrategy <|-[dashed]- StudentDiscount
+DiscountStrategy <|-[dashed]- Promotion
+DiscountStrategy <|-[dashed]- MemberDiscount
+
+'relations
+DiscountFactory -down-> ReflectiveOperationException : Throws
+VATFactory ---> ReflectiveOperationException : Throws
+@enduml
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam package {
+    BackgroundColor LightYellow
+}
+'top to bottom direction
+left to right direction
+skinparam ClassAttributeIconSize 0
+
+mainframe **cd** Facade
 '     TODO: Go through all the dB singletons. Are they correct? Is the UML updated?
+package integration {
     interface IRegistryFactory <<interface>> {
        + getDefaultItemRegister() : ItemRegistry {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
        + getDefaultCustomerRegister() : CustomerRegistry {exceptions=(ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException)}
@@ -317,7 +430,7 @@ package integration {
         + updateRegistry(closedSale : Sale) : void {exception ItemRegistryException}
     }
 
-'     TODO Se över hela upplägget. Records och dylikt
+    '     TODO Se över hela upplägget. Records och dylikt
     class AccountingSystemFlatFileDB <<singleton>>{
         - {static} CSV_DELIMITER : String
         - FILE_PATH_KEY : String
@@ -325,7 +438,7 @@ package integration {
         - flatFileDb : File
         - recordHeader : string
         - records : Map<LocalDateTime, Record>
-'        - records : HashMap<LocalDateTime, Record>
+    '        - records : HashMap<LocalDateTime, Record>
         - timeOfUpdate : LocalTime
         - totalRevenue : Amount
         - totalVatCosts : Amount
@@ -333,7 +446,7 @@ package integration {
         - addRecordDataFromDb() : void {exception AccountingSystemException}
         - updateDatabase() : void {exception AccountingSystemException}
     }
-'        note bottom : Record is a nested class
+    '        note bottom : Record is a nested class
         class Record {
             - timeOfUpdate : LocalTime
             - totalAmount : Amount
@@ -351,18 +464,18 @@ package integration {
         - flatFileDb : File
         - recordHeader : string
         - customerTable : Map<Integer, CustomerData>
-'        - customerTable : HashMap<Integer, CustomerData>
+    '        - customerTable : HashMap<Integer, CustomerData>
         - addCustomerData() : void {exception CustomerRegistryException}
         - updateDatabase() :void {exception CustomerRegistryException}
     }
-'        note bottom : CustomerData is a nested class
-        class CustomerData {
-            - customerID : int
-            - customerType : CustomerType
-            - bonusPoints : int
-            + <<create>>CustomerData(customerID : int, customerType : CustomerType, bonusPoints : int)
-            + toString() : String
-        }
+    '        note bottom : CustomerData is a nested class
+    class CustomerData {
+        - customerID : int
+        - customerType : CustomerType
+        - bonusPoints : int
+        + <<create>>CustomerData(customerID : int, customerType : CustomerType, bonusPoints : int)
+        + toString() : String
+    }
 
     class ItemRegistryFlatFileDB <<singleton>> {
         - {static} CSV_DELIMITER : String
@@ -372,22 +485,22 @@ package integration {
         - flatFileDb : File
         - recordHeader : string
         - inventoryTable : Map<Integer, ItemData>
-'        - inventoryTable : HashMap<Integer, ItemData>
+    '        - inventoryTable : HashMap<Integer, ItemData>
         - addItemData() : void {exception ItemRegistryException}
         - updateDatabase() : void {exception ItemRegistryException}
     }
-'        note bottom : ItemData is a nested class
-        class ItemData {
-            - articleNo : int
-            - name : String
-            - description : String
-            - price : Amount
-            - vatGroupCode : int
-            - inStore : int
-            - sold : int
-            + <<create>>ItemData(articleNo : int, name : String, \n description : String, price : Amount, vatGroupCode : int, \ninStore : int, sold : int)
-            + toString() : String
-        }
+    '        note bottom : ItemData is a nested class
+    class ItemData {
+        - articleNo : int
+        - name : String
+        - description : String
+        - price : Amount
+        - vatGroupCode : int
+        - inStore : int
+        - sold : int
+        + <<create>>ItemData(articleNo : int, name : String, \n description : String, price : Amount, vatGroupCode : int, \ninStore : int, sold : int)
+        + toString() : String
+    }
 
     class SaleLog{
         + sales : List<Sale>
@@ -395,70 +508,14 @@ package integration {
         ~ logSale(sale : Sale) : void
         ~ findSaleByCustomerID(customerID : int) : List<Sale>
     }
-    class Printer{
-        + <<create>>Printer() : Printer
-        + printReceipt(receipt : Receipt) : void
-         + printSaleLog(saleLog : SaleLog) : void
-    }
-    class TotalRevenueFileOutput {
-        - FILE_SEPARATOR  : String
-        - FILE_PATH : String
-        - LOG_FILE_NAME : String
-        - locale : Locale
-        - formatter : DateTimeFormatter
-        - revenueLogger : PrintWriter
-        - logger : ErrorFileLogHandler
-        + <<create>>TotalRevenueFileOutput() : TotalRevenueFileOutput {exception IOException}
-        # doShowTotalRevenue(totalRevenue : Amount)
-        # handleErrors(e : Exception) : void
-        - createTime() : String
-        }
-}
-package util{
-    class ErrorFileLogHandler <<singleton>>{
-        - FILE_SEPARATOR  : String
-        - FILE_PATH : String
-        - LOG_FILE_NAME : String
-        - LINE_SEPARATOR  : String
-        - locale : Locale
-        - formatter : DateTimeFormatter
-        - logFile : PrintWriter
-        - createTime() : String
-    }
-     interface Logger <T><<interface>> {
-        + log(message : T) : void
-    }
 }
 
 'interfaces
-CashRegisterObserver <|-[dashed]- TotalRevenue
-TotalRevenue <|- TotalRevenueView
-TotalRevenue <|- TotalRevenueFileOutput
-
-SaleObserver <|-[dashed]- SaleView
-SaleView <|- EndOfSaleView
-SaleView <|- RunningSaleView
-
-DiscountStrategy <|-[dashed]- CompositeDiscountStrategy
-DiscountStrategy <|-[dashed]- StudentDiscount
-DiscountStrategy <|-[dashed]- Promotion
-DiscountStrategy <|-[dashed]- MemberDiscount
-
-Logger <|-[dashed]- ErrorFileLogHandler
-Logger <|-[dashed]- ErrorMessageHandler
-
-VATStrategy <|-[dashed]- CompositeVATStrategy
-VATStrategy <|-[dashed]- SwedishVAT
-
 IRegistryFactory <|-[dashed]- FlatFileDatabaseFactory
 
 AccountingSystem <|-[dashed]- AccountingSystemFlatFileDB
 CustomerRegistry <|-[dashed]- CustomerRegistryFlatFileDB
 ItemRegistry <|-[dashed]- ItemRegistryFlatFileDB
-
-LimitedSaleView <|-[dashed]- LimitedSaleViewWrapper
-
-Comparable <|-[dashed]- Amount
 
 'Nested classes
 ItemData +-- ItemRegistryFlatFileDB
@@ -466,30 +523,12 @@ CustomerData +-- CustomerRegistryFlatFileDB
 Record +-- AccountingSystemFlatFileDB
 
 'Dependencies
-Main --> View
-Main -left-> Controller
-Main ---> Printer
-Main ---> RegistryHandler
-Controller -up-> CashRegister
-Controller --> SaleLog
-Controller --> CustomerRegistryFlatFileDB
-Controller --> AccountingSystemFlatFileDB
-Controller --> ItemRegistryFlatFileDB
-Controller --> RegistryHandler
 RegistryHandler --> CustomerRegistryFlatFileDB
 RegistryHandler --> AccountingSystemFlatFileDB
 RegistryHandler --> ItemRegistryFlatFileDB
 RegistryHandler --> SaleLog
-View -right-> Controller
-Controller --> Sale
-Controller --> CashPayment
-Sale --> CashPayment
-Receipt <-- Sale
-Sale --> Printer
-Sale --> ShoppingCartItem
-Sale --> Amount
-@enduml
 
+@enduml
 @startuml
 'title DTO
 ' //TODO Ska vi ha en customerDTO och customerDb?
@@ -500,6 +539,7 @@ skinparam linetype ortho
 skinparam package {
     BackgroundColor LightYellow
 }
+package instegration {
     package dto {
         class ItemDTO{
             - itemId : int
@@ -519,103 +559,101 @@ skinparam package {
             + equals(o : Object) : boolean
 '        note bottom : Attributes TBD based on Discount Rules.
         }
-        class RecordDTO{
-        - timeOfUpdate : LocalDateTime
-        - totalAmount : Amount
-        - totalVatAmount : Amount
-        - discounts : Amount
-        +<<create>>RecordDTO(timeOfUpdate : LocalDateTime, totalAmount : Amount, totalVatAmount : Amount, discounts : Amount)
-        }
     }
+}
 note top: getters, toString and equals are included as methods for all DTO attributes
 @enduml
 
 @startuml
 skinparam style strictuml
-participant ":Main" as Main
-participant "printer:Printer" as printer
-participant "registerCreator:RegisterCreator" as registerCreator
-participant "saleLog:SaleLog" as saleLog
-participant ":AccountingSystem" as AccountingSystemFlatFileDB
+hide unlinked
+participant ": Main" as Main
 
-participant ":ItemRegistry" as ItemRegistryFlatFileDB
-participant "contr:Controller" as contr
-participant "cashRegister : CashRegister" as cashRegister
-participant "view : View" as view
+participant "<<singleton>>\n: RegisterCreator" as registerCreator
+participant "saleLog\n: SaleLog" as saleLog
+participant "<<interface>>\n: AccountingSystem" as AccountingSystemFlatFileDB
+participant "<<interface>>\n: CustomerRegistry" as CustomerRegistry
+participant "<<interface>>\n: ItemRegistry" as ItemRegistryFlatFileDB
+
+participant "view \n: View" as view
+participant "<<singleton>>\nerrorMessageHandler\n: ErrormessageHandler" as errorMessageHandler
+participant "contr\n: Controller" as contr
+participant "saleObservers \n: List<SaleObserver>" as saleObservers
+participant "cashRegister\n: CashRegister" as cashRegister
+participant "printer\n: Printer" as printer
+participant "<<singleton>>\nlogger \n: ErrorFileLogHandler" as logger
 ' user -> Main: main()
 activate Main
 create printer
 autonumber 1
-Main -[dashed]->> printer : <<create>>\n printer = Printer() : Printer
-
-create registerCreator
-autonumber 2
-Main -[dashed]->> registerCreator : <<create>>\n registerCreator = RegistryHandler() : RegistryHandler
-activate registerCreator
-
-autonumber 2.1
-create saleLog
-registerCreator -[dashed]->> saleLog : <<create>>\n saleLog = SaleLog() : SaleLog
-
-create AccountingSystemFlatFileDB
-autonumber 2.2
-registerCreator -> AccountingSystemFlatFileDB : <<static>>\ngetInstance() : AccountingSystemFlatFileDB
-
-create CustomerRegistry
-autonumber 2.3
-registerCreator -> CustomerRegistry : <<static>>\ngetInstance() : CustomerRegistry
-'activate CustomerRegistryFlatFileDB
-'deactivate CustomerRegistryFlatFileDB
-
-create ItemRegistryFlatFileDB
-autonumber 2.4
-registerCreator -> ItemRegistryFlatFileDB: <<static>>\ngetInstance() : ItemRegistryFlatFileDB
-'activate ItemRegistry
-'deactivate ItemRegistry
-deactivate registerCreator
+Main -[dashed]->> printer : <<create>>\nprinter = Printer() : Printer
 
 autonumber 3
 create contr
-Main -[dashed]->> contr : <<create>>\n contr = Controller(printer : Printer, registerCreator : RegistryHandler) : Controller
+Main -[dashed]->> contr : <<create>>\ncontr =\nController(printer : Printer) : Controller
 activate contr
 
-autonumber 3.1
-contr -> registerCreator : saleLog = getSaleLog() : SaleLog
-activate registerCreator
-deactivate registerCreator
-
-autonumber 3.2
-contr -> registerCreator : accountingSystem = getAccountingSystem() : AccountingSystemFlatFileDB
-activate registerCreator
-deactivate registerCreator
-
-autonumber 3.3
-contr -> registerCreator : customerRegistry = getCustomerRegistry() : CustomerRegistry
-activate registerCreator
-deactivate registerCreator
-
-autonumber 3.4
-contr -> registerCreator : itemRegistry = getItemRegistry() : ItemRegistryFlatFileDB
-activate registerCreator
-deactivate registerCreator
 
 create cashRegister
-autonumber 3.5
-contr -[dashed]->> cashRegister : <<create>>\n cashRegister = CashRegister(initialAmount: int) : CashRegister
-'activate cashRegister
-'deactivate cashRegister
-'TODO ska jag lägga till att contr skapar en Lista för SaleObservers?
+autonumber 3.1
+contr -[dashed]->> cashRegister : <<create>>\n cashRegister = \nCashRegister(initialAmount: int) : CashRegister
+autonumber 3.2
+contr -> logger : logger =\n ErrorFileLogHandler.getInstance() : Logger
+activate logger
+deactivate logger
+create saleObservers
+autonumber 3.3
+contr -[dashed]->> saleObservers : <<create>>\n observers =\nArrayList<SaleObserver>() : ArrayList
+deactivate contr
+
+
+autonumber 4
+Main -> contr : addCashRegisterObserver(\n\tTotalRevenueFileOutput.getInstance() : CashRegisterObserver\n) : void
+activate contr
+autonumber 4.1
+contr -> cashRegister : addCashRegisterObserver(\n\tobserver : CashRegisterObserver\n) : void
+activate cashRegister
+deactivate cashRegister
+
 deactivate contr
 
 create view
-autonumber 4
+autonumber 5
 Main -[dashed]->> view : <<create>>\n View(contr: Controller):View
 activate view
 
-autonumber 5
-view -> contr : addSaleObserver(new SaleObserver() : SaleObserver) : void
+autonumber 5.1
+view -> contr : addSaleObserver(\n\tnew RunningSaleView() : SaleObserver\n) : void
 activate contr
+autonumber 5.1.1
+contr -> saleObservers : add(saleObserver: SaleObserver) : boolean
+activate saleObservers
+deactivate saleObservers
 deactivate contr
+autonumber 5.2
+view -> contr : addSaleObserver(\n\tnew EndOfSaleView() : SaleObserver\n) : void
+activate contr
+autonumber 5.2.1
+contr -> saleObservers : add(saleObserver: SaleObserver) : boolean
+activate saleObservers
+deactivate saleObservers
+deactivate contr
+autonumber 5.3
+view -> contr : addCashRegisterObserver(\n\tnew TotalRevenueView() : CashRegisterObserver\n) : void
+activate contr
+autonumber 5.3.1
+contr -> cashRegister : addCashRegisterObserver(\n\tobserver : CashRegisterObserver\n) : void
+activate cashRegister
+deactivate cashRegister
+deactivate contr
+autonumber 5.4
+view -> logger : logger =\nErrorFileLogHandler.getInstance() : Logger
+activate logger
+deactivate logger
+autonumber 5.4
+view -> errorMessageHandler : logger =\nErrorMessageHandler.getInstance() : Logger
+activate errorMessageHandler
+deactivate errorMessageHandler
 deactivate view
 deactivate Main
 'TODO ska jag lägga till att view skapar observers?
@@ -639,6 +677,7 @@ participant "saleObservers : List<SaleObserver>" as saleObservers
 
 autonumber 1
 View -> contr : startSale(): void
+activate View
 activate contr
 
 autonumber 1.1
@@ -646,12 +685,16 @@ create currentSale
 contr -[dashed]->> currentSale :  <<create>>\n currentSale = Sale() : Sale
 activate currentSale
 autonumber 1.1.1
+create saleObservers
+currentSale -[dashed]->> saleObservers : <<create>>\n observers =\nArrayList<SaleObserver>() : ArrayList
+autonumber 1.1.2
 currentSale -> DiscountFactory : <<static>>\n discountFactory = getInstance() : DiscountFactory
 activate DiscountFactory
 deactivate DiscountFactory
 currentSale -> DiscountFactory : pricing = getDiscountStrategy() : DiscountStrategy
 
 'Hur lägga till brytningen som Leif har i sitt exempel?
+autonumber 1.1.3
 activate DiscountFactory
 autonumber stop
 currentSale <<- DiscountFactory : <<exception>>\nClassNotFoundException
@@ -673,6 +716,7 @@ deactivate saleObservers
 deactivate currentSale
 
 deactivate contr
+deactivate View
 
 autonumber stop
 @enduml
@@ -683,19 +727,22 @@ skinparam style strictuml
 'title registerItem
 'REGISTERITEM
 hide unlinked
-participant ":View" as View
-participant "contr:Controller" as contr
-participant "currentSale:Sale" as currentSale
-participant "shoppingCart:Map<Integer, ShoppingCartItem>" as shoppingCart
-participant "itemRegistry:ItemRegistry" as itemRegistry
-participant "item : ShoppingCartItem" as item
-participant "newItem : ShoppingCartItem" as newItem
+participant ": View" as View
+participant "contr\n: Controller" as contr
+participant "currentSale\n: Sale" as currentSale
+participant "shoppingCart\n: Map<Integer, ShoppingCartItem>" as shoppingCart
+participant ": RegistryHandler" as RegistryHandler
+'interface ": ItemRegistry" as ItemRegistry
+participant "<<interface>>\n: ItemRegistry" as ItemRegistry
+participant "existingShoppingCartItem \n: ShoppingCartItem" as oldItem
+participant "newShoppingCartItem\n: ShoppingCartItem" as newItem
 
 loop moreItems
 '[validIdentifier]
     alt singleItem
         autonumber 1
         View -> contr : registerItem(itemID:int) : void
+        activate View
         activate contr
         autonumber 1.1
         contr -> contr : registerItem(itemID:int, 1 : int) : void
@@ -708,61 +755,88 @@ loop moreItems
         View -> contr : registerItem(itemID:int, quantity:int) : void
         activate contr
    end
-        deactivate itemRegistry
-        note right: itemRegistry creates ItemDTO
-
         autonumber 1.2
         contr -> currentSale : addItem(itemID : int, quantity:int) : void
         activate currentSale
             autonumber 1.2.1
-            currentSale -> shoppingCart : item = get.(itemID : int) : ShoppingCartItem
-            activate shoppingCart
-            deactivate shoppingCart
-            autonumber 1.2.2
-            currentSale -> item : addToQuantity(quantity : int) : void
-            activate item
-            deactivate item
-            autonumber stop
-            contr <<- currentSale : <<exception>>\nItemNotFoundInShoppingCartException
-            ref over currentSale
-                Notify Sale Observers
-            end ref
-            deactivate currentSale
+            currentSale -> shoppingCart : existingShoppingCartItem = \nget.(itemID : int) : ShoppingCartItem
+                activate shoppingCart
+                deactivate shoppingCart
+            alt existingShoppingCartItem != null
+                autonumber 1.2.2
+                currentSale -> oldItem : addToQuantity(quantity : int) : void
+            ref over currentSale : \t\t Notify Sale Observers
+                activate oldItem
+                deactivate oldItem
+            else
+            ref over currentSale : \t\t Item not found in Shopping Cart
+
+'        activate currentSale
+                autonumber stop
+                    contr <<- currentSale : <<exception>>\nItemNotFoundInItemRegistryException
+                    contr <<- currentSale : <<exception>>\nItemRegistryException
+                    ref over contr : \t\tNotify Developer
+
+             end
+'            autonumber 1.2.3
+'            currentSale -> currentSale
 '            activate currentSale
-        group Item not found in Shopping Cart
-            autonumber 1.2
-            contr -> itemRegistry : itemInfo = getItemInfo(itemID : int) : ItemDTO
-            activate itemRegistry
-            autonumber stop
-            contr <<- itemRegistry : <<exception>>\nItemNotFoundInItemRegistryException
-            contr <<- itemRegistry : <<exception>>\nItemRegistryException
-            deactivate itemRegistry
-            autonumber 1.3
-            contr -> currentSale : addItem(itemInfo : ItemDTO, quantity:int) : void
-            activate currentSale
-            autonumber 1.3.1
-            create newItem
-            currentSale -[dashed]->> newItem : <<create>> \n newItem = ShoppingCartItem(itemInfo : ItemDTO, quantity : int) : ShoppingCartItem
-'            activate newItem
-'            deactivate newItem
-            autonumber 1.3.2
-            currentSale -> shoppingCart : put(item.itemID():int, newItem : ShoppingCartItem) : ShoppingCartItem
-            activate shoppingCart
-            deactivate shoppingCart
-        deactivate currentSale
-            ref over currentSale
-                Notify Sale Observers
-            end ref
-        end
+'            deactivate currentSale
+            deactivate currentSale
+                autonumber stop
+                    View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
+                    ref over View : \t Notify User & Developer
+                    View <<- contr : <<exception>>\nOperationFailedException
+                    ref over View : \tNotify User
         autonumber stop
-            View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
-            View <<- contr : <<exception>>\nOperationFailedException
-        deactivate contr
 
         deactivate contr
+        deactivate View
 end
 
 autonumber stop
+@enduml
+@startuml
+skinparam style strictuml
+hide unlinked
+participant ": View" as View
+participant "contr\n: Controller" as contr
+participant "currentSale\n: Sale" as currentSale
+participant "shoppingCart\n: Map<Integer, ShoppingCartItem>" as shoppingCart
+participant ": RegistryHandler" as RegistryHandler
+'interface ": ItemRegistry" as ItemRegistry
+participant "<<interface>>\n: ItemRegistry" as ItemRegistry
+participant "existingShoppingCartItem \n: ShoppingCartItem" as oldItem
+participant "newShoppingCartItem\n: ShoppingCartItem" as newItem
+mainframe **sd** Item not found in Shopping Cart
+                activate currentSale
+                autonumber 1
+                currentSale -> RegistryHandler : itemInfo = RegistryHandler\n\t\t.getInstance()\n\t\t.getItemInfo(itemID : int) : ItemDTO
+'                activate currentSale
+                ref over RegistryHandler, ItemRegistry
+                    Database call
+                end ref
+                activate RegistryHandler
+                autonumber stop
+                currentSale <<- RegistryHandler : <<exception>>\nItemNotFoundInItemRegistryException
+                currentSale <<- RegistryHandler : <<exception>>\nItemRegistryException
+                deactivate RegistryHandler
+
+                autonumber 1.2
+                currentSale -> currentSale : addItem(itemInfo : ItemDTO, quantity : int) : void
+                activate currentSale
+                autonumber 1.2.1
+                create newItem
+                currentSale -[dashed]->> newItem : <<create>> \n newShoppingCartItem = \n ShoppingCartItem(itemInfo : ItemDTO, quantity : int) : ShoppingCartItem
+                activate newItem
+                ref over newItem : \t\t\tVAT Strategy
+                autonumber stop
+                 currentSale <<- newItem : <<exception>>\nPricingFailedException
+                deactivate newItem
+                currentSale -> shoppingCart : put(\n\titem.itemID():int, \n\tnewShoppingCartItem : ShoppingCartItem\n) : ShoppingCartItem
+                activate shoppingCart
+                deactivate shoppingCart
+            ref over currentSale : \t\t Notify Sale Observers
 @enduml
 @startuml
 
@@ -786,23 +860,58 @@ end loop
 
 @enduml
 @startuml
-
 skinparam style strictuml
-mainframe **sd** Notify Cash Register Observers
-participant ": CashRegister" as CashRegister
-participant "cashRegisterObservers\n: List<CashRegisterObserver>" as cashRegisterObservers
 
--> CashRegister : addPayment()
-activate CashRegister
-CashRegister -> CashRegister : notifyObservers() : void
-activate CashRegister
-loop for each CashRegisterObserver in cashRegisterObservers
-    CashRegister -> cashRegisterObservers : updateRevenue(revenue : Amount) : void
-    activate cashRegisterObservers
-    deactivate cashRegisterObservers
-end loop
+mainframe **sd** Notify User \l**sd** Notify Developer \l**sd** Notify User & Developer
+participant ": Controller" as Controller
+participant ": View" as View
+participant "errorMessageHandler\n: ErrormessageHandler" as errorMessageHandler
+participant "logger \n: ErrorFileLogHandler" as logger
+participant "logFile \n: PrintWriter" as logFile
+participant "exception \n: Exception" as exception
+
+group Notify User
+-> View : catch
+View -> errorMessageHandler : log(message : String) : void
+activate View
+activate errorMessageHandler
+deactivate errorMessageHandler
+deactivate View
+end
+
+group Notify Developer
+-> Controller : catch
+Controller -> logger : log(exception : Exception) : void
+activate Controller
+activate logger
+logger -> logFile : println(logMsgBuilder : StringBuilder)
+logger -> exception : printStackTrace(logFile : PrintWriter)
+logger -> logFile : println(\n\tSystem.getProperty("file.separator"\n) : String)
+deactivate logger
+deactivate logger
+deactivate Controller
+end
+
+group Notify User and Developer
+-> View : catch
+View -> View : writeToLogAndUI
+activate View
+View -> errorMessageHandler : log(message : String) : void
+activate errorMessageHandler
+deactivate errorMessageHandler
+
+View -> logger : log(exception : Exception) : void
+activate logger
+logger -> logFile : println(logMsgBuilder : StringBuilder)
+logger -> exception : printStackTrace(logFile : PrintWriter)
+logger -> logFile : println(\n\tSystem.getProperty("file.separator"\n) : String)
+deactivate logger
+deactivate View
+
+end
 
 @enduml
+
 @startuml
 skinparam style strictuml
 'title EndSale
@@ -834,8 +943,9 @@ skinparam style strictuml
 
 participant ": View" as View
 participant "contr : Controller" as contr
-participant ": CustomerRegistry" as CustomerRegistry
 participant "currentSale : Sale" as currentSale
+participant ": RegistryHandler" as RegistryHandler
+participant ": CustomerRegistry" as CustomerRegistry
 participant ": Customer" as customer
 
 autonumber 1
@@ -843,21 +953,24 @@ View -> contr : registerCustomerToSale(customerID:int): void
 activate View
 activate contr
 autonumber 1.1
-'create CustomerRegistry
-contr -> CustomerRegistry : customerInfo = \ngetCustomerInfo(customerID:int) : CustomerDTO
-activate CustomerRegistry
+                currentSale -> RegistryHandler : itemInfo = RegistryHandler\n\t\t.getInstance()\n\t\t.getItemInfo(itemID : int) : ItemDTO
+'                activate currentSale
+                ref over RegistryHandler, CustomerRegistry
+                    Database call
+                end ref
+                activate RegistryHandler
 autonumber stop
-contr <<- CustomerRegistry : <<exception>>\nCustomerNotFoundInCustomerRegistryException
-contr <<- CustomerRegistry : <<exception>>\nCustomerRegistryException
-deactivate CustomerRegistry
+contr <<- RegistryHandler : <<exception>>\nCustomerNotFoundInCustomerRegistryException
 View <<- contr : <<exception>>\nCustomerNotFoundInCustomerRegistryException
+contr <<- RegistryHandler : <<exception>>\nCustomerRegistryException
+deactivate RegistryHandler
 View <<- contr : <<exception>>\nOperationFailedException
 autonumber 1.2
-contr -> currentSale : addCustomerToSale(customerInfo:CustomerDTO): void
+contr -> currentSale : addCustomerToSale(\n\tcustomerInfo:CustomerDTO\n): void
 activate currentSale
 create customer
 autonumber 1.2.1
-currentSale -[dashed]-> customer : <<create>>\nCustomer(customerInfo : CustomerDTO) \n: Customer
+currentSale -[dashed]-> customer : <<create>>\nCustomer(customerInfo : CustomerDTO) : Customer
 activate customer
 deactivate customer
 deactivate customer
@@ -1019,4 +1132,22 @@ opt customer != null
 payment ->  customer : addBonusPoints(totalCostPaid : Amount)
 end opt
 deactivate currentSale
+@enduml
+@startuml
+
+skinparam style strictuml
+mainframe **sd** Notify Cash Register Observers
+participant ": CashRegister" as CashRegister
+participant "cashRegisterObservers\n: List<CashRegisterObserver>" as cashRegisterObservers
+
+-> CashRegister : addPayment()
+activate CashRegister
+CashRegister -> CashRegister : notifyObservers() : void
+activate CashRegister
+loop for each CashRegisterObserver in cashRegisterObservers
+    CashRegister -> cashRegisterObservers : updateRevenue(revenue : Amount) : void
+    activate cashRegisterObservers
+    deactivate cashRegisterObservers
+end loop
+
 @enduml

@@ -1,15 +1,14 @@
-package se.kth.iv1350.integration;
+package se.kth.iv1350.model;
 
 /**
- * Thrown when something fails with the item registry or inventory system
+ * Thrown when pricing failed.
  */
-public class ItemRegistryException extends RuntimeException {
-
+public class PricingFailedException extends RuntimeException {
     /**
      * Creates a new instance representing the condition described in the specified message.
      * @param message A message that describes what went wrong.
      */
-    public ItemRegistryException(String message) {
+    public PricingFailedException(String message) {
         super(message);
     }
     /**
@@ -18,7 +17,8 @@ public class ItemRegistryException extends RuntimeException {
      * @param message   The exception message.
      * @param cause The exception that caused this exception.
      */
-    ItemRegistryException(String message, Exception cause) {
+
+    public PricingFailedException(String message, Exception cause) {
         super(message, cause);
     }
 }

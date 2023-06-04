@@ -5,7 +5,7 @@ import se.kth.iv1350.model.Sale;
 
 /**
  * Discount strategy defining the ability to calculate total price.
- * This interface shall be implemented by a class providing a promotion or xxx
+ * This interface shall be implemented by a class providing a promotion or
  * discount algorithm.
  */
 public interface DiscountStrategy {

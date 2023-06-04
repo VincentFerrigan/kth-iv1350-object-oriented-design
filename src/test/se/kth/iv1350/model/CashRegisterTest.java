@@ -22,18 +22,18 @@ class CashRegisterTest extends POSTestSuperClass {
     private final int ITEM_ID = 0;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         instance = new CashRegister(INITIAL_BALANCE);
         payment = new CashPayment(PAID_AMOUNT);
         try {
             sale = new Sale();
-        } catch (OperationFailedException ex) {
+        } catch (PricingFailedException ex) {
             fail("Failed to setUp CashPaymentTest");
             ex.printStackTrace();
         }
         try {
             sale.addItem(ITEM_ID, 1);
-        } catch (ItemRegistryException | ItemNotFoundInItemRegistryException | OperationFailedException e) {
+        } catch (ItemRegistryException | ItemNotFoundInItemRegistryException | PricingFailedException e) {
             fail("Exception should not have been thrown, " +
                     e.getMessage());
             throw new RuntimeException(e);

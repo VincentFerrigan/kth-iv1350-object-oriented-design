@@ -1,0 +1,344 @@
+\documentclass[a4paper]{scrreprt}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{lastpage}
+\usepackage{pgf}
+\usepackage{wrapfig}
+\usepackage{fancyvrb}
+\usepackage{float}
+
+%\usepackage[style=ieee]{biblatex} % om du vill köra ieee (tror leif kör den)
+\usepackage[backend=biber,style=vancouver]{biblatex}
+\addbibresource{bibfile.bib}
+%Alternativt med natbib
+%\usepackage[numbers]{natbib} %referenser vancouver
+%\usepackage[numbers,round]{natbib} %referenser vancouver
+%\usepackage{hyperref}
+
+\usepackage{pdflscape}
+% \usepackage{lscape}
+
+% Code highligting
+% \usepackage{minted}
+\usepackage[outputdir=output/tex]{minted} % iom min makefile
+
+
+
+\usepackage[font=footnotesize,labelfont=bf,skip=2pt]{caption}
+\usepackage{hyperref}
+\newenvironment{longlisting}{\captionsetup{type=listing}}{}
+% \renewcommand\listoflistingscaption{Källkod....}
+\renewcommand\listoflistingscaption{List of source codes}
+\setmintedinline[java]{breaklines=true,breakanywhere=true} % necessary for breakanywhere to work later on.
+
+\usepackage{paralist} %Inline lists
+
+% Create header and footer
+% Create header and footer
+\headheight 27pt
+\pagestyle{fancyplain}
+\lhead{\footnotesize{Object-Oriented Design, IV1350}}
+\chead{\footnotesize{Seminar 2 Design}}
+\rhead{}
+\lfoot{}
+\cfoot{\thepage\ (\pageref{LastPage})}
+\rfoot{}
+
+% Create title page
+\title{Seminar 2, Design}
+\subtitle{Object-Oriented Design, IV1350}
+\author{Vincent Ferrigan ferrigan@kth.se}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents %Generates the TOC
+
+\chapter{Introduction}
+
+This is the second version of the report for seminar 5, where a more thorough text
+is added in Result, and an additional section has been added to the Discussion.
+The rest is kept as it was when it was handed in for seminar 2.
+
+The aim of this seminar task is to apply UML and Object-Oriented Patterns when
+designing object-oriented architecture and develop object-oriented
+systems/programs.
+
+During the task the author has practiced creating both \emph{class diagrams} and
+\emph{Interactive diagrams}.
+Here the group, consisting of \emph{Elin Blomquist} and \emph{Robert Koivusalo},
+has chosen to use \emph{Sequence diagrams} instead of \emph{Communication diagrams}
+as Interactive diagrams.
+
+\chapter{Method}
+\section{UML}
+The UML modeling tool used was \emph{PlantUML}.
+PlantUML is an open-source tool for creating UML diagrams using a text-based
+syntax.
+It was chosen to enable version control through git and to avoid using a
+proprietary graphical editor.
+
+UML includes interaction diagrams to illustrate how objects interact via messages.
+Two types were introduced in the course textbook; sequence diagrams and communication diagrams.
+The group found Sequence diagrams to be more notationally rich and that they had more advantages
+over communication diagrams.
+More about this choice is discussed in the section \ref{sec:sequence-diagrams-over-communication-diagrams}
+
+\section{The Design Method}
+When creating the Class Diagram in figure \ref{fig:CD} we followed the MVC and layer patterns
+mentioned in the course textbook,
+and chose to use the layers that were used in the course textbooks case study.
+
+Together, we designed one system operation at a time, while striving for \emph{high cohesion},
+\emph{low coupling} and a high degree of \emph{encapsulation}.
+
+After each system operation, we updated the class diagrams with the objects and their attributes and methods in use.
+\begin{enumerate}
+    \item The \verb|StartSale| System Operations -- see figure~\ref{fig:SD}
+    \item The \verb|registerItem| System Operations -- see figure~\ref{fig:SD1}
+    \item The \verb|endSal|e System Operations -- see figure~\ref{fig:SD2}
+    \item The \verb|discountRequest| System Operations -- see figure~\ref{fig:SD3}
+    \item The \verb|addPayment| System Operations -- see figure~\ref{fig:SD4}
+    \item The Start up, \verb|Main| System Operation -- see figure~\ref{fig:SD5}
+\end{enumerate}
+Naturally we revised every system operation and discussed which methods and attributes that were to be
+public, private or package private and when or if it was appropriate to use \emph{DTOs (Data Transfer Objects)} or not.
+All the DTOs that were chosen are depicted in figure~\ref{fig:DTO}.
+
+\newpage
+\chapter{Result}
+\label{sec:result}
+\section{The Class Diagram}
+The Class Diagram illustrated in figure \ref{fig:CD} emphasizes the links between the objects, i.e.\ the instances of
+our classes.
+It also groups the classes into subsystems in accordance with the MVC architectural pattern.
+
+All possible attributes and methods that belong to a class (including their parameters) are shown.
+In other words, all methods (and parameters) that were depicted in the Interaction Diagrams are all
+collected and grouped here in the Class Diagram.
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{./uml/output/CD_Sem1}
+        \caption{The class diagram after all system operations have been designed.}
+        \label{fig:CD}
+    \end{center}
+\end{figure}
+
+
+    \begin{figure}[h!]
+        \begin{center}
+            \includegraphics[width=\textwidth]{./uml/output/CD_Sem1_001}
+            \caption{The DTOs (Data Transfer Objects)}
+            \label{fig:DTO}
+        \end{center}
+    \end{figure}
+
+\newpage
+%    \newgeometry{left=0cm,right=0cm,top=0cm,bottom=0cm}
+\section{Sequence Diagrams}
+
+Figure ~\ref{fig:SD} shows the Sequence Diagram of the operation startSale
+where an instance of Sale is created, which indicates that a new sale is started.
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[trim=0cm 0cm 51cm 0cm ,clip, width=\textwidth]{./uml/output/SD_Sem2}
+%        \caption{The \verb|startSale| system operation }
+        \caption{The startSale system operation }
+        \label{fig:SD}
+    \end{center}
+\end{figure}
+Figure ~\ref{SD1} is the Sequence Diagram for registerItem,
+illustrating the method calls for when the system registers items to be sold,
+including the additional flows.
+This is done by the cashier entering an item identifier from the view,
+that is forwarded to the \mintinline{java}{InventorySystem}.
+If the item exists in the \mintinline{java}{InventorySystem} it is added to the sale,
+with increased quantity if that item is already in the sale.
+If the item does not exist, an error message is sent to the view.
+If the item is added to the sale, the total price is updated.
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[trim=0cm 0cm 40cm 0cm, clip, width=\textwidth]{./uml/output/SD_Sem2_001}
+%        \caption{The \verb|registerItem| system operation }
+        \caption{The registerItem operation }
+        \label{fig:SD1}
+    \end{center}
+\end{figure}
+
+Figure ~\ref{fig:SD2} shows the operation of endSale,
+that is an alert to the system that no more items are to be registered for the current sale,
+and the system creates a saleDTO containing all the information about the current sale that is about to be paid for.
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[trim=0cm 0cm 50cm 0cm, clip, width=\textwidth]{./uml/output/SD_Sem2_002}
+%        \caption{The \verb|endSale| system operation }
+        \caption{The endSale system operation }
+        \label{fig:SD2}
+    \end{center}
+\end{figure}
+
+Figure ~\ref{fig:SD3} shows the operation discountRequest.
+To see if the customer has a right to a discount their costumer identifier and the saleDTO is sent to the DiscountRegister.
+If a discount is applied to the sale, the total price is reduced and a new saleDTO, with the updated price, is returned.
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[trim=0cm 0cm 30cm 0cm, clip, width=\textwidth]{./uml/output/SD_Sem2_003}
+        \caption{The discoutRequest system operation }
+        \label{fig:SD3}
+    \end{center}
+\end{figure}
+
+Figure ~\ref{fig:SD4} shows the operation addPayment where the system creates and handles the payment,
+registers it in the CashRegister,
+logs it in the SaleLog and updates the external systems \mintinline{java}{InventorySystem} and
+\mintinline{java}{AccountingSystem} with the information from the sale.
+Then a receipt, including the sale information, is printed.
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{./uml/output/SD_Sem2_004}
+%        \caption{The \verb|addPayment| system operation }
+        \caption{The addPayment system operation }
+        \label{fig:SD4}
+    \end{center}
+\end{figure}
+
+Figure ~\ref{fig:SD5} shows the operation startUp, which is the Main.
+The diagram illustrates how the system creates instances of other classes; Printer and SaleLog.
+Then an instance of Controller is created,
+which handles the creation of the CashRegister and external systems;
+\mintinline{java}{AccountingSystem}, \mintinline{java}{DiscountSystem} and \mintinline{java}{InventorySystem}.
+Lastly, Main creates the View
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[trim=0cm 0cm 0cm 0cm, clip, width=\textwidth]{./uml/output/SD_Sem2_005}
+%        \caption{The Start Up \verb|Main| system operations}
+        \caption{The Start Up Main system operations}
+        \label{fig:SD5}
+    \end{center}
+\end{figure}
+
+%    \restoregeometry
+\chapter{Discussion}
+\label{sec:discussion}
+\section{Sequence Diagrams over Communication Diagrams}
+\label{sec:sequence-diagrams-over-communication-diagrams}
+As mentioned earlier, the group found Sequence diagrams to be more notationally rich and advantageous
+over communication diagrams.
+For example, it is easier to see the ''call-flow sequence'' with sequence
+diagrams -- since they simply read from top
+to bottom.
+With communication diagrams one must read the sequence numbers which were,
+sometimes, hard to follow.
+
+Additionally, the group chose Sequence diagrams over
+Communication diagrams for the following reasons:
+\begin{enumerate}
+    \item Clearer visualization of the timeline: Sequence diagrams provide a clear
+    representation of the temporal ordering of interactions, making it easier for
+    the team to understand the chronological flow of events in the system.
+    \item Better focus on message exchanges: Sequence diagrams place more emphasis on the
+    message exchanges between objects, which the group found particularly
+    important in a \emph{Point of Sale system}, where understanding the order of interactions can
+    help us a great deal when we start programming the system.
+    \item More intuitive representation of object lifelines:
+    In Sequence diagrams, object
+    lifelines are visually clear and make it easy to see when an object is created,
+    used, called etc., allowing for a better understanding of object lifecycles
+    and their interactions with other objects.
+\end{enumerate}
+
+However, naturally, Sequence diagrams have their limitations.
+For instance, new objects have to always be added to the right edge, which is
+quite limiting—it quickly consumes and exhausts right-edge space on a page.
+Free space in the vertical dimension is not efficiently used, potentially
+leading to cluttered diagrams and reduced readability.
+
+In conclusion, the group decided to use Sequence diagrams over Communication
+diagrams due to their clearer representation of the call-flow sequence,
+improved visualization of the timeline and better focus on message exchanges.
+Despite their limitations, such as the inefficient use of space,
+Sequence diagrams provide more intuitive
+object lifeline representation, enhanced readability and maintainability.
+
+
+%\section{The Start Up Layer}
+
+\section*{Open Issues}
+\emph{Which constructors should be package private and which must be public?}
+    We chose to make all constructors, other than \mintinline{java}{Receipt} and \mintinline{java}|Amount}, as public.
+    There was no need for \mintinline{java}{Receipt} and \mintinline{java}{Amount} to be other than package private since they
+were only created by objects withing the same layer and package; the \emph{model}.
+    But why not \mintinline{java}{CashPayment}, \mintinline{java}|Item| and \mintinline{java}{Amount}?
+
+    We also had a hard time knowing when, where and how to model the external systems;
+\mintinline{java}{DiscountRegister}, \mintinline{java}{AccountingSystem}, \mintinline{java}{InventorySystem}.
+    Which attributes should they have?
+    Shall we instantiate objects out of them, and if so, when and where?
+    It was especially tricky to know which methods and attributes to add to the \mintinline{java}{DiscountRegister}.
+    It was hard to read how to implement the business rules.
+
+We chose to put that and the other discussion to rest until we start programming, i.e.\ until the next task.
+And hope that much of the issues get clarified during the seminars.
+
+\section*{Added discussion, seminar 5}
+While working on this task the group have had several discussions about classes, attributes, and methods.
+This lead to a lot of designing and re-designing; for instance there was attributes created to later on be deleted or moved to other classes.
+We also created new classes, that was not in the diagrams from seminar 1.
+An example of that is ''Amount'' and ''CashPayment''.
+In order to make the system more flexible, these are easier to exchange in the future if they are handled as objects in the system.
+Another example is the attribute ''quantity'' that initially was an attribute for Sale,
+but was removed and added as an attribute to Item instead, since it is the quantity of Item that is handled.
+Sale then access ''quantity'' through an list of Items.
+
+There were also a few classes whose being or not being was hard to decide on, such as the class IntegrationHandler.
+The purpose of the class IntegrationHandler would have been to make the calls that are currently made by
+Controller to the external systems.
+This method can be good in larger systems to separate calls to external systems from the actual system functionality.
+However, in a system that is as small as ours, it is still a question of not making it over complicated,
+and we found it a bit cluttering to add in our diagrams.
+Therefore, we decided to not add the IntegrationHandler, and let the Controller handle the external calls instead.
+
+The classes representing the external systems
+–- \mintinline{java}{InventorySystem}, \mintinline{java}{AccountingSystem} and \mintinline{java}{DiscountRegister} –- are not
+given any attributes since they are not a part of the design of this system.
+Calls to them are, however, returning DTOs.
+This is because we are expecting that if a call is made to an external system,
+it would not send anything but information in this specific case.
+
+The observant reader will, however, detect that the class \mintinline{java}{DiscountDTO} have the two attributes ''customerID''and ''rules''
+These attributes were added since that information is provided in the Requirement Specification.
+There was discussion about if the DiscountDTO should have attributes at all,
+but since it is specified that discount is decided by customerID and rules, we decided to add it, as a point where the system can be further developed.
+
+While making the diagrams, we initially sent Printer as an argument while creating Sale.
+In the beginning of the process, this made sense since the printer is used to print the sale information on the receipt.
+However, when we were almost done with the diagrams,
+we reflected on the matter and decided that it would be better to have it sent from the Controller when it is time to print,
+rather than when the sale is initiated, and then moved it accordingly.
+This is shown in figure ~\ref{fig:SD4} (1.7 \mintinline{java}{printReceipt(printer:Printer) : void)}.
+
+The creation of Printer and SaleLog was also moved from the Controller to Main.
+The further we got designing the system,
+it made more sense to have these two instances created in Main instead,
+since they are not a part of key system functionality.
+
+While looking at the diagrams, it appears that a lot of the methods are voids and may be package private.
+This shows that their purpose is, for example, to change variables within the class.
+Methods that are private or package private were not put in the diagrams since they are not yet relevant
+for the larger image of system operations.
+
+\end{document}

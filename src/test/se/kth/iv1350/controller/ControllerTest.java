@@ -2,6 +2,7 @@ package se.kth.iv1350.controller;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import se.kth.iv1350.POSTestSuperClass;
 import se.kth.iv1350.model.*;
@@ -120,20 +121,62 @@ class ControllerTest extends POSTestSuperClass {
     }
 
     @Test
-    void testItemThatDoesNotExist() {
-        int incorrectItemID = -1;
+    @DisplayName("Alternative flow 3a, register invalid item - checked exception")
+    void testRegInvalidItemID() {
+        int invalidID = 150;
+
         try {
             instance.startSale();
-            assertThrows(ItemNotFoundInItemRegistryException.class,() -> instance.registerItem(incorrectItemID));
-            instance.registerItem(incorrectItemID);
+        } catch (OperationFailedException ex) {
+            fail("Not part of test."
+                    + "Unable to initialize sale."
+                    + "Error message: %s".formatted(ex.getMessage()));
+        }
+
+        assertThrows(ItemNotFoundInItemRegistryException.class,() -> instance.registerItem(invalidID));
+
+        try {
+            instance.registerItem(invalidID);
+            fail("No exception was thrown");
         } catch(OperationFailedException ex) {
-            fail("Wrong exception called" +
+            fail("Wrong exception" +
                     "Error message: %s".formatted(ex.getMessage()));
         } catch (ItemNotFoundInItemRegistryException ex) {
             assertTrue(ex.getMessage()
-                    .contains("Unable to find item with ID \"%d\" in the inventory system.".formatted(incorrectItemID)));
+                    .contains("Unable to find item with ID \"%d\" in the inventory system.".formatted(invalidID)));
+            assertEquals(ex.getItemIDNotFound(),invalidID,
+                    "Wrong item ID is specified: "
+                            + ex.getItemIDNotFound());
         }
     }
+
+    @Test
+    @DisplayName("Operation failure")
+    void testOperationFailure() {
+        int dbFailureSimulatingID = 404;
+        try {
+            instance.startSale();
+        } catch (OperationFailedException ex) {
+            fail("Not part of test."
+                    + "Unable to initialize sale."
+                    + "Error message: %s".formatted(ex.getMessage()));
+        }
+
+        assertThrows(OperationFailedException.class,() -> instance.registerItem(dbFailureSimulatingID));
+
+        try {
+            instance.registerItem(dbFailureSimulatingID);
+            fail("No exception was thrown");
+        } catch(ItemNotFoundInItemRegistryException ex) {
+            fail("Wrong exception" +
+                    "Error message: %s".formatted(ex.getMessage()));
+        } catch (OperationFailedException ex) {
+            assertTrue(ex.getMessage()
+                    .contains("No connection to inventory system"));
+        }
+    }
+
+
     @Test
     void testNoConnectionToInventorySystem() {
         try {
