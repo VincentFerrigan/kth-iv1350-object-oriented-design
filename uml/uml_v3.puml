@@ -513,90 +513,94 @@ note top: getters, toString and equals are included as methods for all DTO attri
 
 @startuml
 skinparam style strictuml
-participant ":Main" as Main
-participant "printer:Printer" as printer
-participant "registerCreator:RegisterCreator" as registerCreator
-participant "saleLog:SaleLog" as saleLog
-participant ":AccountingSystem" as AccountingSystemFlatFileDB
+hide unlinked
+participant ": Main" as Main
 
-participant ":ItemRegistry" as ItemRegistryFlatFileDB
-participant "contr:Controller" as contr
-participant "cashRegister : CashRegister" as cashRegister
-participant "view : View" as view
+participant "<<singleton>>\n: RegisterCreator" as registerCreator
+participant "saleLog\n: SaleLog" as saleLog
+participant "<<interface>>\n: AccountingSystem" as AccountingSystemFlatFileDB
+participant "<<interface>>\n: CustomerRegistry" as CustomerRegistry
+participant "<<interface>>\n: ItemRegistry" as ItemRegistryFlatFileDB
+
+participant "view \n: View" as view
+participant "<<singleton>>\nerrorMessageHandler\n: ErrormessageHandler" as errorMessageHandler
+participant "contr\n: Controller" as contr
+participant "saleObservers \n: List<SaleObserver>" as saleObservers
+participant "cashRegister\n: CashRegister" as cashRegister
+participant "printer\n: Printer" as printer
+participant "<<singleton>>\nlogger \n: ErrorFileLogHandler" as logger
 ' user -> Main: main()
 activate Main
 create printer
 autonumber 1
-Main -[dashed]->> printer : <<create>>\n printer = Printer() : Printer
-
-create registerCreator
-autonumber 2
-Main -[dashed]->> registerCreator : <<create>>\n registerCreator = RegistryHandler() : RegistryHandler
-activate registerCreator
-
-autonumber 2.1
-create saleLog
-registerCreator -[dashed]->> saleLog : <<create>>\n saleLog = SaleLog() : SaleLog
-
-create AccountingSystemFlatFileDB
-autonumber 2.2
-registerCreator -> AccountingSystemFlatFileDB : <<static>>\ngetInstance() : AccountingSystemFlatFileDB
-
-create CustomerRegistry
-autonumber 2.3
-registerCreator -> CustomerRegistry : <<static>>\ngetInstance() : CustomerRegistry
-'activate CustomerRegistryFlatFileDB
-'deactivate CustomerRegistryFlatFileDB
-
-create ItemRegistryFlatFileDB
-autonumber 2.4
-registerCreator -> ItemRegistryFlatFileDB: <<static>>\ngetInstance() : ItemRegistryFlatFileDB
-'activate ItemRegistry
-'deactivate ItemRegistry
-deactivate registerCreator
+Main -[dashed]->> printer : <<create>>\nprinter = Printer() : Printer
 
 autonumber 3
 create contr
-Main -[dashed]->> contr : <<create>>\n contr = Controller(printer : Printer, registerCreator : RegistryHandler) : Controller
+Main -[dashed]->> contr : <<create>>\ncontr =\nController(printer : Printer) : Controller
 activate contr
 
-autonumber 3.1
-contr -> registerCreator : saleLog = getSaleLog() : SaleLog
-activate registerCreator
-deactivate registerCreator
-
-autonumber 3.2
-contr -> registerCreator : accountingSystem = getAccountingSystem() : AccountingSystemFlatFileDB
-activate registerCreator
-deactivate registerCreator
-
-autonumber 3.3
-contr -> registerCreator : customerRegistry = getCustomerRegistry() : CustomerRegistry
-activate registerCreator
-deactivate registerCreator
-
-autonumber 3.4
-contr -> registerCreator : itemRegistry = getItemRegistry() : ItemRegistryFlatFileDB
-activate registerCreator
-deactivate registerCreator
 
 create cashRegister
-autonumber 3.5
-contr -[dashed]->> cashRegister : <<create>>\n cashRegister = CashRegister(initialAmount: int) : CashRegister
-'activate cashRegister
-'deactivate cashRegister
-'TODO ska jag lägga till att contr skapar en Lista för SaleObservers?
+autonumber 3.1
+contr -[dashed]->> cashRegister : <<create>>\n cashRegister = \nCashRegister(initialAmount: int) : CashRegister
+autonumber 3.2
+contr -> logger : logger =\n ErrorFileLogHandler.getInstance() : Logger
+activate logger
+deactivate logger
+create saleObservers
+autonumber 3.3
+contr -[dashed]->> saleObservers : <<create>>\n observers =\nArrayList<SaleObserver>() : ArrayList
+deactivate contr
+
+
+autonumber 4
+Main -> contr : addCashRegisterObserver(\n\tTotalRevenueFileOutput.getInstance() : CashRegisterObserver\n) : void
+activate contr
+autonumber 4.1
+contr -> cashRegister : addCashRegisterObserver(\n\tobserver : CashRegisterObserver\n) : void
+activate cashRegister
+deactivate cashRegister
+
 deactivate contr
 
 create view
-autonumber 4
+autonumber 5
 Main -[dashed]->> view : <<create>>\n View(contr: Controller):View
 activate view
 
-autonumber 5
-view -> contr : addSaleObserver(new SaleObserver() : SaleObserver) : void
+autonumber 5.1
+view -> contr : addSaleObserver(\n\tnew RunningSaleView() : SaleObserver\n) : void
 activate contr
+autonumber 5.1.1
+contr -> saleObservers : add(saleObserver: SaleObserver) : boolean
+activate saleObservers
+deactivate saleObservers
 deactivate contr
+autonumber 5.2
+view -> contr : addSaleObserver(\n\tnew EndOfSaleView() : SaleObserver\n) : void
+activate contr
+autonumber 5.2.1
+contr -> saleObservers : add(saleObserver: SaleObserver) : boolean
+activate saleObservers
+deactivate saleObservers
+deactivate contr
+autonumber 5.3
+view -> contr : addCashRegisterObserver(\n\tnew TotalRevenueView() : CashRegisterObserver\n) : void
+activate contr
+autonumber 5.3.1
+contr -> cashRegister : addCashRegisterObserver(\n\tobserver : CashRegisterObserver\n) : void
+activate cashRegister
+deactivate cashRegister
+deactivate contr
+autonumber 5.4
+view -> logger : logger =\nErrorFileLogHandler.getInstance() : Logger
+activate logger
+deactivate logger
+autonumber 5.4
+view -> errorMessageHandler : logger =\nErrorMessageHandler.getInstance() : Logger
+activate errorMessageHandler
+deactivate errorMessageHandler
 deactivate view
 deactivate Main
 'TODO ska jag lägga till att view skapar observers?
@@ -620,6 +624,7 @@ participant "saleObservers : List<SaleObserver>" as saleObservers
 
 autonumber 1
 View -> contr : startSale(): void
+activate View
 activate contr
 
 autonumber 1.1
@@ -628,7 +633,7 @@ contr -[dashed]->> currentSale :  <<create>>\n currentSale = Sale() : Sale
 activate currentSale
 autonumber 1.1.1
 create saleObservers
-currentSale -[dashed]->> saleObservers : <<create>>\n observers = ArrayList<SaleObserver>() : ArrayList
+currentSale -[dashed]->> saleObservers : <<create>>\n observers =\nArrayList<SaleObserver>() : ArrayList
 autonumber 1.1.2
 currentSale -> DiscountFactory : <<static>>\n discountFactory = getInstance() : DiscountFactory
 activate DiscountFactory
@@ -658,6 +663,7 @@ deactivate saleObservers
 deactivate currentSale
 
 deactivate contr
+deactivate View
 
 autonumber stop
 @enduml
@@ -706,12 +712,54 @@ loop moreItems
             alt existingShoppingCartItem != null
                 autonumber 1.2.2
                 currentSale -> oldItem : addToQuantity(quantity : int) : void
-            ref over shoppingCart : Notify Sale Observers
+            ref over currentSale : \t\t Notify Sale Observers
                 activate oldItem
                 deactivate oldItem
             else
-                autonumber 1.2.1
+            ref over currentSale : \t\t Item not found in Shopping Cart
+
+'        activate currentSale
+                autonumber stop
+                    contr <<- currentSale : <<exception>>\nItemNotFoundInItemRegistryException
+                    contr <<- currentSale : <<exception>>\nItemRegistryException
+                    ref over contr : Notify Developer\l(Log error)
+
+             end
+'            autonumber 1.2.3
+'            currentSale -> currentSale
+'            activate currentSale
+'            deactivate currentSale
+            deactivate currentSale
+                autonumber stop
+                    View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
+                    ref over View : Notify User & Devloper \l(User by error message and developer by logging error)
+                    View <<- contr : <<exception>>\nOperationFailedException
+                    ref over View : Notify User\l(Error message)
+        autonumber stop
+
+        deactivate contr
+        deactivate View
+end
+
+autonumber stop
+@enduml
+@startuml
+skinparam style strictuml
+hide unlinked
+participant ": View" as View
+participant "contr\n: Controller" as contr
+participant "currentSale\n: Sale" as currentSale
+participant "shoppingCart\n: Map<Integer, ShoppingCartItem>" as shoppingCart
+participant ": RegistryHandler" as RegistryHandler
+'interface ": ItemRegistry" as ItemRegistry
+participant "<<interface>>\n: ItemRegistry" as ItemRegistry
+participant "existingShoppingCartItem \n: ShoppingCartItem" as oldItem
+participant "newShoppingCartItem\n: ShoppingCartItem" as newItem
+mainframe **sd** Item not found in Shopping Cart
+                activate currentSale
+                autonumber 1
                 currentSale -> RegistryHandler : itemInfo = RegistryHandler\n\t\t.getInstance()\n\t\t.getItemInfo(itemID : int) : ItemDTO
+'                activate currentSale
                 ref over RegistryHandler, ItemRegistry
                     Database call
                 end ref
@@ -721,47 +769,21 @@ loop moreItems
                 currentSale <<- RegistryHandler : <<exception>>\nItemRegistryException
                 deactivate RegistryHandler
 
-                autonumber 1.2.2
+                autonumber 1.2
                 currentSale -> currentSale : addItem(itemInfo : ItemDTO, quantity : int) : void
                 activate currentSale
-                autonumber 1.2.2.1
+                autonumber 1.2.1
                 create newItem
                 currentSale -[dashed]->> newItem : <<create>> \n newShoppingCartItem = \n ShoppingCartItem(itemInfo : ItemDTO, quantity : int) : ShoppingCartItem
                 activate newItem
-                ref over newItem : VAT Strategy
+                ref over newItem : \t\t\tVAT Strategy
                 autonumber stop
                  currentSale <<- newItem : <<exception>>\nPricingFailedException
                 deactivate newItem
                 currentSale -> shoppingCart : put(\n\titem.itemID():int, \n\tnewShoppingCartItem : ShoppingCartItem\n) : ShoppingCartItem
                 activate shoppingCart
                 deactivate shoppingCart
-            ref over shoppingCart : Notify Sale Observers
-            end
-                deactivate currentSale
-
-'        activate currentSale
-                autonumber stop
-                    contr <<- currentSale : <<exception>>\nItemNotFoundInItemRegistryException
-                    contr <<- currentSale : <<exception>>\nItemRegistryException
-                    ref over contr : notify developer, log error
-
-'            autonumber 1.2.3
-'            currentSale -> currentSale
-'            activate currentSale
-'            deactivate currentSale
-            deactivate currentSale
-                autonumber stop
-                    View <<- contr : <<exception>>\nItemNotFoundInInRegistryException
-                    ref over View : notify user, error message
-                    View <<- contr : <<exception>>\nOperationFailedException
-                    ref over View : notify user, error message
-        autonumber stop
-
-        deactivate contr
-        deactivate View
-end
-
-autonumber stop
+            ref over currentSale : \t\t Notify Sale Observers
 @enduml
 @startuml
 
@@ -802,6 +824,59 @@ loop for each CashRegisterObserver in cashRegisterObservers
 end loop
 
 @enduml
+@startuml
+skinparam style strictuml
+
+mainframe **sd** Notify User \l**sd** Notify Developer \l**sd** Notify User & Developer
+participant ": Controller" as Controller
+participant ": View" as View
+participant "errorMessageHandler\n: ErrormessageHandler" as errorMessageHandler
+participant "logger \n: ErrorFileLogHandler" as logger
+participant "logFile \n: PrintWriter" as logFile
+participant "exception \n: Exception" as exception
+
+group Notify User
+-> View : catch
+View -> errorMessageHandler : log(message : String) : void
+activate View
+activate errorMessageHandler
+deactivate errorMessageHandler
+deactivate View
+end
+
+group Notify Developer
+-> Controller : catch
+Controller -> logger : log(exception : Exception) : void
+activate Controller
+activate logger
+logger -> logFile : println(logMsgBuilder : StringBuilder)
+logger -> exception : printStackTrace(logFile : PrintWriter)
+logger -> logFile : println(\n\tSystem.getProperty("file.separator"\n) : String)
+deactivate logger
+deactivate logger
+deactivate Controller
+end
+
+group Notify User and Developer
+-> View : catch
+View -> View : writeToLogAndUI
+activate View
+View -> errorMessageHandler : log(message : String) : void
+activate errorMessageHandler
+deactivate errorMessageHandler
+
+View -> logger : log(exception : Exception) : void
+activate logger
+logger -> logFile : println(logMsgBuilder : StringBuilder)
+logger -> exception : printStackTrace(logFile : PrintWriter)
+logger -> logFile : println(\n\tSystem.getProperty("file.separator"\n) : String)
+deactivate logger
+deactivate View
+
+end
+
+@enduml
+
 @startuml
 skinparam style strictuml
 'title EndSale
