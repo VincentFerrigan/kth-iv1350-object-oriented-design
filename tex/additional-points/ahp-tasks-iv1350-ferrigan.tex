@@ -147,14 +147,20 @@ This enables testing classes in both the integration and util layer package.
 \end{longlisting}
 
 \section*{The overall Work-flow}
-\section*{Task 1, Inheritance}
-\section*{Task 2, Inheritance vs Composition}
-\section*{Task 3, Testing Output}
+To implement the template method pattern,
+there was a given pseudocode in the task that was used.
+The pseudocode contained a prescribed structure with methods, including error handling.
+This task was based on the template for the observer pattern from Seminar 4,
+so the given structure was followed.
+
+Several resources were used for solving both task 1 and task 2; the course textbook, The GoF Design Patterns
+and Clean Code -- A handbook of Agile Software Craftmanship.
+The latter was mostly used as a guide in implementing error and exception handling.
 
 \newpage
 \chapter{Result}
 \label{sec:result}
-The entire program, including the additional tasks can be found here on GitHub:
+The entire program, including the additional tasks can be found on GitHub:
 
 \subsubsection*{GitHub-Repo}
 \url{https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design}
@@ -194,6 +200,22 @@ acts as the template for cash register observers
 The class diagram for the observer and template method pattern
 is illustrated in figure ~\ref{fig:the-observers}.
 
+The protected abstract methods are the only methods that the subclasses \emph{must} override.
+Those are
+\mintinline{java}{doShowTotalRevenue(Amount totalRevenue, String timeStamp)}
+\mintinline{java}{handleErrors(Exception e)}.
+The former is a method that should show the total revenue and the latter should handle errors that are thrown.
+In other words, the only behaviour that may vary.
+Both Cash-Register observers display the total revenue and a time stamp.
+The creation of the time stamp
+\mintinline{java}{createTime}, and the try catch statement in
+\mintinline{java}{showTotalRevenue} are joint steps
+that are pulled up to the template base class.
+
+The constructor is considered a hook method that \emph{may} be override
+(for example, \mintinline{java}{TotalRevenueView} has but
+\mintinline{java}{TotalRevenueView} has not).
+
 As mentioned above, the template method
 is not only applied on the task at hand (revenue updates),
 but also for the observers that display sale details.
@@ -206,6 +228,91 @@ is demonstrated in all samples that are included in the README file,
 and therefore presented on the GitHub repository page.
 
 \section*{Task 2, Inheritance vs Composition}
+Both inheritance and composition can be used to extend or wrap functionality
+of existing classes.
+Inheritance allows one to create a subtype
+that can be used anywhere the superclass is expected,
+while composition allows you to control how you expose the wrapped functionality,
+and can also enable wrapping multiple objects or changing the wrapped object at runtime.
+
+The class
+\mintinline{java}{LoggingRandomAsRandom} extends
+Random and overrides the
+nextInt method to log whenever a new random number is generated.
+So does the quite silly example
+\mintinline{java}{LoggingRandomDiceNumbersISARandom}.
+
+
+\mintinline{java}{LoggingRandomHasRandom} wraps a
+Random instance and logs whenever a new number is generated.
+Its silly equivalent,
+\mintinline{java}{LoggingRandomDiceNumbersISARandom}.
+
+As seen in the examples above,
+both inheritance and composition can be used to extend or
+wrap functionality of existing classes.
+Inheritance allows you to create a subtype that can be
+used anywhere the superclass is expected,
+while composition allows you to control how you expose the
+wrapped functionality,
+and can also enable wrapping multiple objects or changing the
+wrapped object at runtime.
+
+\begin{longlisting}
+    \inputminted[
+        label=Random adapted with Inheritance,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=5,
+        lastline=12,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../additional/task2/LoggingRandomAsRandom.java}
+    \caption{Random adapted with inheritance. This class generates integers and prints them to System.out}
+    \label{listing:isa-a}
+\end{longlisting}
+\begin{longlisting}
+    \inputminted[
+        label=The Silly Inheritance examples,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=5,
+        lastline=12,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../additional/task2/LoggingRandomDiceNumbersISARandom.java}
+    \caption{If random only was able to generate numbers on a dice. Here implemented with inheritance.}
+    \label{listing:silly-isa-a}
+\end{longlisting}
+
+\begin{longlisting}
+    \inputminted[
+        label=Random adapted with Inheritance,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=5,
+        lastline=13,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../additional/task2/LoggingRandomHasRandom.java}
+    \caption{Random adapted with Composition. This class generates integers and prints them to System.out}
+    \label{listing:has-a}
+\end{longlisting}
+\begin{longlisting}
+    \inputminted[
+        label=The Silly Composite examples,
+        linenos=true,
+        bgcolor=lightgray,
+        firstline=5,
+        lastline=13,
+%        frame=single,
+        fontsize=\footnotesize,
+    ]{java}{../../additional/task2/LoggingRandomDiceNumbersHasRandom.java}
+    \caption{If random only was able to generate numbers on a dice.
+    Here implemented with composition}
+    \label{listing:silly-has-a}
+\end{longlisting}
+
 \section*{Task 3, Testing Output}
 
 %\begin{longlisting}
@@ -227,8 +334,38 @@ and therefore presented on the GitHub repository page.
 \chapter{Discussion}
 \label{sec:discussion}
 \section*{The Template Model}
+The Template Method Pattern is a design pattern that defines the skeleton of an algorithm in the base class but lets the extended classes override specific steps of the algorithm without changing its structure.
+Here's a summary of what makes the Template Method Pattern useful:
+\begin{enumerate}
+    \item Code Reuse -- eliminates duplicated code.
+    \item Consistency is assured since the identical steps of an algorithm are laid out in a single place (the template method in the parent class), ensuring that all implementations of the algorithm will behave consistently.
+    \item By keeping the high-level algorithm in the base class and giving subclasses only the ability to change certain details, you you can prevent subclasses from making radical changes to the algorithm or its resulting behavior.
+\end{enumerate}
+The refactoring of the Sale Observers to utilize the Template method proved to be particularly beneficial.
+There, more steps were added to the base template class than for the Cash Register Observers.
+
 \section*{Inheritance vs Composition}
-\section*{Testing Output}
+In GoF one can read that there's a principle in object-oriented design known as the
+\emph{''composition over inheritance''-principle}.
+This principle suggests that it can be better to achieve code reuse and flexibility by composing objects—i.e., by having instances of other classes as members of your class—rather than inheriting from a parent class.
+
+\subsubsection*{The IS-A relationship}
+When
+\mintinline{java}{LoggingRandomAsRandom} extends Random, it forms an ''is-a'' relationship.
+This means
+\mintinline{java}{LoggingRandomAsRandom} is a Random.
+It has all the methods that Random has, and any methods we add or override.
+The problem comes when Random has a method that we don't want LoggingRandomAsRandom to have, or if Random changes in a future Java version in a way that breaks our class.
+
+\subsubsection*{The HAS-A relationship}
+When we use composition to create
+\mintinline{java}{LoggingRandomHasRandom}, we form a ''has-a'' relationship.
+\mintinline{java}{LoggingRandomHasRandom} isn't a Random, it has a Random.
+It only exposes the methods we choose to expose, and it doesn't have to have any methods that don't make sense for it.
+We can control how the Random's methods are used, or even use methods from multiple objects.
+
+While inheritance can be simpler and more straightforward for simple cases, composition can provide more flexibility, better encapsulation, and make your code more resilient to changes in the classes you're reusing code from.
+This is most probably why composition is often preferred over inheritance.
 
 %\appendix
 %\chapter{UML -- The Refined Design}
