@@ -7,10 +7,6 @@ import se.kth.iv1350.model.TotalRevenue;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Locale;
 
 /**
  * A Singleton that creates an instance responsible for
@@ -48,10 +44,12 @@ public class TotalRevenueFileOutput extends TotalRevenue {
     /**
      * Creates a string builder with total revenue, that is to be written to a file.
      * @param totalRevenue the new total revenue
+     * @param timeStamp formatted time information, identifying
+     *                  when the info was displayed
      */
     @Override
-    protected void doShowTotalRevenue(Amount totalRevenue) {
-       revenueLogger.println("%s %s: %s".formatted("Total revenue ", createTime(), totalRevenue));
+    protected void doShowTotalRevenue(Amount totalRevenue, String timeStamp) {
+       revenueLogger.println("%s %s ; %s".formatted("Total revenue" , timeStamp, totalRevenue));
     }
 
     /**
@@ -63,10 +61,4 @@ public class TotalRevenueFileOutput extends TotalRevenue {
         logger.log(ex);
     }
 
-    private String createTime() {
-        Locale locale = new Locale("sv", "SE");
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
-        LocalDateTime now = LocalDateTime.now();
-        return now.format(formatter);
-    }
 }
