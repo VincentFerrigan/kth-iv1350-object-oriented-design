@@ -265,8 +265,8 @@ TotalRevenue <|- TotalRevenueView
 TotalRevenue <|- TotalRevenueFileOutput
 
 SaleObserver <|-[dashed]- SaleView
-SaleView <|-- EndOfSaleView
-SaleView <|-- RunningSaleView
+SaleView <|- EndOfSaleView
+SaleView <|- RunningSaleView
 
 Logger <|-[dashed]- ErrorFileLogHandler
 Logger <|-[dashed]- ErrorMessageHandler
