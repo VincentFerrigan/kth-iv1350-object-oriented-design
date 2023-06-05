@@ -40,47 +40,47 @@ One shall be able to
 # UML
 ## Class Diagrams (CD)
 ### CD
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_cd.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_cd.png)
 
 ### CD, DTO
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_cd_dto.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_cd_dto.png)
 
 ### Ref - CD, Integration
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_cd_ref_integration.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_cd_ref_integration.png)
 
 ### Ref - CD, Pricing
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_cd_ref_pricing.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_cd_ref_pricing.png)
 
 ## Sequence Diagrams (SD)
 ### SD, Start up, Main System Operation
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_start_up.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_start_up.png)
 
 ### SD, Start up, Main System Operation
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_start_up.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_start_up.png)
 
 ### SD, Start Sale System Operation
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_start_sale.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_start_sale.png)
 
 ### SD, Register Item System Operation
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_register_item.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_register_item.png)
 
 ### Ref - SD, Item not found
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_ref_item_not_found.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_ref_item_not_found.png)
 
 ### Ref - SD, Notify Sale Observers
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_ref_notify_sale_observers.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_ref_notify_sale_observers.png)
 
 ### Ref - SD, Notify Users and Developers
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_ref_notify_user_developer.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_ref_notify_user_developer.png)
 
 ### SD, End of Sale
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_end_of_sale.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_end_of_sale.png)
 
 ### SD, Register Customer to Sale
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_register_customer.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_register_customer.png)
 
 ### SD, Payment System Operation
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_pay.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_pay.png)
 
 ### Ref - SD, Notify Cash Register Observer
-![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/samples/uml/uml_sd_ref_notify_cash_register.png)
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_ref_notify_cash_register.png)
