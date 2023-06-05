@@ -1,0 +1,77 @@
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam package {
+BackgroundColor LightYellow
+}
+'top to bottom direction
+left to right direction
+skinparam ClassAttributeIconSize 0
+
+package model {
+  abstract class TotalRevenue {
+# TotalRevenue
+# {abstract} doShowTotalRevenue(totalRevenue : Amount)
+# {abstract} handleErrors(e : Exception) : void
+}
+  interface SaleObserver <<interface>> {
++ updateSale(sale : LimitedSaleView)
+  }
+  interface CashRegisterObserver <<interface>> {
++ updateRevenue(totalRevenue : Amount) : void
+  }
+}
+
+package view {
+  abstract class SaleView {
+  - listOfShoppingCartItems : List<ShoppingCartItem>
+  - sale :LimitedSaleView
+  # SaleView()
+  # createSaleItemsInfoString() : String
+  # addNewSaleInfoDetails(sale : LimitedSaleView) : void
+  # {abstract} printCurrentState(sale : LimitedSaleView) : void
+  # {abstract} sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+  # {abstract} shouldUpdate(isComplete : boolean) : boolean
+  }
+  class EndOfSaleView {
+  # printCurrentState(sale : LimitedSaleView) : void
+  # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+  # shouldUpdate(isComplete : boolean) : boolean
+  - createDiscountInfoString(discount : Amount, discountInfo : String) : void
+    }
+  class TotalRevenueView {
+  # doShowTotalRevenue(totalRevenue : Amount)
+  # handleErrors(e : Exception) : void
+  }
+  class RunningSaleView {
+  # printCurrentState(sale : LimitedSaleView) : void
+  # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
+  # shouldUpdate(isComplete : boolean) : boolean
+  }
+}
+package integration {
+  class TotalRevenueFileOutput {
+  - FILE_SEPARATOR  : String
+  - FILE_PATH : String
+  - LOG_FILE_NAME : String
+  - locale : Locale
+  - formatter : DateTimeFormatter
+  - revenueLogger : PrintWriter
+  - logger : ErrorFileLogHandler
+  + <<create>>TotalRevenueFileOutput() : TotalRevenueFileOutput {exception IOException}
+  # doShowTotalRevenue(totalRevenue : Amount)
+  # handleErrors(e : Exception) : void
+  - createTime() : String
+  }
+}
+
+'interfaces
+CashRegisterObserver <|-[dashed]- TotalRevenue
+TotalRevenue <|- TotalRevenueView
+TotalRevenue <|- TotalRevenueFileOutput
+
+SaleObserver <|-[dashed]- SaleView
+SaleView <|-- EndOfSaleView
+SaleView <|-- RunningSaleView
+
+@enduml
