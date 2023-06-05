@@ -15,11 +15,11 @@ public class TotalRevenueView extends TotalRevenue {
      * @param totalRevenue the new total revenue
      */
     @Override
-    protected void doShowTotalRevenue(Amount totalRevenue) {
+    protected void doShowTotalRevenue(Amount totalRevenue, String timeOfUpdate) {
         System.out.println("");
-        System.out.println("--------------- Revenue update follows --------------");
-        System.out.println("%-40s%s".formatted("Total revenue:", totalRevenue));
-        System.out.println("--------------- End of Revenue update ---------------");
+        System.out.println("--------------- Revenue update follows -------------");
+        System.out.println("%s%s%-7s%s".formatted("Total revenue, ", timeOfUpdate," : ", totalRevenue));
+        System.out.println("--------------- End of Revenue update --------------");
     }
 
     /**
