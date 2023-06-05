@@ -11,8 +11,9 @@ skinparam ClassAttributeIconSize 0
 package model {
   abstract class TotalRevenue {
 - showTotalRevenue(totalRevenue : Amount)
+- createTime() : String
 # <<create>>TotalRevenue ()
-# {abstract} doShowTotalRevenue(totalRevenue : Amount)
+# {abstract} doShowTotalRevenue(totalRevenue : Amount, timeStamp : String)
 # {abstract} handleErrors(e : Exception) : void
 }
   interface SaleObserver <<interface>> {
@@ -46,7 +47,7 @@ package view {
   # shouldUpdate(isComplete : boolean) : boolean
   }
   class TotalRevenueView {
-  # doShowTotalRevenue(totalRevenue : Amount)
+  # doShowTotalRevenue(totalRevenue : Amount, String timeStamp)
   # handleErrors(e : Exception) : void
   }
 }
@@ -57,9 +58,8 @@ package integration {
   - LOG_FILE_NAME : String
   - revenueLogger : PrintWriter
   - logger : ErrorFileLogHandler
-  # doShowTotalRevenue(totalRevenue : Amount)
+  # doShowTotalRevenue(totalRevenue : Amount, timeStamp : String)
   # handleErrors(e : Exception) : void
-  - createTime() : String
   }
 }
 
