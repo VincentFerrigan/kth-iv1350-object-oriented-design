@@ -84,3 +84,8 @@ One shall be able to
 
 ### Ref - SD, Notify Cash Register Observer
 ![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_sd_ref_notify_cash_register.png)
+
+## Task 1 - Inheritance, refactoring to template method  
+![](https://github.com/VincentFerrigan/kth-iv1350-object-oriented-design/blob/main/output/uml/uml_adp_tasks.png)
+Since the observers perform similar steps in the same order,
+the Template Method design-pattern can be applied. This UML-example is an extract from the main class diagram.

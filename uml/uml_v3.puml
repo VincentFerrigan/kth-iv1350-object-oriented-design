@@ -152,6 +152,12 @@ package model {
         - sale : Sale
         + <<create>> LimitedSaleViewWrapper(sale : Sale) : LimitedSaleViewWrapper
     }
+    abstract class TotalRevenue {
+        - showTotalRevenue(totalRevenue : Amount)
+        # TotalRevenue
+        # {abstract} doShowTotalRevenue(totalRevenue : Amount)
+        # {abstract} handleErrors(e : Exception) : void
+    }
 }
 package view {
     class EndOfSaleView {
@@ -167,19 +173,10 @@ package view {
         - contr: Controller
         + <<create>> View(contr : Controller) : View
     }
-    abstract class TotalRevenue {
-        # TotalRevenue
-        # {abstract} doShowTotalRevenue(totalRevenue : Amount)
-        # {abstract} handleErrors(e : Exception) : void
-    }
-    class TotalRevenueView {
-        # doShowTotalRevenue(totalRevenue : Amount)
-        # handleErrors(e : Exception) : void
-    }
     abstract class SaleView {
         - listOfShoppingCartItems : List<ShoppingCartItem>
         - sale :LimitedSaleView
-        # SaleView()
+        # <<create>>SaleView()
         # createSaleItemsInfoString() : String
         # addNewSaleInfoDetails(sale : LimitedSaleView) : void
         # {abstract} printCurrentState(sale : LimitedSaleView) : void
@@ -190,6 +187,10 @@ package view {
         # printCurrentState(sale : LimitedSaleView) : void
         # sortShoppingCart(listOfShoppingCartItems : List<ShoppingCartItem>) : void
         # shouldUpdate(isComplete : boolean) : boolean
+    }
+    class TotalRevenueView {
+        # doShowTotalRevenue(totalRevenue : Amount)
+        # handleErrors(e : Exception) : void
     }
 }
 
@@ -233,15 +234,12 @@ package integration {
         + printReceipt(receipt : Receipt) : void
          + printSaleLog(saleLog : SaleLog) : void
     }
-    class TotalRevenueFileOutput {
+    class TotalRevenueFileOutput <<singleton>> {
         - FILE_SEPARATOR  : String
         - FILE_PATH : String
         - LOG_FILE_NAME : String
-        - locale : Locale
-        - formatter : DateTimeFormatter
         - revenueLogger : PrintWriter
         - logger : ErrorFileLogHandler
-        + <<create>>TotalRevenueFileOutput() : TotalRevenueFileOutput {exception IOException}
         # doShowTotalRevenue(totalRevenue : Amount)
         # handleErrors(e : Exception) : void
         - createTime() : String

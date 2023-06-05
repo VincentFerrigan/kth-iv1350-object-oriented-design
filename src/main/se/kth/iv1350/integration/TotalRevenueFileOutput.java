@@ -21,8 +21,6 @@ public class TotalRevenueFileOutput extends TotalRevenue {
     private static final String FILE_SEPARATOR  = System.getProperty("file.separator");
     private final String FILE_PATH = System.getProperty("se.kth.iv1350.log.file.location");
     private static final String LOG_FILE_NAME = System.getProperty("se.kth.iv1350.log.file.revenue_log");
-    private Locale locale = new Locale("sv", "SE");
-    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
     private PrintWriter revenueLogger;
     private final ErrorFileLogHandler logger;
 
@@ -66,6 +64,8 @@ public class TotalRevenueFileOutput extends TotalRevenue {
     }
 
     private String createTime() {
+        Locale locale = new Locale("sv", "SE");
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
         LocalDateTime now = LocalDateTime.now();
         return now.format(formatter);
     }

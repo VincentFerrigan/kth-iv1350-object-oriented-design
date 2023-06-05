@@ -3,7 +3,11 @@ package se.kth.iv1350.view;
 import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.TotalRevenue;
 
-// TODO UML:a och skriva JavaDocs
+/**
+ * Shows the total revenue, each time it has changed.
+ * It's a dummy implementation that prints to
+ * <code>System.out</code>
+ */
 public class TotalRevenueView extends TotalRevenue {
 
     /**
@@ -18,10 +22,13 @@ public class TotalRevenueView extends TotalRevenue {
         System.out.println("--------------- End of Revenue update ---------------");
     }
 
+    /**
+     * Handles errors that are thrown.
+     * @param ex the exception thrown
+     */
     @Override
-    protected void handleErrors(Exception e) {
-
+    protected void handleErrors(Exception ex) {
+        ErrorMessageHandler.getInstance().log("Unable to show total revenue, " +
+                "please contact help desk");
     }
-
-
 }
