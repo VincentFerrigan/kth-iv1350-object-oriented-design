@@ -40,7 +40,6 @@ public class Main {
             View view = new View(contr);
 
             // # BASIC FLOW
-            clearConsole();
             view.basicFlow();
 
             // # ALTERNATIVE FLOWS
@@ -48,16 +47,11 @@ public class Main {
             view.alternativeFlow3B();
             view.alternativeFlow3C();
             view.alternativeFlow9a();
-            view.basicFlowWithUnCheckedExceptions();
+            view.alternativeFlowWithUnCheckedExceptions();
 
         } catch (IOException ex) {
             System.out.println("Unable to start the application");
             ex.printStackTrace();
         }
-    }
-    private final static void clearConsole()
-    {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
     }
 }

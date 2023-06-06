@@ -1,6 +1,5 @@
 package se.kth.iv1350.integration;
 
-import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Sale;
 
 import java.util.ArrayList;
@@ -38,5 +37,13 @@ public class SaleLog {
             }
         }
         return salesWithSpecifiedCustomerID;
+    }
+
+    /**
+     * Gets a list of all logged sales.
+     * @return A {@link List<Sale>} of all logged sales.
+     */
+    public List<Sale> getSales() {
+        return sales;
     }
 }

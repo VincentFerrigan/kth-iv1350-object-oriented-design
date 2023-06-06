@@ -55,7 +55,7 @@ class SaleTest extends POSTestSuperClass {
             // cashRegister.addCashRegisterObserver(new TotalRevenueView());
         } catch (PricingFailedException ex) {
         // Not part of the test
-             fail("No exception should be thrown, unable to set up the ControllerTest. "
+             fail("No exception should be thrown, unable to set up the SaleTest. "
                      + "%s".formatted(ex.getMessage()));
         }
     }
@@ -68,7 +68,7 @@ class SaleTest extends POSTestSuperClass {
     }
 
     @Test
-    @DisplayName("Alternative flow 3a, add item - checked exception")
+    @DisplayName("Alternative flow 3a, add item - checked exception, ItemNotFoundInItemRegistryException")
     void testAddInvalidItemID() {
         int invalidID = 150;
         assertThrows(ItemNotFoundInItemRegistryException.class, () -> instance.addItem(invalidID, 1));
@@ -89,7 +89,7 @@ class SaleTest extends POSTestSuperClass {
     }
 
     @Test
-    @DisplayName("Unchecked exception, database failure.")
+    @DisplayName("Unchecked exception - database failure, OperationFailedException")
     void testUncheckedException() {
         int dbFailureSimulatingID = 404;
         assertThrows(ItemRegistryException.class, () -> instance.addItem(dbFailureSimulatingID, 1));

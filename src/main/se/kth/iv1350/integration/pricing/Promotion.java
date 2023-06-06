@@ -4,8 +4,6 @@ import se.kth.iv1350.model.Amount;
 import se.kth.iv1350.model.Customer;
 import se.kth.iv1350.model.Sale;
 
-// TODO Composite and make several???
-
 /**
  * A <code>Discount Strategy</code> that applies promotions
  * If total price is greater than a threshold the discount is applied depending.
