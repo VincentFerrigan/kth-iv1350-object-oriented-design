@@ -6,8 +6,8 @@ package se.kth.iv1350.model;
  * The class that is interested in such
  * notifications implements this interface, and the object
  * created with that class is registered with
- * {@link se.kth.iv1350.controller.Controller#addCashRegiserObserver(CashRegisterObserver)}
- * When the revenue in the Cash Register changes, that object’s {@link #updateRenue updateRenue}
+ * {@link se.kth.iv1350.controller.Controller#addCashRegisterObserver(CashRegisterObserver observer)}
+ * When the revenue in the Cash Register changes, that object’s {@link #updateRevenue(Amount totalRevenue)}
  * method is invoked.
  */
 public interface CashRegisterObserver {
