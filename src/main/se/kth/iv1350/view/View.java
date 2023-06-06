@@ -158,6 +158,9 @@ public class View {
     /**
      * Simulates a user input that generates calls to all system operations,
      * with an alternative flow, customer eligible for discount.
+     *
+     * Registers item 2 x id 8, 4 x id 8, 4 x id 10.
+     * Customer pays 1000 kr in Cash.
      */
     public void alternativeFlow9a() {
         try {
