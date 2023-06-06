@@ -55,7 +55,7 @@ class SaleTest extends POSTestSuperClass {
             // cashRegister.addCashRegisterObserver(new TotalRevenueView());
         } catch (PricingFailedException ex) {
         // Not part of the test
-             fail("No exception should be thrown, unable to set up the ControllerTest. "
+             fail("No exception should be thrown, unable to set up the SaleTest. "
                      + "%s".formatted(ex.getMessage()));
         }
     }
