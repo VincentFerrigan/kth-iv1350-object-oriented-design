@@ -29,23 +29,201 @@ public class View {
         errorMessageHandler = ErrorMessageHandler.getInstance();
     }
 
-    private void printStep(String step, String stepDescription, int pauseSeconds) throws InterruptedException {
-        System.out.println("%-5s %s".formatted(step, stepDescription));
-        Thread.sleep(1000 * pauseSeconds);
+    /**
+     * Simulates a user input that generates calls to all system operations.
+     * Registers item 5,1,3,9.
+     * Customer pays 200 kr in Cash.
+     */
+    public void basicFlow() {
+        try {
+            contr.startSale();
+            contr.registerItem(5);
+            contr.registerItem(1);
+            contr.registerItem(3);
+            contr.registerItem(9);
+
+            contr.endSale();
+
+            Amount paidAmount = new Amount(200);
+            contr.pay(paidAmount);
+
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+        } catch (OperationFailedException ex) {
+            errorMessageHandler.log("No connection to inventory system. Try again.");
+        } catch (Exception exc) {
+            writeToLogAndUI("Failed to register sale, please try again.", exc);
+        }
     }
-    private void printStep(String step, String stepDescription) throws InterruptedException {
-        printStep(step, stepDescription, 1);
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow - checked exception, business logic error.
+     * Item ID 150 triggers an exception since item is not in inventory system.
+     *
+     * Registers item 5,3,4,2.
+     * Customer pays 500 kr in Cash.
+     */
+    public void alternativeFlow3AWithCheckedExceptions() {
+        try {
+            contr.startSale();
+            contr.registerItem(5);
+            try {
+                contr.registerItem(150);
+                errorMessageHandler.log("Managed to enter a non-existing item ID.");
+            } catch (ItemNotFoundInItemRegistryException ex) {
+                errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+            } catch (OperationFailedException exc) {
+                writeToLogAndUI("Wrong exception was thrown.", exc);
+            }
+            contr.registerItem(3);
+            contr.registerItem(4);
+            contr.registerItem(2 );
+
+            contr.endSale();
+
+            Amount paidAmount = new Amount(500);
+            contr.pay(paidAmount);
+
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+        } catch (OperationFailedException ex) {
+            errorMessageHandler.log("No connection to inventory system. Try again.");
+        } catch (Exception exc) {
+            writeToLogAndUI("Failed to register sale, please try again.", exc);
+        }
     }
-    private void printStep(String stepDescription, int pauseSeconds) throws InterruptedException {
-        printStep("",stepDescription,  pauseSeconds);
+
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow - same item id.
+     *
+     * Registers item 3,3,1,1,9,9,9,9,9
+     * Customer pays 240 kr in Cash.
+     */
+    public void alternativeFlow3B() {
+        try {
+            contr.startSale();
+            contr.registerItem(3);
+            contr.registerItem(3);
+            contr.registerItem(1);
+            contr.registerItem(1);
+            contr.registerItem(9);
+            contr.registerItem(9);
+            contr.registerItem(9);
+            contr.registerItem(9);
+            contr.registerItem(9);
+
+            contr.endSale();
+
+            Amount paidAmount = new Amount(240);
+            contr.pay(paidAmount);
+
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+        } catch (OperationFailedException ex) {
+            errorMessageHandler.log("No connection to inventory system. Try again.");
+        } catch (Exception ex) {
+            writeToLogAndUI("Failed to register sale, please try again.", ex);
+        }
     }
-    private void printStep(String stepDescription) throws InterruptedException {
-        printStep("", stepDescription);
+
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow - multiple items of the same goods.
+     *
+     * Registers item 2 x id 2, 4 x id 8, 4 x id 7 and 10 x id 4
+     * Customer pays 1000 kr in Cash.
+     */
+    public void alternativeFlow3C() {
+        try {
+            contr.startSale();
+            contr.registerItem(2, 2);
+            contr.registerItem(8, 2);
+            contr.registerItem(7, 4);
+            contr.registerItem(10, 4);
+
+            contr.endSale();
+
+            Amount paidAmount = new Amount(1000);
+            contr.pay(paidAmount);
+
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+        } catch (OperationFailedException ex) {
+            errorMessageHandler.log("No connection to inventory system. Try again.");
+        } catch (Exception exc) {
+            writeToLogAndUI("Failed to register sale, please try again.", exc);
+        }
+    }
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow, customer eligible for discount.
+     */
+    public void alternativeFlow9a() {
+        try {
+            contr.startSale();
+            contr.registerItem(8, 2);
+            contr.registerItem(8, 4);
+            contr.registerItem(10, 4);
+
+            contr.endSale();
+            contr.registerCustomerToSale(810111);
+            contr.endSale();
+
+            Amount paidAmount = new Amount(1000);
+            contr.pay(paidAmount);
+
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+        } catch (OperationFailedException ex) {
+            errorMessageHandler.log("No connection to inventory system. Try again.");
+        } catch (Exception exc) {
+            writeToLogAndUI("Failed to register sale, please try again.", exc);
+        }
+    }
+    /**
+     * Simulates a user input that generates calls to all system operations,
+     * with an alternative flow -- unchecked exception.
+     * Item ID 404 to trigger an exception from inventory system.
+     *
+     * Registers item 5, 5, 3 x id 2
+     * Customer pays 500 kr in Cash.
+     */
+    public void alternativeFlowWithUnCheckedExceptions() {
+        try {
+            contr.startSale();
+            contr.registerItem(5);
+            try {
+                contr.registerItem(404);
+                errorMessageHandler.log("Managed to register item even when database call \nfailed.");
+            } catch (ItemNotFoundInItemRegistryException ex) {
+                writeToLogAndUI("Wrong exception was thrown.", ex);
+            } catch (OperationFailedException ex) {
+                writeToLogAndUI("Correctly failed to register item when database call \nfailed", ex);
+            }
+            contr.registerItem(5);
+            contr.registerItem(2, 3);
+
+            contr.endSale();
+
+            Amount paidAmount = new Amount(500);
+            contr.pay(paidAmount);
+
+        } catch (ItemNotFoundInItemRegistryException ex) {
+            errorMessageHandler.log("Unable to find item with ID %s, %nplease try again".formatted(ex.getItemIDNotFound()));
+        } catch (OperationFailedException ex) {
+            errorMessageHandler.log("No connection to inventory system. Try again.");
+        } catch (Exception exc) {
+            writeToLogAndUI("Failed to register sale, please try again.", exc);
+        }
     }
     /**
      * Simulates a user input that generates calls to all system operations.
+     *
+     * Same as {@link #basicFlow()} but with descriptive steps
+     * of the POS process, for demonstration purposes.
      */
-    public void basicFlow() {
+    public void basicFlowWithSteps() {
         System.out.println("BASIC FLOW");
         try {
             step1To2();
@@ -94,8 +272,12 @@ public class View {
      * Simulates a user input that generates calls to all system operations,
      * with an alternative flow - checked exception, business logic error.
      * Item ID 150 triggers an exception since item is not in inventory system.
+     *
+     * Same as {@link #alternativeFlow3AWithCheckedExceptions()} but with descriptive steps
+     * of the POS process, for demonstration purposes.
      */
-    public void alternativeFlow3AWithCheckedExceptions() {
+    public void alternativeFlow3AWithCheckedExceptionsWithSteps() {
+        clearConsole();
         System.out.println( "ALTERNATIVE FLOW - CHECKED EXCEPTION, BUSINESS LOGIC ERROR");
         try {
             step1To2();
@@ -177,8 +359,11 @@ public class View {
     /**
      * Simulates a user input that generates calls to all system operations,
      * with an alternative flow - same item id.
+     *
+     * Same as {@link #alternativeFlow3B()} but with descriptive steps
+     * of the POS process, for demonstration purposes.
      */
-    public void alternativeFlow3B() {
+    public void alternativeFlow3BWithSteps() {
         System.out.println("ALTERNATIVE FLOW - SAME ITEM ID");
         try {
             step1To2();
@@ -253,8 +438,10 @@ public class View {
      * Simulates a user input that generates calls to all system operations,
      * with an alternative flow - multiple items of the same goods.
      *
+     * Same as {@link #alternativeFlow3C()} but with descriptive steps
+     * of the POS process, for demonstration purposes.
      */
-    public void alternativeFlow3C() {
+    public void alternativeFlow3CWithSteps() {
         System.out.println("ALTERNATIVE FLOW - MULTIPLE ITEMS OF THE SAME GOODS");
         try {
             step1To2();
@@ -306,8 +493,11 @@ public class View {
     /**
      * Simulates a user input that generates calls to all system operations,
      * with an alternative flow, customer eligible for discount.
+     *
+     * Same as {@link #alternativeFlow9a()} but with descriptive steps
+     * of the POS process, for demonstration purposes.
      */
-    public void alternativeFlow9a() {
+    public void alternativeFlow9aWithSteps() {
         System.out.println("ALTERNATIVE FLOW, CUSTOMER ELIGIBLE FOR DISCOUNT");
         try {
             step1To2();
@@ -361,10 +551,13 @@ public class View {
     }
     /**
      * Simulates a user input that generates calls to all system operations,
-     * with an alternative flow - unchecked exception.
-     * Item ID 404 to triggers an exception from inventory system.
+     * with an alternative flow -- unchecked exception.
+     * Item ID 404 to trigger an exception from inventory system.
+     *
+     * Same as {@link #alternativeFlowWithUnCheckedExceptions()} but with descriptive steps
+     * of the POS process, for demonstration purposes.
      */
-    public void basicFlowWithUnCheckedExceptions() {
+    public void basicFlowWithUnCheckedExceptionsWithSteps() {
         System.out.println("ALTERNATIVE FLOW - UNCHECKED EXCEPTION");
         try {
             step1To2();
@@ -474,5 +667,18 @@ public class View {
     private void writeToLogAndUI(String uiMsg, Exception exc) {
         errorMessageHandler.log(uiMsg);
         logger.log(exc);
+    }
+    private void printStep(String step, String stepDescription, int pauseSeconds) throws InterruptedException {
+        System.out.println("%-5s %s".formatted(step, stepDescription));
+        Thread.sleep(1000 * pauseSeconds);
+    }
+    private void printStep(String step, String stepDescription) throws InterruptedException {
+        printStep(step, stepDescription, 1);
+    }
+    private void printStep(String stepDescription, int pauseSeconds) throws InterruptedException {
+        printStep("",stepDescription,  pauseSeconds);
+    }
+    private void printStep(String stepDescription) throws InterruptedException {
+        printStep("", stepDescription);
     }
 }
