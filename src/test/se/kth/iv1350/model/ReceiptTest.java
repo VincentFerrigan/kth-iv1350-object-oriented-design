@@ -68,17 +68,48 @@ class ReceiptTest extends POSTestSuperClass {
         instance = new Receipt(sale);
         LocalDateTime saleTime = LocalDateTime.now();
         String result = instance.toString();
-        assertTrue(result.contains(Integer.toString(saleTime.getYear())), "Wrong sale year.");
-        assertTrue(result.contains(Integer.toString(saleTime.getMonthValue())),
-                "Wrong sale month.");
-        assertTrue(result.contains(Integer.toString(saleTime.getDayOfMonth())),
-                "Wrong sale day.");
-        assertTrue(result.contains(Integer.toString(saleTime.getHour())), "Wrong sale hour.");
-        assertTrue(result.contains(Integer.toString(saleTime.getMinute())), "Wrong sale minute.");
-        assertTrue(result.contains(sale.getTotalPricePaid().toString()), "Wrong total price");
-        assertTrue(result.contains(ITEM_NAME), "Wrong item name");
-        assertTrue(result.contains(payment.getPaidAmt().toString()), "Wrong paid amount name");
-        assertTrue(result.contains(PAID_AMOUNT.minus(sale.getTotalPricePaid()).toString()), "Wrong change");
-        assertTrue(result.contains("VAT"), "Receipt does not include the word \"VAT\"");
+        Amount itemPriceIncVAT = itemPrice.plus(itemPrice.multiply(0.25));
+
+        assertAll("Verify data in receipt",
+                ()-> assertTrue(result.contains(Integer.toString(saleTime.getYear())), "Wrong sale year."),
+                () -> assertTrue(result.contains(Integer.toString(saleTime.getMonthValue())), "Wrong sale month."),
+                () -> assertTrue(result.contains(Integer.toString(saleTime.getDayOfMonth())),
+                "Wrong sale day."),
+                () -> assertTrue(result.contains(Integer.toString(saleTime.getHour())), "Wrong sale hour."),
+                () -> assertTrue(result.contains(Integer.toString(saleTime.getMinute())), "Wrong sale minute."),
+                () -> assertTrue(result.contains(sale.getTotalPricePaid().toString()), "Wrong total price"),
+                () -> assertTrue(result.contains(ITEM_NAME), "Wrong item name"),
+                () -> assertTrue(result.contains(payment.getPaidAmt().toString()), "Wrong paid amount name"),
+                () -> assertTrue(result.contains(PAID_AMOUNT.minus(sale.getTotalPricePaid()).toString()), "Wrong change"),
+                () -> assertTrue(result.contains("VAT"), "Receipt does not include the word \"VAT\""),
+                () -> assertTrue(result.contains(itemDisplay(ITEM_NAME,itemPriceIncVAT,1)),"Wrong item display"),
+                () -> assertTrue(result.contains(totalCostDisplay(itemPriceIncVAT, 1)), "Wrong total cost displayed"),
+                () -> assertTrue(result.contains(vatDisplay(itemPriceIncVAT,1)), "Wrong VAT displayed"),
+                () -> assertTrue(result.contains(paidAmountDisplay(PAID_AMOUNT)), "Wrong paid amount displayed"),
+                () -> assertTrue(result.contains(changeDisplay(PAID_AMOUNT, itemPriceIncVAT, 1)), "Wrong change displayed")
+        );
+    }
+    private String itemDisplay(String name, Amount unitPrice, int quantity) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("%-40s%s%n"
+                .formatted(name, unitPrice.multiply(quantity)));
+        builder.append("(%d * %s)\n".formatted(quantity, unitPrice));
+        return builder.toString();
+    }
+    private String totalCostDisplay(Amount unitPrice, int quantity) {
+        return "%-40s%s"
+                .formatted("Total Cost:", unitPrice.multiply(quantity));
+    }
+    private String vatDisplay(Amount unitPrice, int quantity) {
+        return "%-40s%s"
+                .formatted("Total VAT:", unitPrice.multiply(quantity).multiply(1/1.25*0.25));
+    }
+    private String paidAmountDisplay(Amount pricePaid) {
+        return "%-40s%s"
+                .formatted("Paid Amount:", pricePaid);
+    }
+    private String changeDisplay(Amount pricePaid, Amount unitPrice, int quantity ) {
+        return "%-40s%s"
+                .formatted("Change:", pricePaid.minus(unitPrice.multiply(quantity)));
     }
 }
