@@ -79,7 +79,7 @@ class SaleLogTest extends POSTestSuperClass {
         }
         @Test
         @DisplayName("Find a customers sale by CustomerID")
-        void findSalesByCustomerID() {
+        void testFindSalesByCustomerID() {
             sale.addCustomerToSale(new CustomerDTO(1, CustomerType.MEMBER,10));
             sale.pay(payment);
             instance.logSale(sale);
