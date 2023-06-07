@@ -9,6 +9,9 @@ import se.kth.iv1350.integration.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +26,8 @@ class ReceiptTest extends POSTestSuperClass {
     private Printer printer = new Printer();
     private final int ITEM_ID = 0;
     private final String ITEM_NAME = "test name";
+    private Locale locale = new Locale("sv", "SE");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).localizedBy(locale);
 
     @BeforeEach
     void setUp() {
@@ -72,7 +77,7 @@ class ReceiptTest extends POSTestSuperClass {
 
         assertAll("Verify data in receipt",
                 ()-> assertTrue(result.contains(Integer.toString(saleTime.getYear())), "Wrong sale year."),
-                () -> assertTrue(result.contains(Integer.toString(saleTime.getMonthValue())), "Wrong sale month."),
+                () -> assertTrue(result.contains(saleTime.format(formatter)), "Wrong sale date stamp."),
                 () -> assertTrue(result.contains(Integer.toString(saleTime.getDayOfMonth())),
                 "Wrong sale day."),
                 () -> assertTrue(result.contains(Integer.toString(saleTime.getHour())), "Wrong sale hour."),
